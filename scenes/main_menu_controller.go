@@ -40,6 +40,7 @@ func (c *MainMenuController) initUI(scene *ge.Scene) {
 	rowContainer.AddChild(eui.NewSeparator(nil, styles.TransparentColor))
 
 	rowContainer.AddChild(eui.NewButton(c.state.UIResources, "PLAY", func() {
+		scene.Context().ChangeScene(NewBattleController(c.state))
 	}))
 
 	rowContainer.AddChild(eui.NewButton(c.state.UIResources, "SETTINGS", func() {
