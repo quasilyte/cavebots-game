@@ -1,9 +1,13 @@
 package scenes
 
 import (
+	"os"
+
 	"github.com/ebitenui/ebitenui/widget"
+	"github.com/quasilyte/cavebots-game/assets"
 	"github.com/quasilyte/cavebots-game/eui"
 	"github.com/quasilyte/cavebots-game/session"
+	"github.com/quasilyte/cavebots-game/styles"
 	"github.com/quasilyte/ge"
 )
 
@@ -26,8 +30,14 @@ func (c *MainMenuController) initUI(scene *ge.Scene) {
 		})),
 		widget.ContainerOpts.Layout(widget.NewAnchorLayout()))
 
-	rowContainer := eui.NewRowLayoutContainerWithMinWidth(640, 10, nil)
+	rowContainer := eui.NewRowLayoutContainerWithMinWidth(640, 16, nil)
 	root.AddChild(rowContainer)
+
+	bigFont := scene.Context().Loader.LoadFont(assets.FontBig).Face
+
+	rowContainer.AddChild(eui.NewCenteredLabel("CaveBots", bigFont))
+
+	rowContainer.AddChild(eui.NewSeparator(nil, styles.TransparentColor))
 
 	rowContainer.AddChild(eui.NewButton(c.state.UIResources, "PLAY", func() {
 	}))
@@ -39,6 +49,7 @@ func (c *MainMenuController) initUI(scene *ge.Scene) {
 	}))
 
 	rowContainer.AddChild(eui.NewButton(c.state.UIResources, "EXIT", func() {
+		os.Exit(0)
 	}))
 
 	initUI(scene, root)

@@ -1,6 +1,8 @@
 package eui
 
 import (
+	"image/color"
+
 	"github.com/ebitenui/ebitenui/image"
 	"github.com/ebitenui/ebitenui/widget"
 	"github.com/hajimehoshi/ebiten/v2"
@@ -110,4 +112,45 @@ func NewButton(res *Resources, text string, onclick func()) *widget.Button {
 		Text:    text,
 		OnClick: onclick,
 	})
+}
+
+func NewCenteredLabelWithMaxWidth(text string, ff font.Face, width float64) *widget.Text {
+	options := []widget.TextOpt{
+		widget.TextOpts.WidgetOpts(
+			widget.WidgetOpts.LayoutData(widget.RowLayoutData{
+				Stretch: true,
+			}),
+		),
+		widget.TextOpts.Position(widget.TextPositionCenter, widget.TextPositionCenter),
+		widget.TextOpts.Text(text, ff, styles.ButtonTextColor),
+	}
+	if width != -1 {
+		options = append(options, widget.TextOpts.MaxWidth(width))
+	}
+	return widget.NewText(options...)
+}
+
+func NewCenteredLabel(text string, ff font.Face) *widget.Text {
+	return NewCenteredLabelWithMaxWidth(text, ff, -1)
+}
+
+func NewSeparator(ld interface{}, clr color.RGBA) widget.PreferredSizeLocateableWidget {
+	c := widget.NewContainer(
+		widget.ContainerOpts.Layout(widget.NewRowLayout(
+			widget.RowLayoutOpts.Direction(widget.DirectionVertical),
+			widget.RowLayoutOpts.Padding(widget.Insets{
+				Top:    20,
+				Bottom: 20,
+			}))),
+		widget.ContainerOpts.WidgetOpts(widget.WidgetOpts.LayoutData(ld)))
+
+	c.AddChild(widget.NewGraphic(
+		widget.GraphicOpts.WidgetOpts(widget.WidgetOpts.LayoutData(widget.RowLayoutData{
+			Stretch:   true,
+			MaxHeight: 2,
+		})),
+		widget.GraphicOpts.ImageNineSlice(image.NewNineSliceColor(clr)),
+	))
+
+	return c
 }
