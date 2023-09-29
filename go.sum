@@ -2,6 +2,8 @@ github.com/ebitengine/oto/v3 v3.1.0-rc.2 h1:k7INwwydj5vj8CIntUGcwjMwbDCADXRWCjgT
 github.com/ebitengine/oto/v3 v3.1.0-rc.2/go.mod h1:83QMKylcDC3rIAWhX7iMue246WYtF9fAaVp8009zfHc=
 github.com/ebitengine/purego v0.5.0-rc.2 h1:pODNEAUvGZpUQgzX2YFetX6xYsa8MZgVVpqS1HIG3u0=
 github.com/ebitengine/purego v0.5.0-rc.2/go.mod h1:ah1In8AOtksoNK6yk5z1HTJeUkC1Ez4Wk2idgGslMwQ=
+github.com/ebitenui/ebitenui v0.5.5 h1:L9UCWmiMlo4sG5TavQKmjfsnwMmYqkld2tXWZMmKkSA=
+github.com/ebitenui/ebitenui v0.5.5/go.mod h1:CkzAwu9Ks32P+NC/7+iypdLA85Wqnn93UztPFE+kAH4=
 github.com/hajimehoshi/bitmapfont/v3 v3.0.0 h1:r2+6gYK38nfztS/et50gHAswb9hXgxXECYgE8Nczmi4=
 github.com/hajimehoshi/bitmapfont/v3 v3.0.0/go.mod h1:+CxxG+uMmgU4mI2poq944i3uZ6UYFfAkj9V6WqmuvZA=
 github.com/hajimehoshi/ebiten/v2 v2.6.0-rc.2 h1:8iYeY+N7xZP684gR/m4zo+GqWLzS4bd2dOyPt2pN8Is=
@@ -21,6 +23,8 @@ github.com/quasilyte/gmath v0.0.0-20221217210116-fba37a2e15c7/go.mod h1:EbI+KMbA
 github.com/yuin/goldmark v1.4.13/go.mod h1:6yULJ656Px+3vBD8DxQVa3kxgyrAnzto9xy5taEt/CY=
 golang.org/x/crypto v0.0.0-20190308221718-c2843e01d9a2/go.mod h1:djNgcEr1/C05ACkg1iLfiJU5Ep61QUkGW8qpdssI0+w=
 golang.org/x/crypto v0.0.0-20210921155107-089bfa567519/go.mod h1:GvvjBRRGRdwPK5ydBHafDWAxML/pGHZbMvKqRZ5+Abc=
+golang.org/x/exp v0.0.0-20230817173708-d852ddb80c63 h1:m64FZMko/V45gv0bNmrNYoDEq8U5YUhetc9cBWKS1TQ=
+golang.org/x/exp v0.0.0-20230817173708-d852ddb80c63/go.mod h1:0v4NqG35kSWCMzLaMeX+IQrlSnVE/bqGSyC2cz/9Le8=
 golang.org/x/exp/shiny v0.0.0-20230817173708-d852ddb80c63 h1:3AGKexOYqL+ztdWdkB1bDwXgPBuTS/S8A4WzuTvJ8Cg=
 golang.org/x/exp/shiny v0.0.0-20230817173708-d852ddb80c63/go.mod h1:UH99kUObWAZkDnWqppdQe5ZhPYESUw8I0zVV1uWBR+0=
 golang.org/x/image v0.12.0 h1:w13vZbU4o5rKOFFR8y7M+c4A5jXDC0uXTdHYRP8X2DQ=

@@ -4,7 +4,9 @@ import (
 	"time"
 
 	"github.com/quasilyte/cavebots-game/assets"
+	"github.com/quasilyte/cavebots-game/eui"
 	"github.com/quasilyte/cavebots-game/scenes"
+	"github.com/quasilyte/cavebots-game/session"
 	"github.com/quasilyte/ge"
 )
 
@@ -20,7 +22,11 @@ func main() {
 	ctx.Loader.OpenAssetFunc = assets.MakeOpenAssetFunc(ctx)
 	assets.RegisterResources(ctx)
 
-	if err := ge.RunGame(ctx, scenes.NewMainMenuController()); err != nil {
+	state := &session.State{
+		UIResources: eui.PrepareResources(ctx.Loader),
+	}
+
+	if err := ge.RunGame(ctx, scenes.NewMainMenuController(state)); err != nil {
 		panic(err)
 	}
 }
