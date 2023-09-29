@@ -18,6 +18,8 @@ github.com/quasilyte/ebitengine-resource v0.5.1-0.20230301215552-afd21c3065ff h1
 github.com/quasilyte/ebitengine-resource v0.5.1-0.20230301215552-afd21c3065ff/go.mod h1:PEj32KsbbcgeSzAYQY5KspbImb/ucvJXoBgRMUrtBAQ=
 github.com/quasilyte/ge v0.0.0-20230925153958-e5b2a565e636 h1:SXdyww/bTMf99bA7IJBkiE4DDhxj2G4Xk9YY7nYVtRM=
 github.com/quasilyte/ge v0.0.0-20230925153958-e5b2a565e636/go.mod h1:Ybw5zUJaepnaxpYwjdwFeiqx0gHf7Um+Om62bR9oUbE=
+github.com/quasilyte/ge v0.0.0-20230929232357-5a8f0ef73177 h1:viNCDjfnZqqCBZTs9ZAnBqS8XDb+tS6bFeRW5oS0Vd0=
+github.com/quasilyte/ge v0.0.0-20230929232357-5a8f0ef73177/go.mod h1:Ybw5zUJaepnaxpYwjdwFeiqx0gHf7Um+Om62bR9oUbE=
 github.com/quasilyte/gmath v0.0.0-20221217210116-fba37a2e15c7 h1:mvIS9aGirkzuYmHHNWAP6sLRoA5VFaIzMoFdPmqgPdY=
 github.com/quasilyte/gmath v0.0.0-20221217210116-fba37a2e15c7/go.mod h1:EbI+KMbALSVE2s0YFOQpR4uj66zBh9ter5P4CBMSuvA=
 github.com/yuin/goldmark v1.4.13/go.mod h1:6yULJ656Px+3vBD8DxQVa3kxgyrAnzto9xy5taEt/CY=

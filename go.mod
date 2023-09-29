@@ -2,7 +2,7 @@ module github.com/quasilyte/cavebots-game
 
 go 1.21
 
-require github.com/quasilyte/ge v0.0.0-20230925153958-e5b2a565e636
+require github.com/quasilyte/ge v0.0.0-20230929232357-5a8f0ef73177
 
 require (
 	github.com/ebitengine/oto/v3 v3.1.0-rc.2 // indirect
