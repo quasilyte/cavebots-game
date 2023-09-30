@@ -18,6 +18,7 @@ const (
 	orderDeliverResource
 	orderPatrolMove
 	orderVanguardFollow
+	orderMakeUnit
 	orderCreepAttack
 	orderCreepAfterAttack
 )
@@ -73,7 +74,7 @@ func (u *unitNode) Init(scene *ge.Scene) {
 		u.world.stage.AddSprite(u.sprite)
 	case 2:
 		u.world.stage.AddSpriteSlightlyAbove(u.sprite)
-	case 4:
+	case 3:
 		u.world.stage.AddSpriteAbove(u.sprite)
 	}
 
@@ -182,6 +183,8 @@ func (u *unitNode) Update(delta float64) {
 		u.updateVanguard(delta)
 	case droneGeneratorStats:
 		u.updateGenerator(delta)
+	case buildingFactory:
+		u.updateFactory(delta)
 	case creepMutantBase:
 		u.updateCreepBase(delta)
 	case creepMutantWarrior:
@@ -376,6 +379,24 @@ func (u *unitNode) updateCreepBase(delta float64) {
 	}
 }
 
+func (u *unitNode) updateFactory(delta float64) {
+	if u.order != orderMakeUnit {
+		return
+	}
+
+	u.specialDelay -= delta
+	if u.specialDelay > 0 {
+		return
+	}
+
+	u.specialDelay = 0
+	stats := u.orderTarget.(*unitStats)
+	u.orderTarget = nil
+	u.order = orderNone
+
+	u.scene.AddObject(u.world.NewUnitNode(u.pos, stats))
+}
+
 func (u *unitNode) updateGenerator(delta float64) {
 	if !u.waypoint.IsZero() {
 		return
@@ -525,6 +546,8 @@ func (u *unitNode) completeDig() {
 	u.scene.AddObject(newFloatingTextNode(m.world, m.pos, "Status: dig complete"))
 	u.world.AddStones(1)
 
+	tileType := uint8(tileCaveMud)
+
 	switch loot {
 	case lootExtraStones:
 		u.world.AddStones(2)
@@ -547,11 +570,11 @@ func (u *unitNode) completeDig() {
 		u.scene.AddObject(u.world.NewUnitNode(m.pos, droneVanguardStats))
 	case lootFlatCell:
 		u.scene.AddObject(u.world.NewHardTerrainNode(m.pos))
+		tileType = tileCaveFlat
 	}
 
-	// TODO: could be a plain tile.
 	u.world.GrowDiggedRect(m.pos)
-	u.world.grid.SetCellTile(u.world.grid.PosToCoord(m.pos.X, m.pos.Y), tileCaveMud)
+	u.world.grid.SetCellTile(u.world.grid.PosToCoord(m.pos.X, m.pos.Y), tileType)
 
 	m.Dispose()
 	delete(u.world.mountainByCoord, u.world.grid.PackCoord(u.world.grid.PosToCoord(m.pos.X, m.pos.Y)))

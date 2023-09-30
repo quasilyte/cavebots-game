@@ -16,11 +16,13 @@ var firstBuildingList = []*unitStats{
 
 var secondBuildingList = []*unitStats{
 	buildingBarricate,
+	buildingFactory,
 }
 
 var buildingHotkeys = []string{
 	"Q",
 	"W",
+	"E",
 }
 
 func randomSectorPos(rng *gmath.Rand, sector gmath.Rect) gmath.Vec {

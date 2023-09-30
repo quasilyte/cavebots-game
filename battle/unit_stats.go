@@ -59,6 +59,8 @@ var droneHarvesterStats = &unitStats{
 	img:          assets.ImageDroneHarvester,
 	allied:       true,
 	energyUpkeep: 0.2,
+	energyCost:   2,
+	ironCost:     2,
 }
 
 var dronePatrolStats = &unitStats{
@@ -70,6 +72,7 @@ var dronePatrolStats = &unitStats{
 	img:          assets.ImageDronePatrol,
 	allied:       true,
 	energyUpkeep: 0.3,
+	ironCost:     8,
 	weapon: &weaponStats{
 		damage:          8,
 		reload:          1.8,
@@ -90,6 +93,8 @@ var droneVanguardStats = &unitStats{
 	img:          assets.ImageDroneVanguard,
 	allied:       true,
 	energyUpkeep: 0.6,
+	energyCost:   3,
+	ironCost:     9,
 	weapon: &weaponStats{
 		damage:          10,
 		reload:          2.2,
@@ -146,6 +151,17 @@ var buildingSmelter = &unitStats{
 	energyCost:  3,
 	ironCost:    2,
 	stoneCost:   5,
+}
+
+var buildingFactory = &unitStats{
+	name:        "Factory",
+	botPriority: 14,
+	layer:       3,
+	maxHealth:   120,
+	img:         assets.ImageBuildingFactory,
+	allied:      true,
+	building:    true,
+	stoneCost:   14,
 }
 
 var creepMutantBase = &unitStats{

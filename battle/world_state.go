@@ -132,6 +132,26 @@ func (w *worldState) NewHardTerrainNode(pos gmath.Vec) *hardTerrainNode {
 	return n
 }
 
+func (w *worldState) TryBuy(stats *unitStats, pos gmath.Vec) bool {
+	if w.energy < float64(stats.energyCost) {
+		w.scene.AddObject(newFloatingTextNode(w, pos, "Error: not enough energy"))
+		return false
+	}
+	if w.iron < stats.ironCost {
+		w.scene.AddObject(newFloatingTextNode(w, pos, "Error: not enough iron"))
+		return false
+	}
+	if w.stones < stats.stoneCost {
+		w.scene.AddObject(newFloatingTextNode(w, pos, "Error: not enough stone"))
+		return false
+	}
+
+	w.AddEnergy(-float64(stats.energyCost))
+	w.AddIron(-stats.ironCost)
+	w.AddStones(-stats.stoneCost)
+	return true
+}
+
 func (w *worldState) NewUnitNode(pos gmath.Vec, stats *unitStats) *unitNode {
 	n := newUnitNode(w, stats)
 	n.pos = pos

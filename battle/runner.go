@@ -300,6 +300,10 @@ func (r *Runner) handleInput(delta float64) {
 		r.doBuildAction(cursorWorldPos, 1)
 		return
 	}
+	if handler.ActionIsJustPressed(controls.ActionBuild3) {
+		r.doBuildAction(cursorWorldPos, 2)
+		return
+	}
 
 	var cameraPan gmath.Vec
 	if handler.ActionIsPressed(controls.ActionPanRight) {
@@ -335,14 +339,18 @@ func (r *Runner) handleInput(delta float64) {
 	}
 }
 
-func (r *Runner) doBuildAction(cursorPos gmath.Vec, i int) {
+func (r *Runner) doBuildBuilding(coord pathing.GridCoord, cursorPos gmath.Vec, i int) {
+	if i > 1 {
+		return
+	}
+
 	var buildingSpot *hardTerrainNode
 	for _, tile := range r.world.hardTerrain {
 		if tile.building != nil {
 			continue
 		}
-		distSqr := tile.pos.DistanceSquaredTo(cursorPos)
-		if distSqr <= (32 * 32) {
+		tileCoord := r.world.grid.PosToCoord(tile.pos.X, tile.pos.Y)
+		if tileCoord == coord {
 			buildingSpot = tile
 			break
 		}
@@ -352,22 +360,9 @@ func (r *Runner) doBuildAction(cursorPos gmath.Vec, i int) {
 	}
 
 	buildingStats := buildingSpot.buildOptions[i]
-	if r.world.energy < float64(buildingStats.energyCost) {
-		r.scene.AddObject(newFloatingTextNode(r.world, cursorPos, "Error: not enough energy"))
+	if !r.world.TryBuy(buildingStats, cursorPos) {
 		return
 	}
-	if r.world.iron < buildingStats.ironCost {
-		r.scene.AddObject(newFloatingTextNode(r.world, cursorPos, "Error: not enough iron"))
-		return
-	}
-	if r.world.stones < buildingStats.stoneCost {
-		r.scene.AddObject(newFloatingTextNode(r.world, cursorPos, "Error: not enough stone"))
-		return
-	}
-
-	r.world.AddEnergy(-float64(buildingStats.energyCost))
-	r.world.AddIron(-buildingStats.ironCost)
-	r.world.AddStones(-buildingStats.stoneCost)
 
 	newBuilding := r.world.NewUnitNode(buildingSpot.pos, buildingStats)
 	r.scene.AddObject(newBuilding)
@@ -375,6 +370,53 @@ func (r *Runner) doBuildAction(cursorPos gmath.Vec, i int) {
 	newBuilding.EventDisposed.Connect(nil, func(*unitNode) {
 		buildingSpot.building = nil
 	})
+}
+
+func (r *Runner) doBuildAction(cursorPos gmath.Vec, i int) {
+	coord := r.world.grid.PosToCoord(cursorPos.X, cursorPos.Y)
+	if coord.X < 0 || coord.Y < 0 {
+		return
+	}
+
+	if r.world.grid.GetCellTile(coord) == tileCaveFlat {
+		r.doBuildBuilding(coord, cursorPos, i)
+		return
+	}
+
+	var factory *unitNode
+	for _, u := range r.world.playerUnits {
+		if u.stats != buildingFactory {
+			continue
+		}
+		if u.order != orderNone {
+			continue
+		}
+		factoryCoord := r.world.grid.PosToCoord(u.pos.X, u.pos.Y)
+		if factoryCoord == coord {
+			factory = u
+			break
+		}
+	}
+	if factory == nil {
+		return
+	}
+
+	var stats *unitStats
+	switch i {
+	case 0:
+		stats = droneHarvesterStats
+	case 1:
+		stats = dronePatrolStats
+	case 2:
+		stats = droneVanguardStats
+	}
+	if !r.world.TryBuy(stats, factory.pos) {
+		return
+	}
+
+	factory.orderTarget = stats
+	factory.order = orderMakeUnit
+	factory.specialDelay = r.scene.Rand().FloatRange(10, 20)
 }
 
 func (r *Runner) stopHover() {

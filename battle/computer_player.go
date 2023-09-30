@@ -18,6 +18,7 @@ func newComputerPlayer(world *worldState) *computerPlayer {
 	return &computerPlayer{
 		world:       world,
 		attackGroup: make([]*unitNode, 0, 16),
+		attackDelay: world.rand.FloatRange(15, 30),
 	}
 }
 

@@ -45,6 +45,20 @@ func (m *tooltipManager) OnStopHover() {
 	m.removeTooltip()
 }
 
+func (m *tooltipManager) formatPrice(u *unitStats) string {
+	priceParts := make([]string, 0, 3)
+	if u.energyCost != 0 {
+		priceParts = append(priceParts, strconv.Itoa(u.energyCost)+" energy")
+	}
+	if u.ironCost != 0 {
+		priceParts = append(priceParts, strconv.Itoa(u.ironCost)+" iron")
+	}
+	if u.stoneCost != 0 {
+		priceParts = append(priceParts, strconv.Itoa(u.stoneCost)+" stone")
+	}
+	return strings.Join(priceParts, " / ")
+}
+
 func (m *tooltipManager) OnHover(pos gmath.Vec) {
 	screenPos := pos.Sub(m.world.camera.Offset)
 	if screenPos.Y >= ((1080.0 / 2) - 56) {
@@ -87,6 +101,15 @@ func (m *tooltipManager) OnHover(pos gmath.Vec) {
 					s = fmt.Sprintf("%s bot (%s)", u.stats.name, status)
 				}
 			}
+			if u.stats == buildingFactory {
+				if u.order == orderMakeUnit {
+					s += "\n" + u.orderTarget.(*unitStats).name + " bot is being produced..."
+				} else {
+					s += "\n[Q] Harvester - " + m.formatPrice(droneHarvesterStats)
+					s += "\n[W] Patrol - " + m.formatPrice(dronePatrolStats)
+					s += "\n[E] Vanguard - " + m.formatPrice(droneVanguardStats)
+				}
+			}
 			m.createTooltip(pos, s+"\n"+health)
 			return
 		}
@@ -99,17 +122,7 @@ func (m *tooltipManager) OnHover(pos gmath.Vec) {
 		if t.pos.DistanceSquaredTo(pos) < (20 * 20) {
 			parts := []string{"Hard terrain, can build here:"}
 			for i, option := range t.buildOptions {
-				priceParts := make([]string, 0, 3)
-				if option.energyCost != 0 {
-					priceParts = append(priceParts, strconv.Itoa(option.energyCost)+" energy")
-				}
-				if option.ironCost != 0 {
-					priceParts = append(priceParts, strconv.Itoa(option.ironCost)+" iron")
-				}
-				if option.stoneCost != 0 {
-					priceParts = append(priceParts, strconv.Itoa(option.stoneCost)+" stone")
-				}
-				price := strings.Join(priceParts, " / ")
+				price := m.formatPrice(option)
 				parts = append(parts, fmt.Sprintf("[%s] %s - %s", buildingHotkeys[i], option.name, price))
 			}
 			m.createTooltip(pos, strings.Join(parts, "\n"))

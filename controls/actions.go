@@ -12,6 +12,7 @@ const (
 
 	ActionBuild1
 	ActionBuild2
+	ActionBuild3
 
 	ActionPanRight
 	ActionPanDown
