@@ -10,6 +10,7 @@ import (
 	"github.com/quasilyte/ge"
 	"github.com/quasilyte/ge/xslices"
 	"github.com/quasilyte/gmath"
+	"github.com/quasilyte/gsignal"
 	"github.com/quasilyte/pathing"
 )
 
@@ -22,10 +23,11 @@ type Runner struct {
 
 	world *worldState
 
-	labelUpdateDelay float64
-	energyLabel      *ge.Label
-	ironLabel        *ge.Label
-	stonesLabel      *ge.Label
+	energyRegenDelay float64
+
+	energyLabel *ge.Label
+	ironLabel   *ge.Label
+	stonesLabel *ge.Label
 
 	cellSelector *ge.Sprite
 }
@@ -45,6 +47,10 @@ func (r *Runner) Init(scene *ge.Scene) {
 		rand:      scene.Rand(),
 	}
 	r.world.Init()
+
+	r.world.EventResourcesUpdated.Connect(nil, func(gsignal.Void) {
+		r.updateLabels()
+	})
 
 	spawnPos := gmath.Vec{
 		X: float64((numCaveHorizontalCells - 1) * 32),
@@ -72,7 +78,7 @@ func (r *Runner) Init(scene *ge.Scene) {
 	r.ironLabel = scene.NewLabel(assets.FontNormal)
 	r.ironLabel.ColorScale.SetColor(styles.ButtonTextColor)
 	r.ironLabel.Pos.Offset.Y = r.world.height
-	r.ironLabel.Pos.Offset.X = 16 + 240
+	r.ironLabel.Pos.Offset.X = 16 + 320
 	r.ironLabel.Height = 1080 - r.world.height
 	r.ironLabel.AlignVertical = ge.AlignVerticalCenter
 	scene.AddGraphics(r.ironLabel)
@@ -80,10 +86,14 @@ func (r *Runner) Init(scene *ge.Scene) {
 	r.stonesLabel = scene.NewLabel(assets.FontNormal)
 	r.stonesLabel.ColorScale.SetColor(styles.ButtonTextColor)
 	r.stonesLabel.Pos.Offset.Y = r.world.height
-	r.stonesLabel.Pos.Offset.X = 16 + 240 + 240
+	r.stonesLabel.Pos.Offset.X = 16 + 320 + 320
 	r.stonesLabel.Height = 1080 - r.world.height
 	r.stonesLabel.AlignVertical = ge.AlignVerticalCenter
 	scene.AddGraphics(r.stonesLabel)
+
+	r.energyRegenDelay = 10
+
+	r.updateLabels()
 }
 
 func (r *Runner) initMap(spawnPos gmath.Vec) {
@@ -129,15 +139,16 @@ func (r *Runner) initMap(spawnPos gmath.Vec) {
 func (r *Runner) Update(delta float64) {
 	r.handleInput()
 
-	r.labelUpdateDelay = gmath.ClampMin(r.labelUpdateDelay-delta, 0)
-	if r.labelUpdateDelay == 0 {
-		r.labelUpdateDelay = 1
-		r.updateLabels()
+	r.energyRegenDelay -= delta
+	if r.energyRegenDelay <= 0 {
+		r.energyRegenDelay = 10
+		r.world.AddEnergy(r.world.CalcEnergyRegen())
 	}
 }
 
 func (r *Runner) updateLabels() {
-	r.energyLabel.Text = fmt.Sprintf("Energy: %d", int(r.world.energy))
+	energyIncome := r.world.CalcEnergyRegen()
+	r.energyLabel.Text = fmt.Sprintf("Energy: %d (%+.1f)", int(r.world.energy), energyIncome)
 	r.ironLabel.Text = fmt.Sprintf("Iron: %d", r.world.iron)
 	r.stonesLabel.Text = fmt.Sprintf("Stone: %d", r.world.stones)
 }
@@ -162,11 +173,18 @@ func (r *Runner) handleInput() {
 
 	if info, ok := r.state.Input.JustPressedActionInfo(controls.ActionInteract); ok {
 		m := r.world.MountainAt(info.Pos)
-		if m != nil && r.world.CanDig(m) {
-			// TODO: could be a plain tile.
-			r.scene.AddObject(newFloatingTextNode(info.Pos, "Order: dig here"))
-			r.world.grid.SetCellTile(r.world.grid.PosToCoord(m.pos.X, m.pos.Y), tileCaveMud)
-			m.Dispose()
+		if m != nil {
+			if !r.world.CanDig(m) {
+				r.scene.AddObject(newFloatingTextNode(info.Pos, "Error: can't dig here"))
+				return
+			}
+			if r.world.energy < digEnergyCost {
+				r.scene.AddObject(newFloatingTextNode(info.Pos, "Error: not enough energy"))
+				return
+			}
+			r.scene.AddObject(newFloatingTextNode(m.pos, "Order: dig here"))
+			r.core.SendDigging(info.Pos)
+			r.core.orderTarget = m
 			return
 		}
 	}

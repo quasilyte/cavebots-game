@@ -3,6 +3,7 @@ package battle
 import (
 	"github.com/quasilyte/ge"
 	"github.com/quasilyte/gmath"
+	"github.com/quasilyte/gsignal"
 	"github.com/quasilyte/pathing"
 )
 
@@ -25,6 +26,8 @@ type worldState struct {
 	caveWidth float64
 
 	mountainByCoord map[uint32]*mountainNode
+
+	EventResourcesUpdated gsignal.Event[gsignal.Void]
 }
 
 func (w *worldState) Init() {
@@ -69,4 +72,24 @@ func (w *worldState) CanDig(m *mountainNode) bool {
 		}
 	}
 	return false
+}
+
+func (w *worldState) CalcEnergyRegen() float64 {
+	return 1
+}
+
+func (w *worldState) AddEnergy(delta float64) {
+	if delta == 0 {
+		return
+	}
+	w.energy += delta
+	w.EventResourcesUpdated.Emit(gsignal.Void{})
+}
+
+func (w *worldState) AddStones(delta int) {
+	if delta == 0 {
+		return
+	}
+	w.stones += delta
+	w.EventResourcesUpdated.Emit(gsignal.Void{})
 }

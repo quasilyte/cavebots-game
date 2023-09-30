@@ -7,15 +7,26 @@ import (
 	"github.com/quasilyte/pathing"
 )
 
+type unitOrder int
+
+const (
+	orderNone unitOrder = iota
+	orderDig
+)
+
 type unitNode struct {
 	world  *worldState
 	sprite *ge.Sprite
 
 	stats *unitStats
 
-	path     pathing.GridPath
-	pathDest gmath.Vec
-	waypoint gmath.Vec
+	scene *ge.Scene
+
+	path        pathing.GridPath
+	pathDest    gmath.Vec
+	waypoint    gmath.Vec
+	order       unitOrder
+	orderTarget any
 
 	pos gmath.Vec
 }
@@ -28,6 +39,8 @@ func newUnitNode(world *worldState, stats *unitStats) *unitNode {
 }
 
 func (u *unitNode) Init(scene *ge.Scene) {
+	u.scene = scene
+
 	u.sprite = scene.NewSprite(assets.ImageDroneCore)
 	u.sprite.Pos.Base = &u.pos
 	scene.AddGraphics(u.sprite)
@@ -38,6 +51,16 @@ func (u *unitNode) IsDisposed() bool {
 }
 
 func (u *unitNode) SendTo(pos gmath.Vec) {
+	u.sendTo(pos)
+	u.order = orderNone
+}
+
+func (u *unitNode) SendDigging(pos gmath.Vec) {
+	u.sendTo(pos)
+	u.order = orderDig
+}
+
+func (u *unitNode) sendTo(pos gmath.Vec) {
 	from := u.world.grid.PosToCoord(u.pos.X, u.pos.Y)
 	to := u.world.grid.PosToCoord(pos.X, pos.Y)
 	result := u.world.astar.BuildPath(u.world.grid, from, to, normalLayer)
@@ -56,6 +79,24 @@ func (u *unitNode) Update(delta float64) {
 				nextPos := nextPathWaypoint(u.world, u.pos, &u.path, normalLayer)
 				u.waypoint = nextPos.Add(u.world.rand.Offset(-2, 2))
 				return
+			}
+			if u.order == orderDig {
+				u.order = orderNone
+				m := u.orderTarget.(*mountainNode)
+				if m.IsDisposed() {
+					return
+				}
+				if u.world.energy < digEnergyCost {
+					u.scene.AddObject(newFloatingTextNode(m.pos, "Error: not enough energy"))
+					return
+				}
+				u.world.AddEnergy(-digEnergyCost)
+				u.world.AddStones(1)
+				u.scene.AddObject(newFloatingTextNode(m.pos, "Status: dig complete"))
+				// TODO: could be a plain tile.
+				u.world.grid.SetCellTile(u.world.grid.PosToCoord(m.pos.X, m.pos.Y), tileCaveMud)
+				m.Dispose()
+				delete(u.world.mountainByCoord, u.world.grid.PackCoord(u.world.grid.PosToCoord(m.pos.X, m.pos.Y)))
 			}
 		}
 	}
