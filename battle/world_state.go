@@ -41,8 +41,9 @@ type worldState struct {
 	creeps      []*unitNode
 	hardTerrain []*hardTerrainNode
 
-	creepBase      *unitNode
-	creepBaseLevel float64
+	creepBase             *unitNode
+	creepBaseLevel        float64
+	creepBaseAttackBudget int
 
 	resourceNodes []*resourceNode
 
@@ -53,6 +54,8 @@ type worldState struct {
 
 func (w *worldState) Init() {
 	w.energy = 20
+
+	w.creepBaseAttackBudget = 5
 
 	w.rect = gmath.Rect{
 		Max: gmath.Vec{

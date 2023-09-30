@@ -17,6 +17,8 @@ const (
 	orderHarvestResource
 	orderDeliverResource
 	orderPatrolMove
+	orderCreepAttack
+	orderCreepAfterAttack
 )
 
 type unitNode struct {
@@ -38,6 +40,7 @@ type unitNode struct {
 	orderTarget any
 
 	specialDelay float64
+	chargeDelay  float64
 
 	pos gmath.Vec
 
@@ -108,6 +111,11 @@ func (u *unitNode) SendDigging(pos gmath.Vec) {
 	u.order = orderDig
 }
 
+func (u *unitNode) SendAttacking(pos gmath.Vec) {
+	u.sendTo(pos)
+	u.order = orderCreepAttack
+}
+
 func (u *unitNode) sendTo(pos gmath.Vec) {
 	from := u.world.grid.PosToCoord(u.pos.X, u.pos.Y)
 	to := u.world.grid.PosToCoord(pos.X, pos.Y)
@@ -118,11 +126,18 @@ func (u *unitNode) sendTo(pos gmath.Vec) {
 	u.waypoint = makePos(u.world.grid.AlignPos(u.pos.X, u.pos.Y))
 }
 
-func (u *unitNode) OnDamage(amount float64) {
+func (u *unitNode) OnDamage(amount float64, attacker *unitNode) {
 	u.health = gmath.ClampMin(u.health-amount, 0)
 	if u.health == 0 {
 		u.destroy()
 		return
+	}
+
+	switch u.order {
+	case orderCreepAfterAttack:
+		if u.waypoint.IsZero() && u.scene.Rand().Chance(0.7) {
+			u.sendTo(attacker.pos)
+		}
 	}
 }
 
@@ -143,7 +158,7 @@ func (u *unitNode) Update(delta float64) {
 				nextPos := nextPathWaypoint(u.world, u.pos, &u.path, normalLayer)
 				var offset gmath.Vec
 				if u.stats.tiny {
-					offset = u.world.rand.Offset(-14, 14)
+					offset = u.world.rand.Offset(-12, 12)
 				} else {
 					offset = u.world.rand.Offset(-2, 2)
 				}
@@ -168,6 +183,8 @@ func (u *unitNode) Update(delta float64) {
 		u.updateCreepBase(delta)
 	case creepMutantWarrior:
 		u.updateMutantWarrior(delta)
+	case creepMutantWarlord:
+		u.updateMutantWarlord(delta)
 	}
 }
 
@@ -179,6 +196,8 @@ func (u *unitNode) completeOrder(order unitOrder) {
 		u.completeHarvestResource()
 	case orderDeliverResource:
 		u.completeDeliverResource()
+	case orderCreepAttack, orderCreepAfterAttack:
+		u.order = orderCreepAfterAttack
 	case orderPatrolMove:
 		u.specialDelay = u.scene.Rand().FloatRange(7, 10)
 	}
@@ -212,8 +231,37 @@ func (u *unitNode) completeHarvestResource() {
 	u.order = orderDeliverResource
 }
 
+func (u *unitNode) maybeCharge(delta, maxDist float64) {
+	u.chargeDelay -= delta
+	if u.chargeDelay > 0 {
+		return
+	}
+
+	target := gmath.RandElem(u.world.rand, u.world.playerUnits)
+	if target == nil {
+		u.chargeDelay = u.scene.Rand().FloatRange(8, 12)
+		return
+	}
+	if target.pos.DistanceTo(u.pos) > maxDist {
+		u.chargeDelay = u.scene.Rand().FloatRange(1, 3.5)
+		return
+	}
+	u.chargeDelay = u.scene.Rand().FloatRange(4, 15)
+	u.sendTo(target.pos)
+}
+
 func (u *unitNode) updateMutantWarrior(delta float64) {
 	u.processWeapon(delta)
+	if u.waypoint.IsZero() {
+		u.maybeCharge(delta, 140)
+	}
+}
+
+func (u *unitNode) updateMutantWarlord(delta float64) {
+	u.processWeapon(delta)
+	if u.waypoint.IsZero() {
+		u.maybeCharge(delta, 200)
+	}
 }
 
 func (u *unitNode) processWeapon(delta float64) {
@@ -225,7 +273,7 @@ func (u *unitNode) processWeapon(delta float64) {
 	attackDistSqr := u.stats.weapon.attackRange * u.stats.weapon.attackRange
 	isMelee := attackDistSqr == 0
 	if isMelee {
-		attackDistSqr = 16.0 * 16.0
+		attackDistSqr = 34.0 * 34.0
 	}
 
 	var target *unitNode
@@ -239,18 +287,25 @@ func (u *unitNode) processWeapon(delta float64) {
 		if other.pos.DistanceSquaredTo(u.pos) > attackDistSqr {
 			continue
 		}
+		if !isMelee && !hasLineOfFire(u.world, u.pos, other.pos) {
+			continue
+		}
 		target = other
 		break
 	}
 
 	if target == nil {
-		u.reload = u.scene.Rand().FloatRange(2, 4)
+		if isMelee {
+			u.reload = u.scene.Rand().FloatRange(0.4, 1.2)
+		} else {
+			u.reload = u.scene.Rand().FloatRange(2, 4)
+		}
 		return
 	}
 
 	u.reload = u.stats.weapon.reload * u.scene.Rand().FloatRange(0.8, 1.2)
 	if isMelee {
-		target.OnDamage(u.stats.weapon.damage)
+		target.OnDamage(u.stats.weapon.damage, u)
 		playSound(u.world, u.stats.weapon.impactSound, target.pos)
 		return
 	}
@@ -277,9 +332,18 @@ func (u *unitNode) updateCreepBase(delta float64) {
 		X: u.scene.Rand().FloatRange(-32, 32),
 		Y: u.scene.Rand().FloatRange(64, 96),
 	})
-	numWarriors := u.scene.Rand().IntRange(2, 4)
+	numWarriors := u.scene.Rand().IntRange(2, 5)
 	for i := 0; i < numWarriors; i++ {
-		newUnit := u.world.NewUnitNode(u.pos.Add(u.scene.Rand().Offset(-8, 8)), creepMutantWarrior)
+		stats := creepMutantWarrior
+		// Every minute gives +10% warlord chance.
+		warlardChance := 0.0
+		if u.world.creepBaseLevel > 60 {
+			warlardChance = 0.1 * (u.world.creepBaseLevel / 60)
+		}
+		if warlardChance != 0 && u.scene.Rand().Chance(warlardChance) {
+			stats = creepMutantWarlord
+		}
+		newUnit := u.world.NewUnitNode(u.pos.Add(u.scene.Rand().Offset(-8, 8)), stats)
 		u.scene.AddObject(newUnit)
 		newUnit.SendTo(waypoint)
 	}

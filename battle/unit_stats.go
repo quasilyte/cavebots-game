@@ -18,6 +18,9 @@ type unitStats struct {
 
 	weapon *weaponStats
 
+	score       int
+	botPriority float64
+
 	energyCost int
 	ironCost   int
 	stoneCost  int
@@ -35,6 +38,7 @@ type weaponStats struct {
 
 var droneCoreStats = &unitStats{
 	name:         "Core",
+	botPriority:  10,
 	layer:        2,
 	speed:        80,
 	maxHealth:    100,
@@ -45,6 +49,7 @@ var droneCoreStats = &unitStats{
 
 var droneHarvesterStats = &unitStats{
 	name:         "Harvester",
+	botPriority:  3,
 	layer:        2,
 	speed:        96,
 	maxHealth:    30,
@@ -55,6 +60,7 @@ var droneHarvesterStats = &unitStats{
 
 var dronePatrolStats = &unitStats{
 	name:         "Patrol",
+	botPriority:  0.5,
 	layer:        2,
 	speed:        110,
 	maxHealth:    60,
@@ -72,46 +78,50 @@ var dronePatrolStats = &unitStats{
 }
 
 var droneGeneratorStats = &unitStats{
-	name:      "Mobile generator",
-	layer:     2,
-	speed:     30,
-	maxHealth: 60,
-	img:       assets.ImageDroneGenerator,
-	allied:    true,
+	name:        "Mobile generator",
+	botPriority: 5.0,
+	layer:       2,
+	speed:       30,
+	maxHealth:   60,
+	img:         assets.ImageDroneGenerator,
+	allied:      true,
 }
 
 var buildingPowerGenerator = &unitStats{
-	name:      "Generator",
-	layer:     2,
-	maxHealth: 75,
-	img:       assets.ImageBuildingGenerator,
-	allied:    true,
-	building:  true,
-	ironCost:  1,
-	stoneCost: 6,
+	name:        "Generator",
+	botPriority: 11.0,
+	layer:       2,
+	maxHealth:   75,
+	img:         assets.ImageBuildingGenerator,
+	allied:      true,
+	building:    true,
+	ironCost:    1,
+	stoneCost:   6,
 }
 
 var buildingBarricate = &unitStats{
-	name:       "Barricade",
-	layer:      2,
-	maxHealth:  90,
-	img:        assets.ImageBuildingBarricade,
-	allied:     true,
-	building:   true,
-	energyCost: 3,
-	ironCost:   1,
+	name:        "Barricade",
+	botPriority: 1,
+	layer:       2,
+	maxHealth:   90,
+	img:         assets.ImageBuildingBarricade,
+	allied:      true,
+	building:    true,
+	energyCost:  3,
+	ironCost:    1,
 }
 
 var buildingSmelter = &unitStats{
-	name:       "Smelter",
-	layer:      2,
-	maxHealth:  130,
-	img:        assets.ImageBuildingSmelter,
-	allied:     true,
-	building:   true,
-	energyCost: 3,
-	ironCost:   2,
-	stoneCost:  5,
+	name:        "Smelter",
+	botPriority: 6,
+	layer:       2,
+	maxHealth:   130,
+	img:         assets.ImageBuildingSmelter,
+	allied:      true,
+	building:    true,
+	energyCost:  3,
+	ironCost:    2,
+	stoneCost:   5,
 }
 
 var creepMutantBase = &unitStats{
@@ -124,6 +134,7 @@ var creepMutantBase = &unitStats{
 
 var creepMutantWarrior = &unitStats{
 	name:      "Mutant warrior",
+	score:     2,
 	layer:     1,
 	maxHealth: 15,
 	img:       assets.ImageMutantWarrior,
@@ -132,6 +143,21 @@ var creepMutantWarrior = &unitStats{
 	weapon: &weaponStats{
 		damage:      3,
 		reload:      1.2,
+		impactSound: assets.AudioWarriorHit1,
+	},
+}
+
+var creepMutantWarlord = &unitStats{
+	name:      "Mutant warlord",
+	score:     3,
+	layer:     1,
+	maxHealth: 25,
+	img:       assets.ImageMutantWarlord,
+	speed:     20,
+	tiny:      true,
+	weapon: &weaponStats{
+		damage:      8,
+		reload:      1.4,
 		impactSound: assets.AudioWarriorHit1,
 	},
 }

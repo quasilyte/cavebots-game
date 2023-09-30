@@ -120,3 +120,53 @@ func playSound(world *worldState, id resource.AudioID, pos gmath.Vec) {
 		playGlobalSound(world, id)
 	}
 }
+
+func randIterate[T any](rand *gmath.Rand, slice []T, f func(x T) bool) T {
+	var result T
+	if len(slice) == 0 {
+		return result
+	}
+	if len(slice) == 1 {
+		// Don't use rand() if there is only 1 element.
+		x := slice[0]
+		if f(x) {
+			result = x
+		}
+		return result
+	}
+
+	var slider gmath.Slider
+	slider.SetBounds(0, len(slice)-1)
+	slider.TrySetValue(rand.IntRange(0, len(slice)-1))
+	inc := rand.Bool()
+	for i := 0; i < len(slice); i++ {
+		x := slice[slider.Value()]
+		if inc {
+			slider.Inc()
+		} else {
+			slider.Dec()
+		}
+		if f(x) {
+			result = x
+			break
+		}
+	}
+	return result
+}
+
+func hasLineOfFire(world *worldState, from, to gmath.Vec) bool {
+	dist := from.DistanceTo(to)
+	if dist <= 40 {
+		return true
+	}
+	pos := from
+	for dist > 30 {
+		pos = pos.MoveTowards(to, 28)
+		coord := world.grid.PosToCoord(pos.X, pos.Y)
+		if world.grid.GetCellTile(coord) == tileBlocked {
+			return false
+		}
+		dist -= 30
+	}
+	return true
+}

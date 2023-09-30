@@ -69,9 +69,9 @@ func (p *projectileNode) detonate() {
 
 	weapon := p.attacker.stats.weapon
 
-	if p.toPos.DistanceSquaredTo(p.target.pos) > (20 * 20) {
+	if p.toPos.DistanceSquaredTo(p.target.pos) > (16 * 16) {
 		return
 	}
 
-	p.target.OnDamage(weapon.damage)
+	p.target.OnDamage(weapon.damage, p.attacker)
 }
