@@ -17,7 +17,7 @@ const (
 	lootLavaCell
 	lootFlatCell
 	lootBotHarvester
-	lootBotGuard
+	lootBotVanguard
 	lootBotPatrol
 	lootBotGenerator
 )

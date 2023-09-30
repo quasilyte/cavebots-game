@@ -21,6 +21,10 @@ func registerAudioResources(ctx *ge.Context) {
 		AudioPatrolLaser3: {Path: "audio/patrol_laser3.wav"},
 		AudioPatrolLaser4: {Path: "audio/patrol_laser4.wav"},
 
+		AudioVanguardShot1: {Path: "audio/vanguard_shot1.wav"},
+		AudioVanguardShot2: {Path: "audio/vanguard_shot2.wav"},
+		AudioVanguardShot3: {Path: "audio/vanguard_shot3.wav"},
+
 		AudioBowShot1: {Path: "audio/bow_shot1.wav"},
 		AudioBowShot2: {Path: "audio/bow_shot2.wav"},
 		AudioBowShot3: {Path: "audio/bow_shot3.wav"},
@@ -70,6 +74,10 @@ const (
 	AudioPatrolLaser2
 	AudioPatrolLaser3
 	AudioPatrolLaser4
+
+	AudioVanguardShot1
+	AudioVanguardShot2
+	AudioVanguardShot3
 
 	AudioBowShot1
 	AudioBowShot2

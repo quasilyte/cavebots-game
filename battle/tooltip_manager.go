@@ -161,8 +161,8 @@ func (m *tooltipManager) formatMountainInfo(mountain *mountainNode) string {
 		loot = "harvester bot"
 	case lootBotPatrol:
 		loot = "patrol bot"
-	case lootBotGuard:
-		loot = "guard bot"
+	case lootBotVanguard:
+		loot = "vanguard bot"
 	case lootBotGenerator:
 		loot = "generator bot"
 	}

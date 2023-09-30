@@ -17,6 +17,7 @@ const (
 	orderHarvestResource
 	orderDeliverResource
 	orderPatrolMove
+	orderVanguardFollow
 	orderCreepAttack
 	orderCreepAfterAttack
 )
@@ -177,6 +178,8 @@ func (u *unitNode) Update(delta float64) {
 		u.updateHarvester(delta)
 	case dronePatrolStats:
 		u.updatePatrol(delta)
+	case droneVanguardStats:
+		u.updateVanguard(delta)
 	case droneGeneratorStats:
 		u.updateGenerator(delta)
 	case creepMutantBase:
@@ -204,6 +207,8 @@ func (u *unitNode) completeOrder(order unitOrder) {
 		u.order = orderCreepAfterAttack
 	case orderPatrolMove:
 		u.specialDelay = u.scene.Rand().FloatRange(7, 10)
+	case orderVanguardFollow:
+		u.specialDelay = u.scene.Rand().FloatRange(3, 9)
 	}
 }
 
@@ -379,6 +384,25 @@ func (u *unitNode) updateGenerator(delta float64) {
 	u.sendTo(randomSectorPos(u.scene.Rand(), u.world.diggedRect))
 }
 
+func (u *unitNode) updateVanguard(delta float64) {
+	u.processWeapon(delta)
+
+	if !u.waypoint.IsZero() {
+		return
+	}
+	if u.world.core == nil || u.world.core.IsDisposed() {
+		return
+	}
+
+	u.specialDelay = gmath.ClampMin(u.specialDelay-delta, 0)
+	if u.specialDelay != 0 {
+		return
+	}
+
+	u.sendTo(u.world.core.pos.Add(u.scene.Rand().Offset(-80, 80)))
+	u.order = orderVanguardFollow
+}
+
 func (u *unitNode) updatePatrol(delta float64) {
 	u.processWeapon(delta)
 
@@ -513,6 +537,8 @@ func (u *unitNode) completeDig() {
 		u.scene.AddObject(u.world.NewUnitNode(m.pos, dronePatrolStats))
 	case lootBotGenerator:
 		u.scene.AddObject(u.world.NewUnitNode(m.pos, droneGeneratorStats))
+	case lootBotVanguard:
+		u.scene.AddObject(u.world.NewUnitNode(m.pos, droneVanguardStats))
 	case lootFlatCell:
 		u.scene.AddObject(u.world.NewHardTerrainNode(m.pos))
 	}

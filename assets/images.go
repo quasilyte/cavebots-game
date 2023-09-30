@@ -23,6 +23,7 @@ func registerImageResources(ctx *ge.Context) {
 		ImageDroneHarvester: {Path: "images/drone_harvester.png"},
 		ImageDronePatrol:    {Path: "images/drone_patrol.png"},
 		ImageDroneGenerator: {Path: "images/drone_mobile_generator.png"},
+		ImageDroneVanguard:  {Path: "images/drone_vanguard.png"},
 
 		ImageBuildingGenerator: {Path: "images/building_generator.png"},
 		ImageBuildingBarricade: {Path: "images/building_wall.png"},
@@ -42,6 +43,7 @@ func registerImageResources(ctx *ge.Context) {
 		ImageBiomeTransition: {Path: "images/transition.png"},
 
 		ImagePatrolLaserProjectile: {Path: "images/patrol_laser_projectile.png"},
+		ImageVanguardProjectile:    {Path: "images/vanguard_projectile.png"},
 		ImageArrowProjectile:       {Path: "images/arrow_projectile.png"},
 		ImageGatlingProjectile:     {Path: "images/gatling_projectile.png"},
 	}
@@ -69,6 +71,7 @@ const (
 	ImageDroneHarvester
 	ImageDronePatrol
 	ImageDroneGenerator
+	ImageDroneVanguard
 
 	ImageMutantWarrior
 	ImageMutantHunter
@@ -88,6 +91,7 @@ const (
 	ImageBiomeTransition
 
 	ImagePatrolLaserProjectile
+	ImageVanguardProjectile
 	ImageArrowProjectile
 	ImageGatlingProjectile
 )

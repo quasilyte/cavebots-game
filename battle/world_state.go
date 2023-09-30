@@ -121,10 +121,6 @@ func (w *worldState) NewHardTerrainNode(pos gmath.Vec) *hardTerrainNode {
 	case 2:
 		buildOptions[0] = buildingPowerGenerator
 		buildOptions[1] = buildingSmelter
-	case 3:
-		// TODO: something different.
-		buildOptions[0] = buildingPowerGenerator
-		buildOptions[1] = buildingSmelter
 	default:
 		buildOptions[0] = gmath.RandElem(w.rand, firstBuildingList)
 		buildOptions[1] = gmath.RandElem(w.rand, secondBuildingList)
@@ -208,6 +204,8 @@ func (w *worldState) selectLootKind() lootKind {
 		return lootBotPatrol
 	case 11:
 		return lootBotGenerator
+	case 15:
+		return lootBotVanguard
 	}
 
 	if w.lootSeq%5 == 0 {
@@ -237,12 +235,12 @@ func (w *worldState) selectLootKind() lootKind {
 	}
 
 	if w.lootSeq%4 == 0 {
-		if w.rand.Chance(0.4) {
+		if w.rand.Chance(0.55) {
 			return lootFlatCell
 		}
 	}
 
-	if w.rand.Chance(0.1) {
+	if w.rand.Chance(0.15) {
 		return lootExtraStones
 	}
 

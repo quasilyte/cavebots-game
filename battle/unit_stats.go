@@ -73,11 +73,31 @@ var dronePatrolStats = &unitStats{
 	weapon: &weaponStats{
 		damage:          8,
 		reload:          1.8,
-		attackRange:     160,
+		attackRange:     140,
 		projectileSpeed: 550,
 		burstSize:       1,
 		projectileImage: assets.ImagePatrolLaserProjectile,
 		fireSound:       assets.AudioPatrolLaser1,
+	},
+}
+
+var droneVanguardStats = &unitStats{
+	name:         "Vanguard",
+	botPriority:  0.5,
+	layer:        2,
+	speed:        90,
+	maxHealth:    50,
+	img:          assets.ImageDroneVanguard,
+	allied:       true,
+	energyUpkeep: 0.6,
+	weapon: &weaponStats{
+		damage:          10,
+		reload:          2.2,
+		attackRange:     165,
+		projectileSpeed: 600,
+		burstSize:       1,
+		projectileImage: assets.ImageVanguardProjectile,
+		fireSound:       assets.AudioVanguardShot1,
 	},
 }
 
