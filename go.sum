@@ -28,6 +28,8 @@ github.com/quasilyte/ge v0.0.0-20230929232357-5a8f0ef73177 h1:viNCDjfnZqqCBZTs9Z
 github.com/quasilyte/ge v0.0.0-20230929232357-5a8f0ef73177/go.mod h1:Ybw5zUJaepnaxpYwjdwFeiqx0gHf7Um+Om62bR9oUbE=
 github.com/quasilyte/gmath v0.0.0-20221217210116-fba37a2e15c7 h1:mvIS9aGirkzuYmHHNWAP6sLRoA5VFaIzMoFdPmqgPdY=
 github.com/quasilyte/gmath v0.0.0-20221217210116-fba37a2e15c7/go.mod h1:EbI+KMbALSVE2s0YFOQpR4uj66zBh9ter5P4CBMSuvA=
+github.com/quasilyte/pathing v0.0.0-20230926223339-a85269892622 h1:ik+RsCCNWx9kfrTjIINXE0hxEM0gJOENzdtbOba3UkY=
+github.com/quasilyte/pathing v0.0.0-20230926223339-a85269892622/go.mod h1:fxhN3GI+oH3/CevV4WAvx/TQdfm8FM68CfxdirgfAes=
 github.com/stretchr/objx v0.5.0 h1:1zr/of2m5FGMsad5YfcqgdqdWrIhu+EBEJRhR1U7z/c=
 github.com/stretchr/objx v0.5.0/go.mod h1:Yh+to48EsGEfYuaHDzXPcE3xhTkx73EhmCGUpEOglKo=
 github.com/stretchr/testify v1.8.4 h1:CcVxjf3Q8PM0mHUKJCdn+eZZtm5yQwehR5yeSVQQcUk=

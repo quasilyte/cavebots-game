@@ -7,6 +7,7 @@ import (
 	"github.com/quasilyte/ge"
 	"github.com/quasilyte/ge/xslices"
 	"github.com/quasilyte/gmath"
+	"github.com/quasilyte/pathing"
 )
 
 type Runner struct {
@@ -14,7 +15,7 @@ type Runner struct {
 
 	state *session.State
 
-	core *coreUnit
+	core *unitNode
 
 	world *worldState
 
@@ -32,6 +33,8 @@ func (r *Runner) Init(scene *ge.Scene) {
 		width:     1920,
 		height:    32 * numCaveVerticalCells,
 		caveWidth: float64(32 * numCaveHorizontalCells),
+		scene:     scene,
+		rand:      scene.Rand(),
 	}
 	r.world.Init()
 
@@ -46,7 +49,7 @@ func (r *Runner) Init(scene *ge.Scene) {
 	r.cellSelector.Visible = false
 	r.scene.AddGraphics(r.cellSelector)
 
-	r.core = newCoreUnit(r.world)
+	r.core = newUnitNode(r.world, droneCoreStats)
 	r.core.pos = spawnPos.Add(gmath.Vec{X: 16, Y: 16})
 	scene.AddObject(r.core)
 }
@@ -84,6 +87,8 @@ func (r *Runner) initMap(spawnPos gmath.Vec) {
 			pos = pos.Sub(gmath.Vec{X: 8, Y: 8})
 			m := newMountainNode(pos)
 			r.scene.AddObject(m)
+			coord := pathing.GridCoord{X: x, Y: y}
+			r.world.grid.SetCellTile(coord, tileBlocked)
 		}
 	}
 }
@@ -105,6 +110,6 @@ func (r *Runner) handleInput() {
 	}
 
 	if info, ok := r.state.Input.JustPressedActionInfo(controls.ActionSendUnit); ok {
-		_ = info
+		r.core.SendTo(info.Pos)
 	}
 }
