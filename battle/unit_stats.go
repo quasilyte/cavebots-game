@@ -24,10 +24,13 @@ type unitStats struct {
 }
 
 type weaponStats struct {
-	damage      float64
-	attackRange float64
-	reload      float64
-	impact      resource.AudioID
+	damage          float64
+	attackRange     float64
+	reload          float64
+	projectileSpeed float64
+	projectileImage resource.ImageID
+	fireSound       resource.AudioID
+	impactSound     resource.AudioID
 }
 
 var droneCoreStats = &unitStats{
@@ -58,6 +61,14 @@ var dronePatrolStats = &unitStats{
 	img:          assets.ImageDronePatrol,
 	allied:       true,
 	energyUpkeep: 0.3,
+	weapon: &weaponStats{
+		damage:          8,
+		reload:          1.8,
+		attackRange:     160,
+		projectileSpeed: 550,
+		projectileImage: assets.ImagePatrolLaserProjectile,
+		fireSound:       assets.AudioPatrolLaser1,
+	},
 }
 
 var droneGeneratorStats = &unitStats{
@@ -119,8 +130,8 @@ var creepMutantWarrior = &unitStats{
 	speed:     15,
 	tiny:      true,
 	weapon: &weaponStats{
-		damage: 3,
-		reload: 1.2,
-		impact: assets.AudioWarriorHit1,
+		damage:      3,
+		reload:      1.2,
+		impactSound: assets.AudioWarriorHit1,
 	},
 }

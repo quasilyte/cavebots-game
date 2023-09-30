@@ -213,14 +213,30 @@ func (u *unitNode) completeHarvestResource() {
 }
 
 func (u *unitNode) updateMutantWarrior(delta float64) {
+	u.processWeapon(delta)
+}
+
+func (u *unitNode) processWeapon(delta float64) {
 	u.reload = gmath.ClampMin(u.reload-delta, 0)
 	if u.reload != 0 {
 		return
 	}
 
+	attackDistSqr := u.stats.weapon.attackRange * u.stats.weapon.attackRange
+	isMelee := attackDistSqr == 0
+	if isMelee {
+		attackDistSqr = 16.0 * 16.0
+	}
+
 	var target *unitNode
-	for _, other := range u.world.playerUnits {
-		if other.pos.DistanceSquaredTo(u.pos) > (16 * 16) {
+
+	targetSlice := u.world.playerUnits
+	if u.stats.allied {
+		targetSlice = u.world.creeps
+	}
+
+	for _, other := range targetSlice {
+		if other.pos.DistanceSquaredTo(u.pos) > attackDistSqr {
 			continue
 		}
 		target = other
@@ -233,8 +249,19 @@ func (u *unitNode) updateMutantWarrior(delta float64) {
 	}
 
 	u.reload = u.stats.weapon.reload * u.scene.Rand().FloatRange(0.8, 1.2)
-	target.OnDamage(u.stats.weapon.damage)
-	playSound(u.world, u.stats.weapon.impact, target.pos)
+	if isMelee {
+		target.OnDamage(u.stats.weapon.damage)
+		playSound(u.world, u.stats.weapon.impactSound, target.pos)
+		return
+	}
+
+	projectile := newProjectileNode(projectileNodeConfig{
+		attacker:  u,
+		target:    target,
+		targetPos: target.pos.Add(u.scene.Rand().Offset(-6, 6)),
+	})
+	u.scene.AddObject(projectile)
+	playSound(u.world, u.stats.weapon.fireSound, u.pos)
 }
 
 func (u *unitNode) updateCreepBase(delta float64) {
@@ -267,6 +294,8 @@ func (u *unitNode) updateGenerator(delta float64) {
 }
 
 func (u *unitNode) updatePatrol(delta float64) {
+	u.processWeapon(delta)
+
 	if !u.waypoint.IsZero() {
 		return
 	}

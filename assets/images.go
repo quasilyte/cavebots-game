@@ -36,6 +36,8 @@ func registerImageResources(ctx *ge.Context) {
 
 		ImageMountains:   {Path: "images/mountains.png", FrameWidth: 48},
 		ImageHardTerrain: {Path: "images/hard_terrain.png", FrameWidth: 32},
+
+		ImagePatrolLaserProjectile: {Path: "images/patrol_laser_projectile.png"},
 	}
 
 	for id, res := range imageResources {
@@ -74,4 +76,6 @@ const (
 
 	ImageMountains
 	ImageHardTerrain
+
+	ImagePatrolLaserProjectile
 )
