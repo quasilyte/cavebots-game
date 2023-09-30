@@ -18,12 +18,18 @@ type worldState struct {
 	grid  *pathing.Grid
 	astar *pathing.AStar
 
+	energy float64
+	iron   int
+	stones int
+
 	caveWidth float64
 
 	mountainByCoord map[uint32]*mountainNode
 }
 
 func (w *worldState) Init() {
+	w.energy = 10
+
 	w.rect = gmath.Rect{
 		Max: gmath.Vec{
 			X: w.width,

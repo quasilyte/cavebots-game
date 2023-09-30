@@ -1,9 +1,12 @@
 package battle
 
 import (
+	"fmt"
+
 	"github.com/quasilyte/cavebots-game/assets"
 	"github.com/quasilyte/cavebots-game/controls"
 	"github.com/quasilyte/cavebots-game/session"
+	"github.com/quasilyte/cavebots-game/styles"
 	"github.com/quasilyte/ge"
 	"github.com/quasilyte/ge/xslices"
 	"github.com/quasilyte/gmath"
@@ -18,6 +21,11 @@ type Runner struct {
 	core *unitNode
 
 	world *worldState
+
+	labelUpdateDelay float64
+	energyLabel      *ge.Label
+	ironLabel        *ge.Label
+	stonesLabel      *ge.Label
 
 	cellSelector *ge.Sprite
 }
@@ -52,6 +60,30 @@ func (r *Runner) Init(scene *ge.Scene) {
 	r.core = newUnitNode(r.world, droneCoreStats)
 	r.core.pos = spawnPos.Add(gmath.Vec{X: 16, Y: 16})
 	scene.AddObject(r.core)
+
+	r.energyLabel = scene.NewLabel(assets.FontNormal)
+	r.energyLabel.ColorScale.SetColor(styles.ButtonTextColor)
+	r.energyLabel.Pos.Offset.Y = r.world.height
+	r.energyLabel.Pos.Offset.X = 16
+	r.energyLabel.Height = 1080 - r.world.height
+	r.energyLabel.AlignVertical = ge.AlignVerticalCenter
+	scene.AddGraphics(r.energyLabel)
+
+	r.ironLabel = scene.NewLabel(assets.FontNormal)
+	r.ironLabel.ColorScale.SetColor(styles.ButtonTextColor)
+	r.ironLabel.Pos.Offset.Y = r.world.height
+	r.ironLabel.Pos.Offset.X = 16 + 240
+	r.ironLabel.Height = 1080 - r.world.height
+	r.ironLabel.AlignVertical = ge.AlignVerticalCenter
+	scene.AddGraphics(r.ironLabel)
+
+	r.stonesLabel = scene.NewLabel(assets.FontNormal)
+	r.stonesLabel.ColorScale.SetColor(styles.ButtonTextColor)
+	r.stonesLabel.Pos.Offset.Y = r.world.height
+	r.stonesLabel.Pos.Offset.X = 16 + 240 + 240
+	r.stonesLabel.Height = 1080 - r.world.height
+	r.stonesLabel.AlignVertical = ge.AlignVerticalCenter
+	scene.AddGraphics(r.stonesLabel)
 }
 
 func (r *Runner) initMap(spawnPos gmath.Vec) {
@@ -96,6 +128,18 @@ func (r *Runner) initMap(spawnPos gmath.Vec) {
 
 func (r *Runner) Update(delta float64) {
 	r.handleInput()
+
+	r.labelUpdateDelay = gmath.ClampMin(r.labelUpdateDelay-delta, 0)
+	if r.labelUpdateDelay == 0 {
+		r.labelUpdateDelay = 1
+		r.updateLabels()
+	}
+}
+
+func (r *Runner) updateLabels() {
+	r.energyLabel.Text = fmt.Sprintf("Energy: %d", int(r.world.energy))
+	r.ironLabel.Text = fmt.Sprintf("Iron: %d", r.world.iron)
+	r.stonesLabel.Text = fmt.Sprintf("Stone: %d", r.world.stones)
 }
 
 func (r *Runner) handleInput() {
