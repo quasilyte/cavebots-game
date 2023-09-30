@@ -158,6 +158,17 @@ func (r *Runner) placeCreeps() {
 	}
 
 	{
+		pos := r.world.core.pos.Add(gmath.Vec{X: 32 * 17, Y: 96})
+		boss := r.world.NewUnitNode(pos, creepJeep)
+		scene.AddObject(boss)
+	}
+	{
+		pos := r.world.core.pos.Add(gmath.Vec{X: 32 * 15, Y: -32 * 6})
+		boss := r.world.NewUnitNode(pos, creepJeep)
+		scene.AddObject(boss)
+	}
+
+	{
 		creep := r.world.NewUnitNode(r.world.core.pos.Add(gmath.Vec{X: 32 * 18, Y: -96}), creepMutantBase)
 		scene.AddObject(creep)
 		r.world.creepBase = creep

@@ -187,6 +187,8 @@ func (u *unitNode) Update(delta float64) {
 		u.updateMutantHunter(delta)
 	case creepMutantWarlord:
 		u.updateMutantWarlord(delta)
+	case creepJeep:
+		u.updateJeep(delta)
 	}
 }
 
@@ -270,6 +272,10 @@ func (u *unitNode) updateMutantWarlord(delta float64) {
 	}
 }
 
+func (u *unitNode) updateJeep(delta float64) {
+	u.processWeapon(delta)
+}
+
 func (u *unitNode) processWeapon(delta float64) {
 	u.reload = gmath.ClampMin(u.reload-delta, 0)
 	if u.reload != 0 {
@@ -316,12 +322,16 @@ func (u *unitNode) processWeapon(delta float64) {
 		return
 	}
 
-	projectile := newProjectileNode(projectileNodeConfig{
-		attacker:  u,
-		target:    target,
-		targetPos: target.pos.Add(u.scene.Rand().Offset(-6, 6)),
-	})
-	u.scene.AddObject(projectile)
+	for i := 0; i < u.stats.weapon.burstSize; i++ {
+		fireDelay := float64(i) * u.stats.weapon.burstDelay
+		projectile := newProjectileNode(projectileNodeConfig{
+			attacker:  u,
+			target:    target,
+			targetPos: target.pos.Add(u.scene.Rand().Offset(-6, 6)),
+			fireDelay: fireDelay,
+		})
+		u.scene.AddObject(projectile)
+	}
 	playSound(u.world, u.stats.weapon.fireSound, u.pos)
 }
 

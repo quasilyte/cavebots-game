@@ -31,7 +31,9 @@ type weaponStats struct {
 	attackRange     float64
 	reload          float64
 	projectileSpeed float64
-	ArcPower        float64
+	arcPower        float64
+	burstSize       int
+	burstDelay      float64
 	projectileImage resource.ImageID
 	fireSound       resource.AudioID
 	impactSound     resource.AudioID
@@ -73,6 +75,7 @@ var dronePatrolStats = &unitStats{
 		reload:          1.8,
 		attackRange:     160,
 		projectileSpeed: 550,
+		burstSize:       1,
 		projectileImage: assets.ImagePatrolLaserProjectile,
 		fireSound:       assets.AudioPatrolLaser1,
 	},
@@ -161,9 +164,10 @@ var creepMutantHunter = &unitStats{
 		reload:          2.0,
 		attackRange:     120,
 		projectileSpeed: 350,
+		burstSize:       1,
 		projectileImage: assets.ImageArrowProjectile,
 		fireSound:       assets.AudioBowShot1,
-		ArcPower:        2.5,
+		arcPower:        2.5,
 	},
 }
 
@@ -179,5 +183,23 @@ var creepMutantWarlord = &unitStats{
 		damage:      8,
 		reload:      1.4,
 		impactSound: assets.AudioWarriorHit1,
+	},
+}
+
+var creepJeep = &unitStats{
+	name:      "Monster",
+	layer:     2,
+	maxHealth: 140,
+	img:       assets.ImageJeep,
+	building:  true,
+	weapon: &weaponStats{
+		damage:          3,
+		reload:          1.9,
+		attackRange:     230,
+		burstSize:       3,
+		burstDelay:      0.1,
+		projectileSpeed: 600,
+		projectileImage: assets.ImageGatlingProjectile,
+		fireSound:       assets.AudioGatlingShot,
 	},
 }
