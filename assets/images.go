@@ -17,6 +17,8 @@ func registerImageResources(ctx *ge.Context) {
 		ImageCaveTiles:   {Path: "images/cave_tiles.png"},
 		ImageForestTiles: {Path: "images/forest_tiles.png"},
 
+		ImageCellSelector: {Path: "images/cell_selector.png"},
+
 		ImageMountains: {Path: "images/mountains.png", FrameWidth: 48},
 	}
 
@@ -36,6 +38,8 @@ const (
 
 	ImageCaveTiles
 	ImageForestTiles
+
+	ImageCellSelector
 
 	ImageMountains
 )

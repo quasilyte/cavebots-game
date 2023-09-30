@@ -20,7 +20,7 @@ func NewBattleController(state *session.State) *BattleController {
 func (c *BattleController) Init(scene *ge.Scene) {
 	c.scene = scene
 
-	c.runner = battle.NewRunner()
+	c.runner = battle.NewRunner(c.state)
 	c.runner.Init(scene)
 }
 

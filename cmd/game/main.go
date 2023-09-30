@@ -8,6 +8,7 @@ import (
 	"github.com/quasilyte/cavebots-game/scenes"
 	"github.com/quasilyte/cavebots-game/session"
 	"github.com/quasilyte/ge"
+	"github.com/quasilyte/ge/input"
 )
 
 func main() {
@@ -25,6 +26,9 @@ func main() {
 	state := &session.State{
 		UIResources: eui.PrepareResources(ctx.Loader),
 	}
+
+	keymap := input.Keymap{}
+	state.Input = ctx.Input.NewHandler(0, keymap)
 
 	if err := ge.RunGame(ctx, scenes.NewMainMenuController(state)); err != nil {
 		panic(err)
