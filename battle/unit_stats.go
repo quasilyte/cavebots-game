@@ -46,6 +46,14 @@ var dronePatrolStats = &unitStats{
 	energyUpkeep: 0.3,
 }
 
+var droneGeneratorStats = &unitStats{
+	name:      "Mobile generator",
+	speed:     30,
+	maxHealth: 60,
+	img:       assets.ImageDroneGenerator,
+	allied:    true,
+}
+
 var buildingPowerGenerator = &unitStats{
 	name:      "Generator",
 	maxHealth: 75,

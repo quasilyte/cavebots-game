@@ -118,6 +118,8 @@ func (u *unitNode) Update(delta float64) {
 		u.updateHarvester(delta)
 	case dronePatrolStats:
 		u.updatePatrol(delta)
+	case droneGeneratorStats:
+		u.updateGenerator(delta)
 	}
 }
 
@@ -162,7 +164,19 @@ func (u *unitNode) completeHarvestResource() {
 	u.order = orderDeliverResource
 }
 
+func (u *unitNode) updateGenerator(delta float64) {
+	if !u.waypoint.IsZero() {
+		return
+	}
+
+	u.sendTo(randomSectorPos(u.scene.Rand(), u.world.diggedRect))
+}
+
 func (u *unitNode) updatePatrol(delta float64) {
+	if !u.waypoint.IsZero() {
+		return
+	}
+
 	u.specialDelay = gmath.ClampMin(u.specialDelay-delta, 0)
 	if u.specialDelay != 0 {
 		return
@@ -285,11 +299,11 @@ func (u *unitNode) completeDig() {
 		iron := u.world.NewResourceNode(m.pos, ironResourceStats, u.scene.Rand().IntRange(minAmount, maxAmount))
 		u.scene.AddObjectBelow(iron, 1)
 	case lootBotHarvester:
-		newUnit := u.world.NewUnitNode(m.pos, droneHarvesterStats)
-		u.scene.AddObject(newUnit)
+		u.scene.AddObject(u.world.NewUnitNode(m.pos, droneHarvesterStats))
 	case lootBotPatrol:
-		newUnit := u.world.NewUnitNode(m.pos, dronePatrolStats)
-		u.scene.AddObject(newUnit)
+		u.scene.AddObject(u.world.NewUnitNode(m.pos, dronePatrolStats))
+	case lootBotGenerator:
+		u.scene.AddObject(u.world.NewUnitNode(m.pos, droneGeneratorStats))
 	case lootFlatCell:
 		u.scene.AddObject(u.world.NewHardTerrainNode(m.pos))
 	}

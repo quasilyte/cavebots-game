@@ -173,6 +173,8 @@ func (w *worldState) selectLootKind() lootKind {
 		return lootIronDeposit
 	case 8:
 		return lootBotPatrol
+	case 11:
+		return lootBotGenerator
 	}
 
 	if w.lootSeq%5 == 0 {
@@ -183,14 +185,21 @@ func (w *worldState) selectLootKind() lootKind {
 		if roll <= 0.6 {
 			return lootBotPatrol
 		}
+		if roll <= 0.65 {
+			return lootBotGenerator
+		}
 	}
 
 	if w.lootSeq%3 == 0 {
+		if w.lootSeq > 25 && w.rand.Chance(0.4) {
+			return lootLargeIronDeposit
+		}
+		// A second roll for the late game.
+		if w.lootSeq > 40 && w.rand.Chance(0.3) {
+			return lootLargeIronDeposit
+		}
 		if w.rand.Chance(0.5) {
 			return lootIronDeposit
-		}
-		if w.lootSeq > 25 && w.rand.Chance(0.25) {
-			return lootLargeIronDeposit
 		}
 	}
 
@@ -238,11 +247,15 @@ func (w *worldState) CalcEnergyUpkeep() float64 {
 func (w *worldState) CalcEnergyRegen() float64 {
 	regen := 1.0 // Base regen (core-provided)
 	generatorMultiplier := 1.0
+	generatorBotMultiplier := 1.0
 	for _, u := range w.playerUnits {
 		switch u.stats {
 		case buildingPowerGenerator:
 			regen += 0.8 * generatorMultiplier
 			generatorMultiplier = gmath.ClampMin(generatorMultiplier-0.1, 0.1)
+		case droneGeneratorStats:
+			regen += 0.5 * generatorBotMultiplier
+			generatorBotMultiplier = gmath.ClampMin(generatorBotMultiplier-0.15, 0.05)
 		}
 	}
 	return regen - w.CalcEnergyUpkeep()

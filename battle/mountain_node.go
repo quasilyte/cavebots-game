@@ -19,6 +19,7 @@ const (
 	lootBotHarvester
 	lootBotGuard
 	lootBotPatrol
+	lootBotGenerator
 )
 
 type mountainNode struct {

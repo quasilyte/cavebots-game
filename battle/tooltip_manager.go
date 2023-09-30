@@ -78,7 +78,7 @@ func (m *tooltipManager) OnHover(pos gmath.Vec) {
 					if u.offline {
 						status = "offline"
 					}
-					s = fmt.Sprintf("%s drone (%s)", u.stats.name, status)
+					s = fmt.Sprintf("%s bot (%s)", u.stats.name, status)
 				}
 			}
 			m.createTooltip(pos, s+"\n"+health)
@@ -136,6 +136,8 @@ func (m *tooltipManager) formatMountainInfo(mountain *mountainNode) string {
 		loot = "patrol bot"
 	case lootBotGuard:
 		loot = "guard bot"
+	case lootBotGenerator:
+		loot = "generator bot"
 	}
 
 	if loot == "" {
