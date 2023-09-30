@@ -124,7 +124,7 @@ func (u *unitNode) sendTo(pos gmath.Vec) {
 	result := u.world.astar.BuildPath(u.world.grid, from, to, normalLayer)
 	u.path = result.Steps
 
-	u.pathDest = makePos(u.world.grid.CoordToPos(result.Finish))
+	u.pathDest = makePos(u.world.grid.AlignPos(pos.X, pos.Y))
 	u.waypoint = makePos(u.world.grid.AlignPos(u.pos.X, u.pos.Y))
 }
 
@@ -528,6 +528,9 @@ func (u *unitNode) movementSpeed() float64 {
 func (u *unitNode) completeDig() {
 	m := u.orderTarget.(*mountainNode)
 	if m.IsDisposed() {
+		return
+	}
+	if u.pos.DistanceTo(u.pathDest) > 40 {
 		return
 	}
 
