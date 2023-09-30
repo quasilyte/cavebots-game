@@ -1,6 +1,8 @@
 package battle
 
 import (
+	"fmt"
+
 	"github.com/quasilyte/cavebots-game/assets"
 	"github.com/quasilyte/ge"
 	"github.com/quasilyte/gmath"
@@ -49,6 +51,14 @@ func (m *tooltipManager) OnHover(pos gmath.Vec) {
 		}
 		m.createTooltip(pos, s)
 		return
+	}
+
+	for _, res := range m.world.resourceNodes {
+		if res.pos.DistanceSquaredTo(pos) < (22 * 22) {
+			s := fmt.Sprintf("Iron resource (%d)", res.amount)
+			m.createTooltip(pos, s)
+			return
+		}
 	}
 }
 

@@ -111,13 +111,13 @@ func (r *Runner) initMap(spawnPos gmath.Vec) {
 	{
 		bg := ge.NewTiledBackground(r.scene.Context())
 		bg.LoadTileset(r.scene.Context(), caveWidth, 32*numCaveVerticalCells, assets.ImageCaveTiles, assets.RawCaveTileset)
-		r.scene.AddGraphics(bg)
+		r.scene.AddGraphicsBelow(bg, 1)
 	}
 	{
 		bg := ge.NewTiledBackground(r.scene.Context())
 		bg.LoadTileset(r.scene.Context(), 1920-caveWidth, 32*numCaveVerticalCells, assets.ImageForestTiles, assets.RawCaveTileset)
 		bg.Pos.Offset.X = caveWidth
-		r.scene.AddGraphics(bg)
+		r.scene.AddGraphicsBelow(bg, 1)
 	}
 
 	initialTunnel := make([]gmath.Vec, 0, 8)

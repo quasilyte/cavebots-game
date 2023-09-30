@@ -1,9 +1,9 @@
 package battle
 
 import (
-	"github.com/quasilyte/cavebots-game/assets"
 	"github.com/quasilyte/ge"
 	"github.com/quasilyte/gmath"
+	"github.com/quasilyte/gsignal"
 	"github.com/quasilyte/pathing"
 )
 
@@ -29,6 +29,10 @@ type unitNode struct {
 	orderTarget any
 
 	pos gmath.Vec
+
+	offline bool
+
+	EventDisposed gsignal.Event[*unitNode]
 }
 
 func newUnitNode(world *worldState, stats *unitStats) *unitNode {
@@ -41,13 +45,22 @@ func newUnitNode(world *worldState, stats *unitStats) *unitNode {
 func (u *unitNode) Init(scene *ge.Scene) {
 	u.scene = scene
 
-	u.sprite = scene.NewSprite(assets.ImageDroneCore)
+	u.sprite = scene.NewSprite(u.stats.img)
 	u.sprite.Pos.Base = &u.pos
 	scene.AddGraphics(u.sprite)
 }
 
 func (u *unitNode) IsDisposed() bool {
 	return u.sprite.IsDisposed()
+}
+
+func (u *unitNode) Dispose() {
+	if u.IsDisposed() {
+		return
+	}
+	u.EventDisposed.Emit(u)
+
+	u.sprite.Dispose()
 }
 
 func (u *unitNode) SendTo(pos gmath.Vec) {
@@ -101,10 +114,23 @@ func (u *unitNode) completeDig() {
 	}
 
 	u.world.AddEnergy(-digEnergyCost)
-	u.world.AddStones(1)
 	u.scene.AddObject(newFloatingTextNode(m.pos, "Status: dig complete"))
+	u.world.AddStones(1)
+
+	switch u.world.PeekLoot(m) {
+	case lootExtraStones:
+		u.world.AddStones(2)
+	case lootIronDeposit:
+		iron := u.world.NewResourceNode(m.pos, ironResourceStats, u.scene.Rand().IntRange(2, 4))
+		u.scene.AddObjectBelow(iron, 1)
+	case lootBotHarvester:
+		newUnit := u.world.NewUnitNode(m.pos, droneHarvesterStats)
+		u.scene.AddObject(newUnit)
+	}
+
 	// TODO: could be a plain tile.
 	u.world.grid.SetCellTile(u.world.grid.PosToCoord(m.pos.X, m.pos.Y), tileCaveMud)
+
 	m.Dispose()
 	delete(u.world.mountainByCoord, u.world.grid.PackCoord(u.world.grid.PosToCoord(m.pos.X, m.pos.Y)))
 }

@@ -2,6 +2,7 @@ package battle
 
 import (
 	"github.com/quasilyte/ge"
+	"github.com/quasilyte/ge/xslices"
 	"github.com/quasilyte/gmath"
 	"github.com/quasilyte/gsignal"
 	"github.com/quasilyte/pathing"
@@ -28,6 +29,8 @@ type worldState struct {
 	caveWidth float64
 
 	playerUnits []*unitNode
+
+	resourceNodes []*resourceNode
 
 	mountainByCoord map[uint32]*mountainNode
 
@@ -56,6 +59,29 @@ func (w *worldState) Init() {
 		NumCols: uint(w.grid.NumCols()),
 		NumRows: uint(w.grid.NumRows()),
 	})
+}
+
+func (w *worldState) NewUnitNode(pos gmath.Vec, stats *unitStats) *unitNode {
+	n := newUnitNode(w, stats)
+	n.pos = pos
+	n.EventDisposed.Connect(nil, func(n *unitNode) {
+		if n.stats.allied {
+			w.playerUnits = xslices.Remove(w.playerUnits, n)
+		}
+	})
+	if stats.allied {
+		w.playerUnits = append(w.playerUnits, n)
+	}
+	return n
+}
+
+func (w *worldState) NewResourceNode(pos gmath.Vec, stats *resourceStats, amount int) *resourceNode {
+	n := newResourceNode(pos, stats, amount)
+	n.EventDisposed.Connect(nil, func(n *resourceNode) {
+		w.resourceNodes = xslices.Remove(w.resourceNodes, n)
+	})
+	w.resourceNodes = append(w.resourceNodes, n)
+	return n
 }
 
 func (w *worldState) MountainAt(pos gmath.Vec) *mountainNode {
@@ -119,8 +145,20 @@ func (w *worldState) CanDig(m *mountainNode) bool {
 	return false
 }
 
+func (w *worldState) CalcEnergyUpkeep() float64 {
+	v := 0.0
+	for _, u := range w.playerUnits {
+		if u.offline {
+			continue
+		}
+		v += u.stats.energyUpkeep
+	}
+	return v
+}
+
 func (w *worldState) CalcEnergyRegen() float64 {
-	return 1
+	regen := 1.0 // Base regen (core-provided)
+	return regen - w.CalcEnergyUpkeep()
 }
 
 func (w *worldState) AddEnergy(delta float64) {
