@@ -72,6 +72,7 @@ func (r *Runner) Init(scene *ge.Scene) {
 	r.core.pos = spawnPos.Add(gmath.Vec{X: 16, Y: 16})
 	r.world.playerUnits = append(r.world.playerUnits, r.core)
 	scene.AddObject(r.core)
+	r.world.core = r.core
 
 	r.energyLabel = scene.NewLabel(assets.FontNormal)
 	r.energyLabel.ColorScale.SetColor(styles.ButtonTextColor)

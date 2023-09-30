@@ -1,6 +1,8 @@
 package battle
 
 import (
+	"math"
+
 	"github.com/quasilyte/ge"
 	"github.com/quasilyte/gmath"
 	"github.com/quasilyte/gsignal"
@@ -12,6 +14,8 @@ type unitOrder int
 const (
 	orderNone unitOrder = iota
 	orderDig
+	orderHarvestResource
+	orderDeliverResource
 )
 
 type unitNode struct {
@@ -28,7 +32,11 @@ type unitNode struct {
 	order       unitOrder
 	orderTarget any
 
+	specialDelay float64
+
 	pos gmath.Vec
+
+	cargo int
 
 	offline bool
 
@@ -85,7 +93,7 @@ func (u *unitNode) sendTo(pos gmath.Vec) {
 
 func (u *unitNode) Update(delta float64) {
 	if !u.waypoint.IsZero() {
-		newPos, reached := moveTowardsWithSpeed(u.pos, u.waypoint, delta, u.stats.speed)
+		newPos, reached := moveTowardsWithSpeed(u.pos, u.waypoint, delta, u.movementSpeed())
 		u.pos = newPos
 		if reached {
 			if u.path.HasNext() {
@@ -95,11 +103,107 @@ func (u *unitNode) Update(delta float64) {
 			}
 			order := u.order
 			u.order = orderNone
-			if order == orderDig {
-				u.completeDig()
-			}
+			u.waypoint = gmath.Vec{}
+			u.completeOrder(order)
 		}
 	}
+
+	switch u.stats {
+	case droneHarvesterStats:
+		u.updateHarvester(delta)
+	}
+}
+
+func (u *unitNode) completeOrder(order unitOrder) {
+	switch order {
+	case orderDig:
+		u.completeDig()
+	case orderHarvestResource:
+		u.completeHarvestResource()
+	case orderDeliverResource:
+		u.completeDeliverResource()
+	}
+}
+
+func (u *unitNode) completeDeliverResource() {
+	target := u.orderTarget.(*unitNode)
+	if target.IsDisposed() {
+		u.order = orderDeliverResource
+		return
+	}
+	if target.pos.DistanceSquaredTo(u.pos) > (22 * 22) {
+		u.order = orderDeliverResource
+		return
+	}
+	u.world.AddIron(u.cargo)
+	u.cargo = 0
+}
+
+func (u *unitNode) completeHarvestResource() {
+	res := u.orderTarget.(*resourceNode)
+	if res.IsDisposed() || res.amount <= 0 {
+		return
+	}
+
+	res.amount--
+	if res.amount <= 0 {
+		res.Dispose()
+	}
+	u.cargo = 1
+	u.order = orderDeliverResource
+}
+
+func (u *unitNode) updateHarvester(delta float64) {
+	switch u.order {
+	case orderHarvestResource:
+		// Moving towards the resource.
+
+	case orderDeliverResource:
+		if u.cargo == 0 {
+			u.order = orderNone
+			return
+		}
+		if !u.waypoint.IsZero() {
+			// Already delivering it somewhere.
+			return
+		}
+		u.orderTarget = u.world.core
+		u.sendTo(u.world.core.pos)
+
+	default:
+		u.specialDelay = gmath.ClampMin(u.specialDelay-delta, 0)
+		if u.specialDelay != 0 {
+			return
+		}
+		closestDistSqr := math.MaxFloat64
+		var closestResource *resourceNode
+		for _, res := range u.world.resourceNodes {
+			distSqr := res.pos.DistanceSquaredTo(u.pos)
+			if distSqr >= (512 * 512) {
+				continue
+			}
+			if distSqr < closestDistSqr {
+				closestDistSqr = distSqr
+				closestResource = res
+			}
+		}
+		if closestResource != nil {
+			u.order = orderHarvestResource
+			u.orderTarget = closestResource
+			u.sendTo(closestResource.pos)
+		} else {
+			u.specialDelay = u.scene.Rand().FloatRange(2, 7)
+		}
+	}
+
+}
+
+func (u *unitNode) movementSpeed() float64 {
+	multiplier := 1.0
+	if u.cargo != 0 {
+		multiplier = 0.25
+	}
+	return u.stats.speed * multiplier
 }
 
 func (u *unitNode) completeDig() {
@@ -121,7 +225,7 @@ func (u *unitNode) completeDig() {
 	case lootExtraStones:
 		u.world.AddStones(2)
 	case lootIronDeposit:
-		iron := u.world.NewResourceNode(m.pos, ironResourceStats, u.scene.Rand().IntRange(2, 4))
+		iron := u.world.NewResourceNode(m.pos, ironResourceStats, u.scene.Rand().IntRange(4, 8))
 		u.scene.AddObjectBelow(iron, 1)
 	case lootBotHarvester:
 		newUnit := u.world.NewUnitNode(m.pos, droneHarvesterStats)

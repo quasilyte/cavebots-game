@@ -28,6 +28,7 @@ type worldState struct {
 
 	caveWidth float64
 
+	core        *unitNode
 	playerUnits []*unitNode
 
 	resourceNodes []*resourceNode
@@ -166,6 +167,14 @@ func (w *worldState) AddEnergy(delta float64) {
 		return
 	}
 	w.energy += delta
+	w.EventResourcesUpdated.Emit(gsignal.Void{})
+}
+
+func (w *worldState) AddIron(delta int) {
+	if delta == 0 {
+		return
+	}
+	w.iron += delta
 	w.EventResourcesUpdated.Emit(gsignal.Void{})
 }
 
