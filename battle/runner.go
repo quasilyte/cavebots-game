@@ -98,6 +98,7 @@ func (r *Runner) Init(scene *ge.Scene) {
 	{
 		creep := r.world.NewUnitNode(r.core.pos.Add(gmath.Vec{X: 32 * 8}), creepMutantWarrior)
 		scene.AddObject(creep)
+		creep.SendTo(creep.pos.Sub(gmath.Vec{X: 64}))
 	}
 
 	r.world.diggedRect = gmath.Rect{

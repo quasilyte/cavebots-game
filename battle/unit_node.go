@@ -114,7 +114,13 @@ func (u *unitNode) Update(delta float64) {
 		if reached {
 			if u.path.HasNext() {
 				nextPos := nextPathWaypoint(u.world, u.pos, &u.path, normalLayer)
-				u.waypoint = nextPos.Add(u.world.rand.Offset(-2, 2))
+				var offset gmath.Vec
+				if u.stats.tiny {
+					offset = u.world.rand.Offset(-14, 14)
+				} else {
+					offset = u.world.rand.Offset(-2, 2)
+				}
+				u.waypoint = nextPos.Add(offset)
 				return
 			}
 			order := u.order

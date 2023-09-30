@@ -12,6 +12,7 @@ type unitStats struct {
 	img          resource.ImageID
 	allied       bool
 	building     bool
+	tiny         bool
 	energyUpkeep float64
 
 	energyCost int
@@ -89,4 +90,6 @@ var creepMutantWarrior = &unitStats{
 	name:      "Mutant warrior",
 	maxHealth: 15,
 	img:       assets.ImageMutantWarrior,
+	speed:     10,
+	tiny:      true,
 }
