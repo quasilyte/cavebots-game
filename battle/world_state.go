@@ -38,6 +38,7 @@ type worldState struct {
 
 	core        *unitNode
 	playerUnits []*unitNode
+	creeps      []*unitNode
 	hardTerrain []*hardTerrainNode
 
 	resourceNodes []*resourceNode
@@ -135,10 +136,14 @@ func (w *worldState) NewUnitNode(pos gmath.Vec, stats *unitStats) *unitNode {
 	n.EventDisposed.Connect(nil, func(n *unitNode) {
 		if n.stats.allied {
 			w.playerUnits = xslices.Remove(w.playerUnits, n)
+		} else {
+			w.creeps = xslices.Remove(w.creeps, n)
 		}
 	})
 	if stats.allied {
 		w.playerUnits = append(w.playerUnits, n)
+	} else {
+		w.creeps = append(w.creeps, n)
 	}
 	return n
 }

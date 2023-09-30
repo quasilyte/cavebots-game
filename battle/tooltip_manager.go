@@ -48,6 +48,7 @@ func (m *tooltipManager) OnStopHover() {
 func (m *tooltipManager) OnHover(pos gmath.Vec) {
 	screenPos := pos.Sub(m.world.camera.Offset)
 	if screenPos.Y >= ((1080.0 / 2) - 56) {
+		// TODO: resource hints.
 		return
 	}
 
@@ -112,6 +113,13 @@ func (m *tooltipManager) OnHover(pos gmath.Vec) {
 				parts = append(parts, fmt.Sprintf("[%s] %s - %s", buildingHotkeys[i], option.name, price))
 			}
 			m.createTooltip(pos, strings.Join(parts, "\n"))
+			return
+		}
+	}
+
+	for _, u := range m.world.creeps {
+		if u.pos.DistanceSquaredTo(pos) < (16 * 16) {
+			m.createTooltip(pos, u.stats.name+" (hostile)")
 			return
 		}
 	}
@@ -184,10 +192,10 @@ func (m *tooltipManager) createTooltip(pos gmath.Vec, s string) {
 	m.tooltipTime = 5
 
 	w, h := estimateMessageBounds(m.world.scene.Context().Loader.LoadFont(assets.FontSmall).Face, s, 0)
-	if w+pos.X+26 > 1920 {
+	if w+pos.X+26 > 1920.0/2 {
 		pos.X -= w
 	}
-	if h+pos.Y+26 > 1080 {
+	if h+pos.Y+26 > 1080.0/2 {
 		pos.Y -= h + 26
 	} else {
 		pos.Y += 26
