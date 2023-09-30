@@ -11,19 +11,24 @@ type messageNode struct {
 	rect  *ge.Rect
 	label *ge.Label
 
+	world *worldState
+
 	pos  gmath.Vec
 	text string
 }
 
-func newMessageNode(pos gmath.Vec, text string) *messageNode {
+func newMessageNode(world *worldState, pos gmath.Vec, text string) *messageNode {
 	return &messageNode{
-		pos:  pos,
-		text: text,
+		world: world,
+		pos:   pos,
+		text:  text,
 	}
 }
 
 func (m *messageNode) Init(scene *ge.Scene) {
 	w, h := estimateMessageBounds(scene.Context().Loader.LoadFont(assets.FontSmall).Face, m.text, 16)
+
+	m.pos = m.pos.Sub(m.world.camera.Offset)
 
 	m.label = scene.NewLabel(assets.FontSmall)
 	m.label.Text = m.text
@@ -38,12 +43,13 @@ func (m *messageNode) Init(scene *ge.Scene) {
 	m.rect = ge.NewRect(scene.Context(), w+8, h)
 	m.rect.Centered = false
 	m.rect.FillColorScale.SetColor(styles.BgDark)
-	m.rect.FillColorScale.A = 0.5
+	m.rect.FillColorScale.A = 0.7
+	m.rect.OutlineWidth = 1
 	m.rect.OutlineColorScale.SetColor(styles.OutlineLight)
 	m.rect.Pos.Base = &m.pos
 
-	scene.AddGraphics(m.rect)
-	scene.AddGraphics(m.label)
+	m.world.camera.UI.AddGraphicsAbove(m.rect)
+	m.world.camera.UI.AddGraphicsAbove(m.label)
 }
 
 func (m *messageNode) Update(delta float64) {}

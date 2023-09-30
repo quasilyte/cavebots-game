@@ -7,6 +7,8 @@ import (
 )
 
 type hardTerrainNode struct {
+	world *worldState
+
 	sprite *ge.Sprite
 
 	buildOptions [2]*unitStats
@@ -16,8 +18,9 @@ type hardTerrainNode struct {
 	pos gmath.Vec
 }
 
-func newHardTerrainNode(pos gmath.Vec, buildOptions [2]*unitStats) *hardTerrainNode {
+func newHardTerrainNode(world *worldState, pos gmath.Vec, buildOptions [2]*unitStats) *hardTerrainNode {
 	return &hardTerrainNode{
+		world:        world,
 		pos:          pos,
 		buildOptions: buildOptions,
 	}
@@ -27,7 +30,7 @@ func (t *hardTerrainNode) Init(scene *ge.Scene) {
 	t.sprite = scene.NewSprite(assets.ImageHardTerrain)
 	t.sprite.Pos.Base = &t.pos
 	t.sprite.FlipHorizontal = scene.Rand().Bool()
-	scene.AddGraphicsBelow(t.sprite, 1)
+	t.world.stage.AddSpriteBelow(t.sprite)
 }
 
 func (t *hardTerrainNode) IsDisposed() bool { return false }

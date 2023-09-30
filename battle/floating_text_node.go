@@ -12,22 +12,26 @@ import (
 type floatingTextNode struct {
 	label     *ge.Label
 	rect      *ge.Rect
+	world     *worldState
 	pos       gmath.Vec
 	spritePos gmath.Vec
 	text      string
 	hp        float64
 }
 
-func newFloatingTextNode(pos gmath.Vec, text string) *floatingTextNode {
+func newFloatingTextNode(world *worldState, pos gmath.Vec, text string) *floatingTextNode {
 	return &floatingTextNode{
-		pos:  pos,
-		text: text,
-		hp:   1.5,
+		world: world,
+		pos:   pos,
+		text:  text,
+		hp:    1.5,
 	}
 }
 
 func (t *floatingTextNode) Init(scene *ge.Scene) {
 	w, h := estimateMessageBounds(scene.Context().Loader.LoadFont(assets.FontSmall).Face, t.text, 16)
+
+	t.pos = t.pos.Sub(t.world.camera.Offset)
 
 	t.label = scene.NewLabel(assets.FontSmall)
 	t.label.Text = t.text
@@ -53,8 +57,8 @@ func (t *floatingTextNode) Init(scene *ge.Scene) {
 	t.pos.Y -= 54
 	t.spritePos = t.pos
 
-	scene.AddGraphics(t.rect)
-	scene.AddGraphics(t.label)
+	t.world.camera.UI.AddGraphics(t.rect)
+	t.world.camera.UI.AddGraphics(t.label)
 }
 
 func (t *floatingTextNode) IsDisposed() bool {

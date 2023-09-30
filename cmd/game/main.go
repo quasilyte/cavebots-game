@@ -17,8 +17,8 @@ func main() {
 	ctx.Rand.SetSeed(time.Now().Unix())
 	ctx.GameName = "cavebots"
 	ctx.WindowTitle = "Cavebots"
-	ctx.WindowWidth = 1920
-	ctx.WindowHeight = 1080
+	ctx.WindowWidth = 1920 / 2
+	ctx.WindowHeight = 1080 / 2
 	ctx.FullScreen = true
 
 	ctx.Loader.OpenAssetFunc = assets.MakeOpenAssetFunc(ctx)
@@ -33,6 +33,10 @@ func main() {
 		controls.ActionInteract: {input.KeyMouseLeft},
 		controls.ActionBuild1:   {input.KeyQ},
 		controls.ActionBuild2:   {input.KeyW},
+		controls.ActionPanRight: {input.KeyRight},
+		controls.ActionPanDown:  {input.KeyDown},
+		controls.ActionPanLeft:  {input.KeyLeft},
+		controls.ActionPanUp:    {input.KeyUp},
 	}
 	state.Input = ctx.Input.NewHandler(0, keymap)
 

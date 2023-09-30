@@ -188,6 +188,6 @@ func (m *tooltipManager) createTooltip(pos gmath.Vec, s string) {
 		pos.Y += 26
 	}
 
-	m.message = newMessageNode(pos, s)
+	m.message = newMessageNode(m.world, pos, s)
 	m.world.scene.AddObject(m.message)
 }

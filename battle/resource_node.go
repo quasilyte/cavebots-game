@@ -30,6 +30,8 @@ var ironResourceStats = &resourceStats{
 type resourceNode struct {
 	stats *resourceStats
 
+	world *worldState
+
 	sprite *ge.Sprite
 
 	pos gmath.Vec
@@ -39,8 +41,9 @@ type resourceNode struct {
 	EventDisposed gsignal.Event[*resourceNode]
 }
 
-func newResourceNode(pos gmath.Vec, stats *resourceStats, amount int) *resourceNode {
+func newResourceNode(world *worldState, pos gmath.Vec, stats *resourceStats, amount int) *resourceNode {
 	return &resourceNode{
+		world:  world,
 		pos:    pos,
 		stats:  stats,
 		amount: amount,
@@ -50,7 +53,7 @@ func newResourceNode(pos gmath.Vec, stats *resourceStats, amount int) *resourceN
 func (r *resourceNode) Init(scene *ge.Scene) {
 	r.sprite = scene.NewSprite(r.stats.img)
 	r.sprite.Pos.Base = &r.pos
-	scene.AddGraphics(r.sprite)
+	r.world.stage.AddSprite(r.sprite)
 }
 
 func (r *resourceNode) IsDisposed() bool {

@@ -10,4 +10,9 @@ const (
 
 	ActionBuild1
 	ActionBuild2
+
+	ActionPanRight
+	ActionPanDown
+	ActionPanLeft
+	ActionPanUp
 )

@@ -3,10 +3,12 @@ package battle
 import (
 	"fmt"
 
+	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/quasilyte/cavebots-game/assets"
 	"github.com/quasilyte/cavebots-game/controls"
 	"github.com/quasilyte/cavebots-game/session"
 	"github.com/quasilyte/cavebots-game/styles"
+	resource "github.com/quasilyte/ebitengine-resource"
 	"github.com/quasilyte/ge"
 	"github.com/quasilyte/ge/xslices"
 	"github.com/quasilyte/gmath"
@@ -25,6 +27,7 @@ type Runner struct {
 
 	energyRegenDelay float64
 
+	labelsRect  *ge.Rect
 	energyLabel *ge.Label
 	ironLabel   *ge.Label
 	stonesLabel *ge.Label
@@ -34,11 +37,18 @@ type Runner struct {
 	hoverPos       gmath.Vec
 	ttm            *tooltipManager
 
+	cameraPanSpeed    float64
+	cameraPanBoundary float64
+
 	cellSelector *ge.Sprite
 }
 
 func NewRunner(state *session.State) *Runner {
-	return &Runner{state: state}
+	return &Runner{
+		state:             state,
+		cameraPanSpeed:    8,
+		cameraPanBoundary: 8,
+	}
 }
 
 func (r *Runner) Init(scene *ge.Scene) {
@@ -66,13 +76,15 @@ func (r *Runner) Init(scene *ge.Scene) {
 
 	r.cellSelector = scene.NewSprite(assets.ImageCellSelector)
 	r.cellSelector.Visible = false
-	r.scene.AddGraphics(r.cellSelector)
+	r.world.stage.AddSpriteAbove(r.cellSelector)
 
 	r.core = newUnitNode(r.world, droneCoreStats)
 	r.core.pos = spawnPos.Add(gmath.Vec{X: 16, Y: 16}).Sub(gmath.Vec{X: 32})
 	r.world.playerUnits = append(r.world.playerUnits, r.core)
 	scene.AddObject(r.core)
 	r.world.core = r.core
+
+	r.world.camera.CenterOn(spawnPos)
 
 	{
 		creep := r.world.NewUnitNode(r.core.pos.Add(gmath.Vec{X: 32 * 8}), creepMutantWarrior)
@@ -84,29 +96,35 @@ func (r *Runner) Init(scene *ge.Scene) {
 		Max: r.core.pos.Add(gmath.Vec{X: 15, Y: 15}),
 	}
 
+	r.labelsRect = ge.NewRect(scene.Context(), 1920.0/2, 56)
+	r.labelsRect.Centered = false
+	r.labelsRect.FillColorScale.SetColor(styles.BgSuperDark)
+	r.labelsRect.Pos.Offset.Y = (1080 / 2) - 56
+	r.world.camera.UI.AddGraphicsAbove(r.labelsRect)
+
 	r.energyLabel = scene.NewLabel(assets.FontNormal)
 	r.energyLabel.ColorScale.SetColor(styles.ButtonTextColor)
-	r.energyLabel.Pos.Offset.Y = r.world.height
+	r.energyLabel.Pos.Offset.Y = (1080 / 2) - 56
 	r.energyLabel.Pos.Offset.X = 16
-	r.energyLabel.Height = 1080 - r.world.height
+	r.energyLabel.Height = 56
 	r.energyLabel.AlignVertical = ge.AlignVerticalCenter
-	scene.AddGraphics(r.energyLabel)
+	r.world.camera.UI.AddGraphicsAbove(r.energyLabel)
 
-	r.ironLabel = scene.NewLabel(assets.FontNormal)
-	r.ironLabel.ColorScale.SetColor(styles.ButtonTextColor)
-	r.ironLabel.Pos.Offset.Y = r.world.height
-	r.ironLabel.Pos.Offset.X = 16 + 320
-	r.ironLabel.Height = 1080 - r.world.height
-	r.ironLabel.AlignVertical = ge.AlignVerticalCenter
-	scene.AddGraphics(r.ironLabel)
+	// r.ironLabel = scene.NewLabel(assets.FontNormal)
+	// r.ironLabel.ColorScale.SetColor(styles.ButtonTextColor)
+	// r.ironLabel.Pos.Offset.Y = r.world.height
+	// r.ironLabel.Pos.Offset.X = 16 + 320
+	// r.ironLabel.Height = 1080 - r.world.height
+	// r.ironLabel.AlignVertical = ge.AlignVerticalCenter
+	// scene.AddGraphics(r.ironLabel)
 
-	r.stonesLabel = scene.NewLabel(assets.FontNormal)
-	r.stonesLabel.ColorScale.SetColor(styles.ButtonTextColor)
-	r.stonesLabel.Pos.Offset.Y = r.world.height
-	r.stonesLabel.Pos.Offset.X = 16 + 320 + 320
-	r.stonesLabel.Height = 1080 - r.world.height
-	r.stonesLabel.AlignVertical = ge.AlignVerticalCenter
-	scene.AddGraphics(r.stonesLabel)
+	// r.stonesLabel = scene.NewLabel(assets.FontNormal)
+	// r.stonesLabel.ColorScale.SetColor(styles.ButtonTextColor)
+	// r.stonesLabel.Pos.Offset.Y = r.world.height
+	// r.stonesLabel.Pos.Offset.X = 16 + 320 + 320
+	// r.stonesLabel.Height = 1080 - r.world.height
+	// r.stonesLabel.AlignVertical = ge.AlignVerticalCenter
+	// scene.AddGraphics(r.stonesLabel)
 
 	r.energyRegenDelay = 10
 
@@ -114,22 +132,12 @@ func (r *Runner) Init(scene *ge.Scene) {
 
 	r.ttm = newTooltipManager(r.world)
 	scene.AddObject(r.ttm)
+
+	scene.AddGraphics(r.world.camera)
 }
 
 func (r *Runner) initMap(spawnPos gmath.Vec) {
-	caveWidth := r.world.caveWidth
-
-	{
-		bg := ge.NewTiledBackground(r.scene.Context())
-		bg.LoadTileset(r.scene.Context(), caveWidth, 32*numCaveVerticalCells, assets.ImageCaveTiles, assets.RawCaveTileset)
-		r.scene.AddGraphicsBelow(bg, 1)
-	}
-	{
-		bg := ge.NewTiledBackground(r.scene.Context())
-		bg.LoadTileset(r.scene.Context(), 1920-caveWidth, 32*numCaveVerticalCells, assets.ImageForestTiles, assets.RawCaveTileset)
-		bg.Pos.Offset.X = caveWidth
-		r.scene.AddGraphicsBelow(bg, 1)
-	}
+	r.initBackground()
 
 	initialTunnel := make([]gmath.Vec, 0, 8)
 
@@ -148,7 +156,7 @@ func (r *Runner) initMap(spawnPos gmath.Vec) {
 				r.world.grid.SetCellTile(coord, tileCaveMud)
 				continue
 			}
-			m := newMountainNode(pos)
+			m := newMountainNode(r.world, pos)
 			if !r.world.innerCaveRect.Contains(pos) {
 				m.outer = true
 			}
@@ -160,8 +168,28 @@ func (r *Runner) initMap(spawnPos gmath.Vec) {
 	}
 }
 
+func (r *Runner) initBackground() {
+	wholeBg := ebiten.NewImage(1920, numCaveVerticalCells*32)
+	{
+		bg := ge.NewTiledBackground(r.scene.Context())
+		bg.LoadTileset(r.scene.Context(), r.world.caveWidth, 32*numCaveVerticalCells, assets.ImageCaveTiles, assets.RawCaveTileset)
+		bg.Draw(wholeBg)
+	}
+	{
+		bg := ge.NewTiledBackground(r.scene.Context())
+		bg.LoadTileset(r.scene.Context(), 1920-r.world.caveWidth, 32*numCaveVerticalCells, assets.ImageForestTiles, assets.RawCaveTileset)
+		bg.Pos.Offset.X = r.world.caveWidth
+		bg.Draw(wholeBg)
+	}
+	s := ge.NewSprite(r.scene.Context())
+	s.Centered = false
+	s.SetImage(resource.Image{Data: wholeBg})
+	r.world.stage.AddSpriteBelow(s)
+}
+
 func (r *Runner) Update(delta float64) {
 	r.handleInput(delta)
+	r.world.stage.Update()
 
 	r.energyRegenDelay -= delta
 	if r.energyRegenDelay <= 0 {
@@ -173,56 +201,89 @@ func (r *Runner) Update(delta float64) {
 func (r *Runner) updateLabels() {
 	energyIncome := r.world.CalcEnergyRegen()
 	r.energyLabel.Text = fmt.Sprintf("Energy: %d (%+.1f)", int(r.world.energy), energyIncome)
-	r.ironLabel.Text = fmt.Sprintf("Iron: %d", r.world.iron)
-	r.stonesLabel.Text = fmt.Sprintf("Stone: %d", r.world.stones)
+	// r.ironLabel.Text = fmt.Sprintf("Iron: %d", r.world.iron)
+	// r.stonesLabel.Text = fmt.Sprintf("Stone: %d", r.world.stones)
 }
 
 func (r *Runner) handleInput(delta float64) {
 	cursorPos := r.state.Input.CursorPos()
+	cursorWorldPos := r.world.camera.AbsPos(cursorPos)
 
-	r.handleHover(cursorPos, delta)
+	r.handleHover(cursorWorldPos, delta)
 
-	if r.world.rect.Contains(cursorPos) {
+	handler := r.state.Input
+
+	if r.world.rect.Contains(cursorWorldPos) {
 		r.cellSelector.Visible = true
-		r.cellSelector.Pos.Offset = gmath.Vec{
-			X: float64((int(cursorPos.X)/32)*32) + 16,
-			Y: float64((int(cursorPos.Y)/32)*32) + 16,
-		}
+		r.cellSelector.Pos.Offset = makePos(r.world.grid.AlignPos(cursorWorldPos.X, cursorWorldPos.Y))
 	} else {
 		r.cellSelector.Visible = false
 	}
 
-	if info, ok := r.state.Input.JustPressedActionInfo(controls.ActionSendUnit); ok {
-		r.core.SendTo(info.Pos)
-		r.scene.AddObject(newFloatingTextNode(info.Pos, "Order: move here"))
+	if handler.ActionIsJustPressed(controls.ActionSendUnit) {
+		r.core.SendTo(cursorWorldPos)
+		r.scene.AddObject(newFloatingTextNode(r.world, cursorWorldPos, "Order: move here"))
 		return
 	}
 
-	if info, ok := r.state.Input.JustPressedActionInfo(controls.ActionInteract); ok {
-		m := r.world.MountainAt(info.Pos)
+	if handler.ActionIsJustPressed(controls.ActionInteract) {
+		m := r.world.MountainAt(cursorWorldPos)
 		if m != nil {
 			if !r.world.CanDig(m) {
-				r.scene.AddObject(newFloatingTextNode(info.Pos, "Error: can't dig here"))
+				r.scene.AddObject(newFloatingTextNode(r.world, cursorWorldPos, "Error: can't dig here"))
 				return
 			}
 			if r.world.energy < digEnergyCost {
-				r.scene.AddObject(newFloatingTextNode(info.Pos, "Error: not enough energy"))
+				r.scene.AddObject(newFloatingTextNode(r.world, cursorWorldPos, "Error: not enough energy"))
 				return
 			}
-			r.scene.AddObject(newFloatingTextNode(m.pos, "Order: dig here"))
-			r.core.SendDigging(info.Pos)
+			r.scene.AddObject(newFloatingTextNode(r.world, m.pos, "Order: dig here"))
+			r.core.SendDigging(cursorWorldPos)
 			r.core.orderTarget = m
 			return
 		}
 	}
 
-	if r.state.Input.ActionIsJustPressed(controls.ActionBuild1) {
-		r.doBuildAction(cursorPos, 0)
+	if handler.ActionIsJustPressed(controls.ActionBuild1) {
+		r.doBuildAction(cursorWorldPos, 0)
 		return
 	}
-	if r.state.Input.ActionIsJustPressed(controls.ActionBuild2) {
-		r.doBuildAction(cursorPos, 1)
+	if handler.ActionIsJustPressed(controls.ActionBuild2) {
+		r.doBuildAction(cursorWorldPos, 1)
 		return
+	}
+
+	var cameraPan gmath.Vec
+	if handler.ActionIsPressed(controls.ActionPanRight) {
+		cameraPan.X += r.cameraPanSpeed
+	}
+	if handler.ActionIsPressed(controls.ActionPanDown) {
+		cameraPan.Y += r.cameraPanSpeed
+	}
+	if handler.ActionIsPressed(controls.ActionPanLeft) {
+		cameraPan.X -= r.cameraPanSpeed
+	}
+	if handler.ActionIsPressed(controls.ActionPanUp) {
+		cameraPan.Y -= r.cameraPanSpeed
+	}
+	if cameraPan.IsZero() && r.cameraPanBoundary != 0 {
+		// Mouse cursor can pan the camera too.
+		cursor := handler.CursorPos()
+		if cursor.X > r.world.camera.Rect.Width()-r.cameraPanBoundary {
+			cameraPan.X += r.cameraPanSpeed
+		}
+		if cursor.Y > r.world.camera.Rect.Height()-r.cameraPanBoundary {
+			cameraPan.Y += r.cameraPanSpeed
+		}
+		if cursor.X < r.cameraPanBoundary {
+			cameraPan.X -= r.cameraPanSpeed
+		}
+		if cursor.Y < r.cameraPanBoundary {
+			cameraPan.Y -= r.cameraPanSpeed
+		}
+	}
+	if !cameraPan.IsZero() {
+		r.world.camera.Pan(cameraPan)
 	}
 }
 
@@ -244,15 +305,15 @@ func (r *Runner) doBuildAction(cursorPos gmath.Vec, i int) {
 
 	buildingStats := buildingSpot.buildOptions[i]
 	if r.world.energy < float64(buildingStats.energyCost) {
-		r.scene.AddObject(newFloatingTextNode(cursorPos, "Error: not enough energy"))
+		r.scene.AddObject(newFloatingTextNode(r.world, cursorPos, "Error: not enough energy"))
 		return
 	}
 	if r.world.iron < buildingStats.ironCost {
-		r.scene.AddObject(newFloatingTextNode(cursorPos, "Error: not enough iron"))
+		r.scene.AddObject(newFloatingTextNode(r.world, cursorPos, "Error: not enough iron"))
 		return
 	}
 	if r.world.stones < buildingStats.stoneCost {
-		r.scene.AddObject(newFloatingTextNode(cursorPos, "Error: not enough stone"))
+		r.scene.AddObject(newFloatingTextNode(r.world, cursorPos, "Error: not enough stone"))
 		return
 	}
 

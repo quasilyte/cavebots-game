@@ -1,6 +1,7 @@
 package battle
 
 import (
+	"github.com/quasilyte/cavebots-game/viewport"
 	"github.com/quasilyte/ge"
 	"github.com/quasilyte/ge/xslices"
 	"github.com/quasilyte/gmath"
@@ -14,6 +15,9 @@ type worldState struct {
 
 	scene *ge.Scene
 	rand  *gmath.Rand
+
+	stage  *viewport.Stage
+	camera *viewport.Camera
 
 	rect          gmath.Rect
 	caveRect      gmath.Rect
@@ -75,6 +79,14 @@ func (w *worldState) Init() {
 		NumCols: uint(w.grid.NumCols()),
 		NumRows: uint(w.grid.NumRows()),
 	})
+
+	w.stage = viewport.NewStage()
+	w.camera = viewport.NewCamera(w.stage, gmath.Rect{
+		Max: gmath.Vec{
+			X: 1920,
+			Y: 1080,
+		},
+	}, 1920.0/2, 1080.0/2)
 }
 
 func (w *worldState) GrowDiggedRect(pos gmath.Vec) {
@@ -112,7 +124,7 @@ func (w *worldState) NewHardTerrainNode(pos gmath.Vec) *hardTerrainNode {
 	}
 	w.buildingSeq++
 
-	n := newHardTerrainNode(pos, buildOptions)
+	n := newHardTerrainNode(w, pos, buildOptions)
 	w.hardTerrain = append(w.hardTerrain, n)
 	return n
 }
@@ -132,7 +144,7 @@ func (w *worldState) NewUnitNode(pos gmath.Vec, stats *unitStats) *unitNode {
 }
 
 func (w *worldState) NewResourceNode(pos gmath.Vec, stats *resourceStats, amount int) *resourceNode {
-	n := newResourceNode(pos, stats, amount)
+	n := newResourceNode(w, pos, stats, amount)
 	n.EventDisposed.Connect(nil, func(n *resourceNode) {
 		w.resourceNodes = xslices.Remove(w.resourceNodes, n)
 	})

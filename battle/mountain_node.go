@@ -23,6 +23,7 @@ const (
 )
 
 type mountainNode struct {
+	world  *worldState
 	pos    gmath.Vec
 	sprite *ge.Sprite
 
@@ -31,9 +32,10 @@ type mountainNode struct {
 	loot lootKind
 }
 
-func newMountainNode(pos gmath.Vec) *mountainNode {
+func newMountainNode(world *worldState, pos gmath.Vec) *mountainNode {
 	return &mountainNode{
-		pos: pos,
+		pos:   pos,
+		world: world,
 	}
 }
 
@@ -42,7 +44,7 @@ func (m *mountainNode) Init(scene *ge.Scene) {
 	s.FlipHorizontal = scene.Rand().Bool()
 	s.Pos.Base = &m.pos
 	s.FrameOffset.X = float64(scene.Rand().IntRange(0, 1)) * s.FrameWidth
-	scene.AddGraphics(s)
+	m.world.stage.AddSprite(s)
 	m.sprite = s
 }
 

@@ -61,7 +61,7 @@ func (u *unitNode) Init(scene *ge.Scene) {
 
 	u.sprite = scene.NewSprite(u.stats.img)
 	u.sprite.Pos.Base = &u.pos
-	scene.AddGraphics(u.sprite)
+	u.world.stage.AddSpriteSlightlyAbove(u.sprite)
 
 	if u.sprite.FrameWidth != u.sprite.ImageWidth() {
 		u.anim = ge.NewRepeatedAnimation(u.sprite, -1)
@@ -289,12 +289,12 @@ func (u *unitNode) completeDig() {
 	}
 
 	if u.world.energy < digEnergyCost {
-		u.scene.AddObject(newFloatingTextNode(m.pos, "Error: not enough energy"))
+		u.scene.AddObject(newFloatingTextNode(m.world, m.pos, "Error: not enough energy"))
 		return
 	}
 
 	u.world.AddEnergy(-digEnergyCost)
-	u.scene.AddObject(newFloatingTextNode(m.pos, "Status: dig complete"))
+	u.scene.AddObject(newFloatingTextNode(m.world, m.pos, "Status: dig complete"))
 	u.world.AddStones(1)
 
 	switch loot := u.world.PeekLoot(m); loot {
