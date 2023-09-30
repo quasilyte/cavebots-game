@@ -76,6 +76,9 @@ func (m *tooltipManager) formatMountainInfo(mountain *mountainNode) string {
 	case lootLargeIronDeposit:
 		loot = "large iron deposit"
 
+	case lootExtraStones:
+		loot = "stone-rich"
+
 	case lootBotHarvester:
 		loot = "harvester bot"
 	case lootBotPatrol:
