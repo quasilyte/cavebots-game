@@ -2,6 +2,7 @@ package battle
 
 import (
 	"github.com/quasilyte/cavebots-game/assets"
+	"github.com/quasilyte/cavebots-game/controls"
 	"github.com/quasilyte/cavebots-game/session"
 	"github.com/quasilyte/ge"
 	"github.com/quasilyte/ge/xslices"
@@ -12,6 +13,8 @@ type Runner struct {
 	scene *ge.Scene
 
 	state *session.State
+
+	core *coreUnit
 
 	world *worldState
 
@@ -32,14 +35,23 @@ func (r *Runner) Init(scene *ge.Scene) {
 	}
 	r.world.Init()
 
-	r.initMap()
+	spawnPos := gmath.Vec{
+		X: float64((numCaveHorizontalCells - 1) * 32),
+		Y: float64(32 * r.scene.Rand().IntRange(8, numCaveVerticalCells-8)),
+	}
+
+	r.initMap(spawnPos)
 
 	r.cellSelector = scene.NewSprite(assets.ImageCellSelector)
 	r.cellSelector.Visible = false
 	r.scene.AddGraphics(r.cellSelector)
+
+	r.core = newCoreUnit(r.world)
+	r.core.pos = spawnPos.Add(gmath.Vec{X: 16, Y: 16})
+	scene.AddObject(r.core)
 }
 
-func (r *Runner) initMap() {
+func (r *Runner) initMap(spawnPos gmath.Vec) {
 	caveWidth := r.world.caveWidth
 
 	{
@@ -54,14 +66,12 @@ func (r *Runner) initMap() {
 		r.scene.AddGraphics(bg)
 	}
 
-	caveEntranceY := r.scene.Rand().IntRange(8, numCaveVerticalCells-8)
-
 	initialTunnel := make([]gmath.Vec, 0, 8)
 
 	for i := 0; i < 8; i++ {
 		initialTunnel = append(initialTunnel, gmath.Vec{
 			X: float64((numCaveHorizontalCells - 1 - i) * 32),
-			Y: float64((caveEntranceY - 1) * 32),
+			Y: spawnPos.Y,
 		})
 	}
 
@@ -79,6 +89,10 @@ func (r *Runner) initMap() {
 }
 
 func (r *Runner) Update(delta float64) {
+	r.handleInput()
+}
+
+func (r *Runner) handleInput() {
 	cursorPos := r.state.Input.CursorPos()
 	if r.world.rect.Contains(cursorPos) {
 		r.cellSelector.Visible = true
@@ -88,5 +102,9 @@ func (r *Runner) Update(delta float64) {
 		}
 	} else {
 		r.cellSelector.Visible = false
+	}
+
+	if info, ok := r.state.Input.JustPressedActionInfo(controls.ActionSendUnit); ok {
+		_ = info
 	}
 }

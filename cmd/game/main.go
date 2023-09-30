@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/quasilyte/cavebots-game/assets"
+	"github.com/quasilyte/cavebots-game/controls"
 	"github.com/quasilyte/cavebots-game/eui"
 	"github.com/quasilyte/cavebots-game/scenes"
 	"github.com/quasilyte/cavebots-game/session"
@@ -27,7 +28,9 @@ func main() {
 		UIResources: eui.PrepareResources(ctx.Loader),
 	}
 
-	keymap := input.Keymap{}
+	keymap := input.Keymap{
+		controls.ActionSendUnit: {input.KeyMouseRight},
+	}
 	state.Input = ctx.Input.NewHandler(0, keymap)
 
 	if err := ge.RunGame(ctx, scenes.NewMainMenuController(state)); err != nil {
