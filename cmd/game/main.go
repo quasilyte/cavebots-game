@@ -31,6 +31,8 @@ func main() {
 	keymap := input.Keymap{
 		controls.ActionSendUnit: {input.KeyMouseRight},
 		controls.ActionInteract: {input.KeyMouseLeft},
+		controls.ActionBuild1:   {input.KeyQ},
+		controls.ActionBuild2:   {input.KeyW},
 	}
 	state.Input = ctx.Input.NewHandler(0, keymap)
 

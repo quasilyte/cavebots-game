@@ -7,4 +7,7 @@ const (
 
 	ActionSendUnit
 	ActionInteract
+
+	ActionBuild1
+	ActionBuild2
 )

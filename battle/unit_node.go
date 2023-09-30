@@ -140,7 +140,7 @@ func (u *unitNode) completeDeliverResource() {
 		u.order = orderDeliverResource
 		return
 	}
-	if target.pos.DistanceSquaredTo(u.pos) > (22 * 22) {
+	if target.pos.DistanceSquaredTo(u.pos) > (64 * 64) {
 		u.order = orderDeliverResource
 		return
 	}
@@ -182,6 +182,10 @@ func (u *unitNode) updateHarvester(delta float64) {
 		// Moving towards the resource.
 
 	case orderDeliverResource:
+		u.specialDelay = gmath.ClampMin(u.specialDelay-delta, 0)
+		if u.specialDelay != 0 {
+			return
+		}
 		if u.cargo == 0 {
 			u.order = orderNone
 			return
@@ -190,8 +194,32 @@ func (u *unitNode) updateHarvester(delta float64) {
 			// Already delivering it somewhere.
 			return
 		}
-		u.orderTarget = u.world.core
-		u.sendTo(u.world.core.pos)
+		var closestPlace *unitNode
+		closestDistSqr := math.MaxFloat64
+		for _, other := range u.world.playerUnits {
+			distMultiplier := 1.0
+			switch other.stats {
+			case droneCoreStats:
+				distMultiplier = 1.5
+			case buildingSmelter:
+				// OK
+			default:
+				continue
+			}
+			distSqr := other.pos.DistanceSquaredTo(u.pos) * distMultiplier
+			if distSqr < closestDistSqr {
+				closestDistSqr = distSqr
+				closestPlace = other
+			}
+		}
+		if closestPlace != nil {
+			if closestPlace.pos.DistanceSquaredTo(u.pos) < 16 {
+				u.specialDelay = 2
+				return
+			}
+			u.orderTarget = closestPlace
+			u.sendTo(closestPlace.pos)
+		}
 
 	default:
 		u.specialDelay = gmath.ClampMin(u.specialDelay-delta, 0)
@@ -244,11 +272,17 @@ func (u *unitNode) completeDig() {
 	u.scene.AddObject(newFloatingTextNode(m.pos, "Status: dig complete"))
 	u.world.AddStones(1)
 
-	switch u.world.PeekLoot(m) {
+	switch loot := u.world.PeekLoot(m); loot {
 	case lootExtraStones:
 		u.world.AddStones(2)
-	case lootIronDeposit:
-		iron := u.world.NewResourceNode(m.pos, ironResourceStats, u.scene.Rand().IntRange(4, 8))
+	case lootIronDeposit, lootLargeIronDeposit:
+		minAmount := 4
+		maxAmount := 8
+		if loot == lootLargeIronDeposit {
+			minAmount = 12
+			maxAmount = 30
+		}
+		iron := u.world.NewResourceNode(m.pos, ironResourceStats, u.scene.Rand().IntRange(minAmount, maxAmount))
 		u.scene.AddObjectBelow(iron, 1)
 	case lootBotHarvester:
 		newUnit := u.world.NewUnitNode(m.pos, droneHarvesterStats)

@@ -27,7 +27,8 @@ type worldState struct {
 	iron   int
 	stones int
 
-	lootSeq int
+	lootSeq     int
+	buildingSeq int
 
 	caveWidth float64
 
@@ -43,7 +44,7 @@ type worldState struct {
 }
 
 func (w *worldState) Init() {
-	w.energy = 15
+	w.energy = 20
 
 	w.rect = gmath.Rect{
 		Max: gmath.Vec{
@@ -92,7 +93,25 @@ func (w *worldState) GrowDiggedRect(pos gmath.Vec) {
 }
 
 func (w *worldState) NewHardTerrainNode(pos gmath.Vec) *hardTerrainNode {
-	n := newHardTerrainNode(pos)
+	var buildOptions [2]*unitStats
+	switch w.buildingSeq {
+	case 0:
+		buildOptions[0] = buildingPowerGenerator
+		buildOptions[1] = buildingBarricate
+	case 2:
+		buildOptions[0] = buildingPowerGenerator
+		buildOptions[1] = buildingSmelter
+	case 3:
+		// TODO: something different.
+		buildOptions[0] = buildingPowerGenerator
+		buildOptions[1] = buildingSmelter
+	default:
+		buildOptions[0] = gmath.RandElem(w.rand, firstBuildingList)
+		buildOptions[1] = gmath.RandElem(w.rand, secondBuildingList)
+	}
+	w.buildingSeq++
+
+	n := newHardTerrainNode(pos, buildOptions)
 	w.hardTerrain = append(w.hardTerrain, n)
 	return n
 }
@@ -150,6 +169,8 @@ func (w *worldState) selectLootKind() lootKind {
 		return lootBotHarvester
 	case 3:
 		return lootFlatCell
+	case 6:
+		return lootIronDeposit
 	case 8:
 		return lootBotPatrol
 	}
@@ -216,6 +237,14 @@ func (w *worldState) CalcEnergyUpkeep() float64 {
 
 func (w *worldState) CalcEnergyRegen() float64 {
 	regen := 1.0 // Base regen (core-provided)
+	generatorMultiplier := 1.0
+	for _, u := range w.playerUnits {
+		switch u.stats {
+		case buildingPowerGenerator:
+			regen += 0.8 * generatorMultiplier
+			generatorMultiplier = gmath.ClampMin(generatorMultiplier-0.1, 0.1)
+		}
+	}
 	return regen - w.CalcEnergyUpkeep()
 }
 

@@ -209,6 +209,60 @@ func (r *Runner) handleInput(delta float64) {
 			return
 		}
 	}
+
+	if r.state.Input.ActionIsJustPressed(controls.ActionBuild1) {
+		r.doBuildAction(cursorPos, 0)
+		return
+	}
+	if r.state.Input.ActionIsJustPressed(controls.ActionBuild2) {
+		r.doBuildAction(cursorPos, 1)
+		return
+	}
+}
+
+func (r *Runner) doBuildAction(cursorPos gmath.Vec, i int) {
+	var buildingSpot *hardTerrainNode
+	for _, tile := range r.world.hardTerrain {
+		if tile.building != nil {
+			continue
+		}
+		distSqr := tile.pos.DistanceSquaredTo(cursorPos)
+		if distSqr <= (32 * 32) {
+			buildingSpot = tile
+			break
+		}
+	}
+	if buildingSpot == nil {
+		return
+	}
+
+	buildingStats := buildingSpot.buildOptions[i]
+	if r.world.energy < float64(buildingStats.energyCost) {
+		r.scene.AddObject(newFloatingTextNode(cursorPos, "Error: not enough energy"))
+		return
+	}
+	if r.world.iron < buildingStats.ironCost {
+		r.scene.AddObject(newFloatingTextNode(cursorPos, "Error: not enough iron"))
+		return
+	}
+	if r.world.stones < buildingStats.stoneCost {
+		r.scene.AddObject(newFloatingTextNode(cursorPos, "Error: not enough stone"))
+		return
+	}
+
+	r.world.AddEnergy(-float64(buildingStats.energyCost))
+	r.world.AddIron(-buildingStats.ironCost)
+	r.world.AddStones(-buildingStats.stoneCost)
+
+	newBuilding := r.world.NewUnitNode(buildingSpot.pos, buildingStats)
+	r.scene.AddObject(newBuilding)
+	buildingSpot.building = newBuilding
+	coord := r.world.grid.PosToCoord(buildingSpot.pos.X, buildingSpot.pos.Y)
+	r.world.grid.SetCellTile(coord, tileBlocked)
+	newBuilding.EventDisposed.Connect(nil, func(*unitNode) {
+		buildingSpot.building = nil
+		r.world.grid.SetCellTile(coord, tileCaveFlat)
+	})
 }
 
 func (r *Runner) stopHover() {

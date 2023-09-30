@@ -11,7 +11,12 @@ type unitStats struct {
 	maxHealth    float64
 	img          resource.ImageID
 	allied       bool
+	building     bool
 	energyUpkeep float64
+
+	energyCost int
+	ironCost   int
+	stoneCost  int
 }
 
 var droneCoreStats = &unitStats{
@@ -39,4 +44,35 @@ var dronePatrolStats = &unitStats{
 	img:          assets.ImageDronePatrol,
 	allied:       true,
 	energyUpkeep: 0.3,
+}
+
+var buildingPowerGenerator = &unitStats{
+	name:      "Generator",
+	maxHealth: 75,
+	img:       assets.ImageBuildingGenerator,
+	allied:    true,
+	building:  true,
+	ironCost:  1,
+	stoneCost: 6,
+}
+
+var buildingBarricate = &unitStats{
+	name:       "Barricade",
+	maxHealth:  90,
+	img:        assets.ImageBuildingBarricade,
+	allied:     true,
+	building:   true,
+	energyCost: 3,
+	ironCost:   1,
+}
+
+var buildingSmelter = &unitStats{
+	name:       "Smelter",
+	maxHealth:  130,
+	img:        assets.ImageBuildingSmelter,
+	allied:     true,
+	building:   true,
+	energyCost: 3,
+	ironCost:   2,
+	stoneCost:  5,
 }

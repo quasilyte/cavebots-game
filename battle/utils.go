@@ -7,6 +7,20 @@ import (
 	"golang.org/x/image/font"
 )
 
+var firstBuildingList = []*unitStats{
+	buildingPowerGenerator,
+	buildingSmelter,
+}
+
+var secondBuildingList = []*unitStats{
+	buildingBarricate,
+}
+
+var buildingHotkeys = []string{
+	"Q",
+	"W",
+}
+
 func randomSectorPos(rng *gmath.Rand, sector gmath.Rect) gmath.Vec {
 	return gmath.Vec{
 		X: rng.FloatRange(sector.Min.X, sector.Max.X),

@@ -9,12 +9,17 @@ import (
 type hardTerrainNode struct {
 	sprite *ge.Sprite
 
+	buildOptions [2]*unitStats
+
+	building *unitNode
+
 	pos gmath.Vec
 }
 
-func newHardTerrainNode(pos gmath.Vec) *hardTerrainNode {
+func newHardTerrainNode(pos gmath.Vec, buildOptions [2]*unitStats) *hardTerrainNode {
 	return &hardTerrainNode{
-		pos: pos,
+		pos:          pos,
+		buildOptions: buildOptions,
 	}
 }
 
@@ -27,4 +32,5 @@ func (t *hardTerrainNode) Init(scene *ge.Scene) {
 
 func (t *hardTerrainNode) IsDisposed() bool { return false }
 
-func (t *hardTerrainNode) Update(delta float64) {}
+func (t *hardTerrainNode) Update(delta float64) {
+}

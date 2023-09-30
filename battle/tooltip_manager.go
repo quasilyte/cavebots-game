@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math"
 	"strconv"
+	"strings"
 
 	"github.com/quasilyte/cavebots-game/assets"
 	"github.com/quasilyte/ge"
@@ -70,11 +71,15 @@ func (m *tooltipManager) OnHover(pos gmath.Vec) {
 			s := "Core"
 			health := strconv.Itoa(int(100*math.Ceil(u.health/u.stats.maxHealth))) + "%"
 			if u.stats != droneCoreStats {
-				status := "online"
-				if u.offline {
-					status = "offline"
+				if u.stats.building {
+					s = u.stats.name
+				} else {
+					status := "online"
+					if u.offline {
+						status = "offline"
+					}
+					s = fmt.Sprintf("%s drone (%s)", u.stats.name, status)
 				}
-				s = fmt.Sprintf("%s drone (%s)", u.stats.name, status)
 			}
 			m.createTooltip(pos, s+"\n"+health)
 			return
@@ -82,9 +87,27 @@ func (m *tooltipManager) OnHover(pos gmath.Vec) {
 	}
 
 	for _, t := range m.world.hardTerrain {
+		if t.building != nil {
+			continue
+		}
 		if t.pos.DistanceSquaredTo(pos) < (20 * 20) {
 			// TODO: show building options.
-			m.createTooltip(pos, "Hard terrain (can build here)")
+			parts := []string{"Hard terrain, can build here:"}
+			for i, option := range t.buildOptions {
+				priceParts := make([]string, 0, 3)
+				if option.energyCost != 0 {
+					priceParts = append(priceParts, strconv.Itoa(option.energyCost)+" energy")
+				}
+				if option.ironCost != 0 {
+					priceParts = append(priceParts, strconv.Itoa(option.ironCost)+" iron")
+				}
+				if option.stoneCost != 0 {
+					priceParts = append(priceParts, strconv.Itoa(option.stoneCost)+" stone")
+				}
+				price := strings.Join(priceParts, " and ")
+				parts = append(parts, fmt.Sprintf("[%s] %s - %s", buildingHotkeys[i], option.name, price))
+			}
+			m.createTooltip(pos, strings.Join(parts, "\n"))
 			return
 		}
 	}
