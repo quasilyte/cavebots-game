@@ -60,7 +60,7 @@ func (m *tooltipManager) OnHover(pos gmath.Vec) {
 
 	for _, res := range m.world.resourceNodes {
 		if res.pos.DistanceSquaredTo(pos) < (22 * 22) {
-			s := fmt.Sprintf("Iron resource (%d)", res.amount)
+			s := fmt.Sprintf("Iron resource (%d)\nHarvesters collect it", res.amount)
 			m.createTooltip(pos, s)
 			return
 		}
