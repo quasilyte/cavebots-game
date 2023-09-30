@@ -61,10 +61,6 @@ func (r *Runner) Init(scene *ge.Scene) {
 		X: float64((numCaveHorizontalCells - 1) * 32),
 		Y: float64(32 * r.scene.Rand().IntRange(8, numCaveVerticalCells-8)),
 	}
-	r.world.diggedRect = gmath.Rect{
-		Min: spawnPos.Sub(gmath.Vec{X: 15, Y: 15}),
-		Max: spawnPos.Add(gmath.Vec{X: 15, Y: 15}),
-	}
 
 	r.initMap(spawnPos)
 
@@ -73,10 +69,15 @@ func (r *Runner) Init(scene *ge.Scene) {
 	r.scene.AddGraphics(r.cellSelector)
 
 	r.core = newUnitNode(r.world, droneCoreStats)
-	r.core.pos = spawnPos.Add(gmath.Vec{X: 16, Y: 16})
+	r.core.pos = spawnPos.Add(gmath.Vec{X: 16, Y: 16}).Sub(gmath.Vec{X: 32})
 	r.world.playerUnits = append(r.world.playerUnits, r.core)
 	scene.AddObject(r.core)
 	r.world.core = r.core
+
+	r.world.diggedRect = gmath.Rect{
+		Min: r.core.pos.Sub(gmath.Vec{X: 15, Y: 15}),
+		Max: r.core.pos.Add(gmath.Vec{X: 15, Y: 15}),
+	}
 
 	r.energyLabel = scene.NewLabel(assets.FontNormal)
 	r.energyLabel.ColorScale.SetColor(styles.ButtonTextColor)
@@ -141,6 +142,9 @@ func (r *Runner) initMap(spawnPos gmath.Vec) {
 				continue
 			}
 			m := newMountainNode(pos)
+			if !r.world.innerCaveRect.Contains(pos) {
+				m.outer = true
+			}
 			r.scene.AddObject(m)
 			coord := pathing.GridCoord{X: x, Y: y}
 			r.world.grid.SetCellTile(coord, tileBlocked)

@@ -15,9 +15,10 @@ type worldState struct {
 	scene *ge.Scene
 	rand  *gmath.Rand
 
-	rect       gmath.Rect
-	caveRect   gmath.Rect
-	diggedRect gmath.Rect
+	rect          gmath.Rect
+	caveRect      gmath.Rect
+	innerCaveRect gmath.Rect
+	diggedRect    gmath.Rect
 
 	grid  *pathing.Grid
 	astar *pathing.AStar
@@ -41,7 +42,7 @@ type worldState struct {
 }
 
 func (w *worldState) Init() {
-	w.energy = 10
+	w.energy = 15
 
 	w.rect = gmath.Rect{
 		Max: gmath.Vec{
@@ -54,6 +55,10 @@ func (w *worldState) Init() {
 			X: w.caveWidth,
 			Y: w.rect.Max.Y,
 		},
+	}
+	w.innerCaveRect = gmath.Rect{
+		Min: gmath.Vec{X: 32, Y: 32},
+		Max: w.caveRect.Max.Sub(gmath.Vec{X: 32, Y: 32}),
 	}
 	w.mountainByCoord = make(map[uint32]*mountainNode)
 
@@ -172,9 +177,15 @@ func (w *worldState) selectLootKind() lootKind {
 }
 
 func (w *worldState) CanDig(m *mountainNode) bool {
+	if m.outer {
+		return false
+	}
 	coord := w.grid.PosToCoord(m.pos.X, m.pos.Y)
 	for _, offset := range cellNeighborOffsets {
 		probe := coord.Add(offset)
+		if probe.X < 0 || probe.Y < 0 {
+			continue
+		}
 		if w.grid.GetCellTile(probe) != tileBlocked {
 			return true
 		}

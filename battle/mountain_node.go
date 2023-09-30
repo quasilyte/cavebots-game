@@ -25,6 +25,8 @@ type mountainNode struct {
 	pos    gmath.Vec
 	sprite *ge.Sprite
 
+	outer bool
+
 	loot lootKind
 }
 

@@ -47,8 +47,10 @@ func (m *tooltipManager) OnStopHover() {
 func (m *tooltipManager) OnHover(pos gmath.Vec) {
 	mountain := m.world.MountainAt(pos)
 	if mountain != nil {
-		s := "Mountain"
-		if m.world.CanDig(mountain) {
+		s := "Inner block"
+		if mountain.outer {
+			s = "Outer block"
+		} else if m.world.CanDig(mountain) {
 			s = m.formatMountainInfo(mountain)
 		}
 		m.createTooltip(pos, s)
@@ -106,9 +108,9 @@ func (m *tooltipManager) formatMountainInfo(mountain *mountainNode) string {
 	}
 
 	if loot == "" {
-		return "Diggable mountain\nTerrain: " + terrain
+		return "Diggable block\nTerrain: " + terrain
 	}
-	return "Diggable mountain\nTerrain: " + terrain + "\nExtra: " + loot
+	return "Diggable block\nTerrain: " + terrain + "\nExtra: " + loot
 }
 
 func (m *tooltipManager) removeTooltip() {
