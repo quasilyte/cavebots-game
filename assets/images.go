@@ -31,6 +31,7 @@ func registerImageResources(ctx *ge.Context) {
 		ImageBuildingMutantBase: {Path: "images/mutant_base.png", FrameWidth: 34},
 
 		ImageMutantWarrior: {Path: "images/mutant_warrior.png", FrameWidth: 32},
+		ImageMutantHunter:  {Path: "images/mutant_hunter.png", FrameWidth: 32},
 		ImageMutantWarlord: {Path: "images/mutant_warlord.png", FrameWidth: 32},
 
 		ImageIronResource: {Path: "images/iron_resource.png"},
@@ -39,6 +40,7 @@ func registerImageResources(ctx *ge.Context) {
 		ImageHardTerrain: {Path: "images/hard_terrain.png", FrameWidth: 32},
 
 		ImagePatrolLaserProjectile: {Path: "images/patrol_laser_projectile.png"},
+		ImageArrowProjectile:       {Path: "images/arrow_projectile.png"},
 	}
 
 	for id, res := range imageResources {
@@ -66,6 +68,7 @@ const (
 	ImageDroneGenerator
 
 	ImageMutantWarrior
+	ImageMutantHunter
 	ImageMutantWarlord
 
 	ImageBuildingBarricade
@@ -80,4 +83,5 @@ const (
 	ImageHardTerrain
 
 	ImagePatrolLaserProjectile
+	ImageArrowProjectile
 )

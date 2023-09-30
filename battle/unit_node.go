@@ -183,6 +183,8 @@ func (u *unitNode) Update(delta float64) {
 		u.updateCreepBase(delta)
 	case creepMutantWarrior:
 		u.updateMutantWarrior(delta)
+	case creepMutantHunter:
+		u.updateMutantHunter(delta)
 	case creepMutantWarlord:
 		u.updateMutantWarlord(delta)
 	}
@@ -255,6 +257,10 @@ func (u *unitNode) updateMutantWarrior(delta float64) {
 	if u.waypoint.IsZero() {
 		u.maybeCharge(delta, 140)
 	}
+}
+
+func (u *unitNode) updateMutantHunter(delta float64) {
+	u.processWeapon(delta)
 }
 
 func (u *unitNode) updateMutantWarlord(delta float64) {
@@ -344,6 +350,12 @@ func (u *unitNode) updateCreepBase(delta float64) {
 			stats = creepMutantWarlord
 		}
 		newUnit := u.world.NewUnitNode(u.pos.Add(u.scene.Rand().Offset(-8, 8)), stats)
+		u.scene.AddObject(newUnit)
+		newUnit.SendTo(waypoint)
+	}
+	numArchers := gmath.Clamp(int(u.world.creepBaseLevel/80.0), 0, 3)
+	for i := 0; i < numArchers; i++ {
+		newUnit := u.world.NewUnitNode(u.pos.Add(u.scene.Rand().Offset(-8, 8)), creepMutantHunter)
 		u.scene.AddObject(newUnit)
 		newUnit.SendTo(waypoint)
 	}

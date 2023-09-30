@@ -21,6 +21,10 @@ func registerAudioResources(ctx *ge.Context) {
 		AudioPatrolLaser3: {Path: "audio/patrol_laser3.wav"},
 		AudioPatrolLaser4: {Path: "audio/patrol_laser4.wav"},
 
+		AudioBowShot1: {Path: "audio/bow_shot1.wav"},
+		AudioBowShot2: {Path: "audio/bow_shot2.wav"},
+		AudioBowShot3: {Path: "audio/bow_shot3.wav"},
+
 		AudioWarriorHit1: {Path: "audio/warrior_hit1.wav"},
 		AudioWarriorHit2: {Path: "audio/warrior_hit2.wav"},
 		AudioWarriorHit3: {Path: "audio/warrior_hit3.wav"},
@@ -39,6 +43,8 @@ func NumSamples(a resource.AudioID) int {
 		return 8
 	case AudioPatrolLaser1:
 		return 4
+	case AudioBowShot1:
+		return 3
 	case AudioWarriorHit1:
 		return 4
 	default:
@@ -62,6 +68,10 @@ const (
 	AudioPatrolLaser2
 	AudioPatrolLaser3
 	AudioPatrolLaser4
+
+	AudioBowShot1
+	AudioBowShot2
+	AudioBowShot3
 
 	AudioWarriorHit1
 	AudioWarriorHit2

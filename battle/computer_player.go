@@ -58,13 +58,11 @@ func (p *computerPlayer) maybeDoAttack() float64 {
 		return attackBudget <= 0
 	})
 	if len(p.attackGroup) == 0 {
-		fmt.Println("no units")
 		return rng.FloatRange(8, 30)
 	}
 
-	// Every 2 minutes give +1 budget growth.
-	extraBudgetGrowth := int(p.world.creepBaseLevel / (2 * 60))
-	fmt.Println("extra", extraBudgetGrowth)
+	// Every 2.0 minutes give +1 budget growth.
+	extraBudgetGrowth := int(p.world.creepBaseLevel / (2.0 * 60.0))
 
 	var bestTarget *unitNode
 	var bestScore float64

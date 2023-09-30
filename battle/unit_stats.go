@@ -31,6 +31,7 @@ type weaponStats struct {
 	attackRange     float64
 	reload          float64
 	projectileSpeed float64
+	ArcPower        float64
 	projectileImage resource.ImageID
 	fireSound       resource.AudioID
 	impactSound     resource.AudioID
@@ -147,9 +148,28 @@ var creepMutantWarrior = &unitStats{
 	},
 }
 
+var creepMutantHunter = &unitStats{
+	name:      "Mutant hunter",
+	score:     4,
+	layer:     1,
+	maxHealth: 14,
+	img:       assets.ImageMutantHunter,
+	speed:     25,
+	tiny:      true,
+	weapon: &weaponStats{
+		damage:          5,
+		reload:          2.0,
+		attackRange:     120,
+		projectileSpeed: 350,
+		projectileImage: assets.ImageArrowProjectile,
+		fireSound:       assets.AudioBowShot1,
+		ArcPower:        2.5,
+	},
+}
+
 var creepMutantWarlord = &unitStats{
 	name:      "Mutant warlord",
-	score:     3,
+	score:     4,
 	layer:     1,
 	maxHealth: 25,
 	img:       assets.ImageMutantWarlord,

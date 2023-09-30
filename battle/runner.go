@@ -148,7 +148,7 @@ func (r *Runner) placeCreeps() {
 
 	for i := 0; i < 2; i++ {
 		pos := r.world.core.pos.Add(gmath.Vec{X: 32 * 17, Y: 32})
-		creep := r.world.NewUnitNode(pos.Add(scene.Rand().Offset(-12, 12)), creepMutantWarrior)
+		creep := r.world.NewUnitNode(pos.Add(scene.Rand().Offset(-12, 12)), creepMutantHunter)
 		scene.AddObject(creep)
 	}
 	for i := 0; i < 1; i++ {
