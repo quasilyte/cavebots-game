@@ -1,8 +1,10 @@
 package battle
 
 import (
+	"github.com/hajimehoshi/ebiten/v2/text"
 	"github.com/quasilyte/gmath"
 	"github.com/quasilyte/pathing"
+	"golang.org/x/image/font"
 )
 
 var cellNeighborOffsets = []pathing.GridCoord{
@@ -70,4 +72,11 @@ func nextPathWaypoint(world *worldState, pos gmath.Vec, p *pathing.GridPath, l p
 	}
 	p.Skip(1)
 	return makePos(world.grid.CoordToPos(cell.Move(d1)))
+}
+
+func estimateMessageBounds(f font.Face, s string, xpadding float64) (width, height float64) {
+	bounds := text.BoundString(f, s)
+	width = (float64(bounds.Dx()) + 16) + xpadding
+	height = (float64(bounds.Dy()) + 16)
+	return width, height
 }

@@ -156,6 +156,7 @@ func (r *Runner) handleInput() {
 
 	if info, ok := r.state.Input.JustPressedActionInfo(controls.ActionSendUnit); ok {
 		r.core.SendTo(info.Pos)
+		r.scene.AddObject(newFloatingTextNode(info.Pos, "Order: move here"))
 		return
 	}
 
@@ -163,6 +164,7 @@ func (r *Runner) handleInput() {
 		m := r.world.MountainAt(info.Pos)
 		if m != nil && r.world.CanDig(m) {
 			// TODO: could be a plain tile.
+			r.scene.AddObject(newFloatingTextNode(info.Pos, "Order: dig here"))
 			r.world.grid.SetCellTile(r.world.grid.PosToCoord(m.pos.X, m.pos.Y), tileCaveMud)
 			m.Dispose()
 			return
