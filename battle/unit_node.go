@@ -22,6 +22,7 @@ const (
 type unitNode struct {
 	world  *worldState
 	sprite *ge.Sprite
+	anim   *ge.Animation
 
 	stats *unitStats
 
@@ -61,6 +62,12 @@ func (u *unitNode) Init(scene *ge.Scene) {
 	u.sprite = scene.NewSprite(u.stats.img)
 	u.sprite.Pos.Base = &u.pos
 	scene.AddGraphics(u.sprite)
+
+	if u.sprite.FrameWidth != u.sprite.ImageWidth() {
+		u.anim = ge.NewRepeatedAnimation(u.sprite, -1)
+		u.anim.Tick(scene.Rand().FloatRange(0.1, 4.6))
+		u.anim.SetAnimationSpan(1)
+	}
 }
 
 func (u *unitNode) IsDisposed() bool {
@@ -97,6 +104,10 @@ func (u *unitNode) sendTo(pos gmath.Vec) {
 }
 
 func (u *unitNode) Update(delta float64) {
+	if u.anim != nil {
+		u.anim.Tick(delta)
+	}
+
 	if !u.waypoint.IsZero() {
 		newPos, reached := moveTowardsWithSpeed(u.pos, u.waypoint, delta, u.movementSpeed())
 		u.pos = newPos

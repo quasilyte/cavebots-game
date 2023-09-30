@@ -84,3 +84,9 @@ var buildingSmelter = &unitStats{
 	ironCost:   2,
 	stoneCost:  5,
 }
+
+var creepMutantWarrior = &unitStats{
+	name:      "Mutant warrior",
+	maxHealth: 15,
+	img:       assets.ImageMutantWarrior,
+}
