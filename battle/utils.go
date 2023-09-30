@@ -5,6 +5,13 @@ import (
 	"github.com/quasilyte/pathing"
 )
 
+var cellNeighborOffsets = []pathing.GridCoord{
+	{X: 1},
+	{Y: 1},
+	{X: -1},
+	{Y: -1},
+}
+
 type tinyCoord struct {
 	data uint8
 }

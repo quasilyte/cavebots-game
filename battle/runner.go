@@ -73,22 +73,23 @@ func (r *Runner) initMap(spawnPos gmath.Vec) {
 
 	for i := 0; i < 8; i++ {
 		initialTunnel = append(initialTunnel, gmath.Vec{
-			X: float64((numCaveHorizontalCells - 1 - i) * 32),
-			Y: spawnPos.Y,
+			X: float64((numCaveHorizontalCells-1-i)*32) + 16,
+			Y: spawnPos.Y + 16,
 		})
 	}
 
 	for y := 0; y < numCaveVerticalCells; y++ {
 		for x := 0; x < numCaveHorizontalCells; x++ {
-			pos := gmath.Vec{X: float64(x * 32), Y: float64(y * 32)}
+			pos := gmath.Vec{X: float64(x*32) + 16, Y: float64(y*32) + 16}
 			if xslices.Contains(initialTunnel, pos) {
 				continue
 			}
-			pos = pos.Sub(gmath.Vec{X: 8, Y: 8})
 			m := newMountainNode(pos)
 			r.scene.AddObject(m)
 			coord := pathing.GridCoord{X: x, Y: y}
 			r.world.grid.SetCellTile(coord, tileBlocked)
+			packedCoord := r.world.grid.PackCoord(coord)
+			r.world.mountainByCoord[packedCoord] = m
 		}
 	}
 }
@@ -111,5 +112,16 @@ func (r *Runner) handleInput() {
 
 	if info, ok := r.state.Input.JustPressedActionInfo(controls.ActionSendUnit); ok {
 		r.core.SendTo(info.Pos)
+		return
+	}
+
+	if info, ok := r.state.Input.JustPressedActionInfo(controls.ActionInteract); ok {
+		m := r.world.MountainAt(info.Pos)
+		if m != nil && r.world.CanDig(m) {
+			// TODO: could be a plain tile.
+			r.world.grid.SetCellTile(r.world.grid.PosToCoord(m.pos.X, m.pos.Y), tileCaveMud)
+			m.Dispose()
+			return
+		}
 	}
 }

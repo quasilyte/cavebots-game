@@ -6,4 +6,5 @@ const (
 	ActionUnknown input.Action = iota
 
 	ActionSendUnit
+	ActionInteract
 )

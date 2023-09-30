@@ -19,6 +19,8 @@ type worldState struct {
 	astar *pathing.AStar
 
 	caveWidth float64
+
+	mountainByCoord map[uint32]*mountainNode
 }
 
 func (w *worldState) Init() {
@@ -28,6 +30,8 @@ func (w *worldState) Init() {
 			Y: w.height,
 		},
 	}
+
+	w.mountainByCoord = make(map[uint32]*mountainNode)
 
 	w.grid = pathing.NewGrid(pathing.GridConfig{
 		WorldWidth:  uint(w.width),
@@ -39,4 +43,24 @@ func (w *worldState) Init() {
 		NumCols: uint(w.grid.NumCols()),
 		NumRows: uint(w.grid.NumRows()),
 	})
+}
+
+func (w *worldState) MountainAt(pos gmath.Vec) *mountainNode {
+	coord := w.grid.PosToCoord(pos.X, pos.Y)
+	packedCoord := w.grid.PackCoord(coord)
+	if m, ok := w.mountainByCoord[packedCoord]; ok {
+		return m
+	}
+	return nil
+}
+
+func (w *worldState) CanDig(m *mountainNode) bool {
+	coord := w.grid.PosToCoord(m.pos.X, m.pos.Y)
+	for _, offset := range cellNeighborOffsets {
+		probe := coord.Add(offset)
+		if w.grid.GetCellTile(probe) != tileBlocked {
+			return true
+		}
+	}
+	return false
 }

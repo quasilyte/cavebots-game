@@ -21,7 +21,6 @@ func (m *mountainNode) Init(scene *ge.Scene) {
 	s := scene.NewSprite(assets.ImageMountains)
 	s.FlipHorizontal = scene.Rand().Bool()
 	s.Pos.Base = &m.pos
-	s.Centered = false
 	s.FrameOffset.X = float64(scene.Rand().IntRange(0, 1)) * s.FrameWidth
 	scene.AddGraphics(s)
 	m.sprite = s
