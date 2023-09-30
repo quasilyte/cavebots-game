@@ -33,6 +33,7 @@ type worldState struct {
 
 	core        *unitNode
 	playerUnits []*unitNode
+	hardTerrain []*hardTerrainNode
 
 	resourceNodes []*resourceNode
 
@@ -90,6 +91,12 @@ func (w *worldState) GrowDiggedRect(pos gmath.Vec) {
 	}
 }
 
+func (w *worldState) NewHardTerrainNode(pos gmath.Vec) *hardTerrainNode {
+	n := newHardTerrainNode(pos)
+	w.hardTerrain = append(w.hardTerrain, n)
+	return n
+}
+
 func (w *worldState) NewUnitNode(pos gmath.Vec, stats *unitStats) *unitNode {
 	n := newUnitNode(w, stats)
 	n.pos = pos
@@ -135,12 +142,15 @@ func (w *worldState) AssignLoot(m *mountainNode) {
 }
 
 func (w *worldState) selectLootKind() lootKind {
+	// Since this is a game prototype and our random loot
+	// generation is not that reliable, hardcode
+	// some of the items here.
 	switch w.lootSeq {
 	case 0:
 		return lootBotHarvester
 	case 3:
 		return lootFlatCell
-	case 5:
+	case 8:
 		return lootBotPatrol
 	}
 

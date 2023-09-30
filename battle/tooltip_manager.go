@@ -80,16 +80,24 @@ func (m *tooltipManager) OnHover(pos gmath.Vec) {
 			return
 		}
 	}
+
+	for _, t := range m.world.hardTerrain {
+		if t.pos.DistanceSquaredTo(pos) < (20 * 20) {
+			// TODO: show building options.
+			m.createTooltip(pos, "Hard terrain (can build here)")
+			return
+		}
+	}
 }
 
 func (m *tooltipManager) formatMountainInfo(mountain *mountainNode) string {
-	terrain := "normal"
+	terrain := "soft"
 	loot := ""
 	switch m.world.PeekLoot(mountain) {
 	case lootLavaCell:
 		terrain = "lava"
 	case lootFlatCell:
-		terrain = "flat"
+		terrain = "hard"
 
 	case lootIronDeposit:
 		loot = "iron deposit"

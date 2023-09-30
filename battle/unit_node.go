@@ -256,6 +256,8 @@ func (u *unitNode) completeDig() {
 	case lootBotPatrol:
 		newUnit := u.world.NewUnitNode(m.pos, dronePatrolStats)
 		u.scene.AddObject(newUnit)
+	case lootFlatCell:
+		u.scene.AddObject(u.world.NewHardTerrainNode(m.pos))
 	}
 
 	// TODO: could be a plain tile.
