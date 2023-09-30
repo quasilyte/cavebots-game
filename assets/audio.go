@@ -16,25 +16,25 @@ func registerAudioResources(ctx *ge.Context) {
 		AudioUnitAck7: {Path: "audio/unit_ack7.wav"},
 		AudioUnitAck8: {Path: "audio/unit_ack8.wav"},
 
-		AudioPatrolLaser1: {Path: "audio/patrol_laser1.wav"},
-		AudioPatrolLaser2: {Path: "audio/patrol_laser2.wav"},
-		AudioPatrolLaser3: {Path: "audio/patrol_laser3.wav"},
-		AudioPatrolLaser4: {Path: "audio/patrol_laser4.wav"},
+		AudioPatrolLaser1: {Path: "audio/patrol_laser1.wav", Volume: -0.15},
+		AudioPatrolLaser2: {Path: "audio/patrol_laser2.wav", Volume: -0.15},
+		AudioPatrolLaser3: {Path: "audio/patrol_laser3.wav", Volume: -0.15},
+		AudioPatrolLaser4: {Path: "audio/patrol_laser4.wav", Volume: -0.15},
 
-		AudioVanguardShot1: {Path: "audio/vanguard_shot1.wav"},
-		AudioVanguardShot2: {Path: "audio/vanguard_shot2.wav"},
-		AudioVanguardShot3: {Path: "audio/vanguard_shot3.wav"},
+		AudioVanguardShot1: {Path: "audio/vanguard_shot1.wav", Volume: -0.05},
+		AudioVanguardShot2: {Path: "audio/vanguard_shot2.wav", Volume: -0.05},
+		AudioVanguardShot3: {Path: "audio/vanguard_shot3.wav", Volume: -0.05},
 
 		AudioBowShot1: {Path: "audio/bow_shot1.wav"},
 		AudioBowShot2: {Path: "audio/bow_shot2.wav"},
 		AudioBowShot3: {Path: "audio/bow_shot3.wav"},
 
-		AudioWarriorHit1: {Path: "audio/warrior_hit1.wav"},
-		AudioWarriorHit2: {Path: "audio/warrior_hit2.wav"},
-		AudioWarriorHit3: {Path: "audio/warrior_hit3.wav"},
-		AudioWarriorHit4: {Path: "audio/warrior_hit4.wav"},
+		AudioWarriorHit1: {Path: "audio/warrior_hit1.wav", Volume: -0.15},
+		AudioWarriorHit2: {Path: "audio/warrior_hit2.wav", Volume: -0.15},
+		AudioWarriorHit3: {Path: "audio/warrior_hit3.wav", Volume: -0.15},
+		AudioWarriorHit4: {Path: "audio/warrior_hit4.wav", Volume: -0.15},
 
-		AudioGatlingShot: {Path: "audio/gatling_shot.wav"},
+		AudioGatlingShot: {Path: "audio/gatling_shot.wav", Volume: -0.1},
 	}
 
 	for id, res := range audioResources {
