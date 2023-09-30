@@ -2,6 +2,8 @@ package battle
 
 import (
 	"fmt"
+	"math"
+	"strconv"
 
 	"github.com/quasilyte/cavebots-game/assets"
 	"github.com/quasilyte/ge"
@@ -57,6 +59,22 @@ func (m *tooltipManager) OnHover(pos gmath.Vec) {
 		if res.pos.DistanceSquaredTo(pos) < (22 * 22) {
 			s := fmt.Sprintf("Iron resource (%d)", res.amount)
 			m.createTooltip(pos, s)
+			return
+		}
+	}
+
+	for _, u := range m.world.playerUnits {
+		if u.pos.DistanceSquaredTo(pos) < (18 * 18) {
+			s := "Core"
+			health := strconv.Itoa(int(100*math.Ceil(u.health/u.stats.maxHealth))) + "%"
+			if u.stats != droneCoreStats {
+				status := "online"
+				if u.offline {
+					status = "offline"
+				}
+				s = fmt.Sprintf("%s drone (%s)", u.stats.name, status)
+			}
+			m.createTooltip(pos, s+"\n"+health)
 			return
 		}
 	}

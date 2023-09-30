@@ -32,7 +32,7 @@ func (t *floatingTextNode) Init(scene *ge.Scene) {
 	t.label = scene.NewLabel(assets.FontSmall)
 	t.label.Text = t.text
 	t.label.Pos.Base = &t.spritePos
-	t.label.Pos.Offset.X = 8
+	t.label.Pos.Offset.X = 4
 	t.label.Width = w
 	t.label.Height = h
 	t.label.AlignHorizontal = ge.AlignHorizontalCenter

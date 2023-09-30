@@ -21,6 +21,7 @@ func registerImageResources(ctx *ge.Context) {
 
 		ImageDroneCore:      {Path: "images/drone_core.png"},
 		ImageDroneHarvester: {Path: "images/drone_harvester.png"},
+		ImageDronePatrol:    {Path: "images/drone_patrol.png"},
 
 		ImageIronResource: {Path: "images/iron_resource.png"},
 
@@ -48,6 +49,7 @@ const (
 
 	ImageDroneCore
 	ImageDroneHarvester
+	ImageDronePatrol
 
 	ImageIronResource
 

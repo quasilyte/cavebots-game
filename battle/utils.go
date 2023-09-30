@@ -7,6 +7,13 @@ import (
 	"golang.org/x/image/font"
 )
 
+func randomSectorPos(rng *gmath.Rand, sector gmath.Rect) gmath.Vec {
+	return gmath.Vec{
+		X: rng.FloatRange(sector.Min.X, sector.Max.X),
+		Y: rng.FloatRange(sector.Min.Y, sector.Max.Y),
+	}
+}
+
 var cellNeighborOffsets = []pathing.GridCoord{
 	{X: 1},
 	{Y: 1},

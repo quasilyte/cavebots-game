@@ -16,6 +16,7 @@ const (
 	orderDig
 	orderHarvestResource
 	orderDeliverResource
+	orderPatrolMove
 )
 
 type unitNode struct {
@@ -23,6 +24,8 @@ type unitNode struct {
 	sprite *ge.Sprite
 
 	stats *unitStats
+
+	health float64
 
 	scene *ge.Scene
 
@@ -52,6 +55,8 @@ func newUnitNode(world *worldState, stats *unitStats) *unitNode {
 
 func (u *unitNode) Init(scene *ge.Scene) {
 	u.scene = scene
+
+	u.health = u.stats.maxHealth
 
 	u.sprite = scene.NewSprite(u.stats.img)
 	u.sprite.Pos.Base = &u.pos
@@ -111,6 +116,8 @@ func (u *unitNode) Update(delta float64) {
 	switch u.stats {
 	case droneHarvesterStats:
 		u.updateHarvester(delta)
+	case dronePatrolStats:
+		u.updatePatrol(delta)
 	}
 }
 
@@ -122,6 +129,8 @@ func (u *unitNode) completeOrder(order unitOrder) {
 		u.completeHarvestResource()
 	case orderDeliverResource:
 		u.completeDeliverResource()
+	case orderPatrolMove:
+		u.specialDelay = u.scene.Rand().FloatRange(7, 10)
 	}
 }
 
@@ -151,6 +160,20 @@ func (u *unitNode) completeHarvestResource() {
 	}
 	u.cargo = 1
 	u.order = orderDeliverResource
+}
+
+func (u *unitNode) updatePatrol(delta float64) {
+	u.specialDelay = gmath.ClampMin(u.specialDelay-delta, 0)
+	if u.specialDelay != 0 {
+		return
+	}
+	if u.scene.Rand().Chance(0.2) {
+		u.specialDelay = u.scene.Rand().FloatRange(3, 5)
+		return
+	}
+
+	u.sendTo(randomSectorPos(u.scene.Rand(), u.world.diggedRect))
+	u.order = orderPatrolMove
 }
 
 func (u *unitNode) updateHarvester(delta float64) {
@@ -230,9 +253,13 @@ func (u *unitNode) completeDig() {
 	case lootBotHarvester:
 		newUnit := u.world.NewUnitNode(m.pos, droneHarvesterStats)
 		u.scene.AddObject(newUnit)
+	case lootBotPatrol:
+		newUnit := u.world.NewUnitNode(m.pos, dronePatrolStats)
+		u.scene.AddObject(newUnit)
 	}
 
 	// TODO: could be a plain tile.
+	u.world.GrowDiggedRect(m.pos)
 	u.world.grid.SetCellTile(u.world.grid.PosToCoord(m.pos.X, m.pos.Y), tileCaveMud)
 
 	m.Dispose()

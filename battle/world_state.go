@@ -15,7 +15,9 @@ type worldState struct {
 	scene *ge.Scene
 	rand  *gmath.Rand
 
-	rect gmath.Rect
+	rect       gmath.Rect
+	caveRect   gmath.Rect
+	diggedRect gmath.Rect
 
 	grid  *pathing.Grid
 	astar *pathing.AStar
@@ -47,7 +49,12 @@ func (w *worldState) Init() {
 			Y: w.height,
 		},
 	}
-
+	w.caveRect = gmath.Rect{
+		Max: gmath.Vec{
+			X: w.caveWidth,
+			Y: w.rect.Max.Y,
+		},
+	}
 	w.mountainByCoord = make(map[uint32]*mountainNode)
 
 	w.grid = pathing.NewGrid(pathing.GridConfig{
@@ -60,6 +67,22 @@ func (w *worldState) Init() {
 		NumCols: uint(w.grid.NumCols()),
 		NumRows: uint(w.grid.NumRows()),
 	})
+}
+
+func (w *worldState) GrowDiggedRect(pos gmath.Vec) {
+	if w.diggedRect.Min.X > pos.X {
+		w.diggedRect.Min.X = pos.X
+	}
+	if w.diggedRect.Max.X < pos.X {
+		w.diggedRect.Max.X = pos.X
+	}
+
+	if w.diggedRect.Min.Y > pos.Y {
+		w.diggedRect.Min.Y = pos.Y
+	}
+	if w.diggedRect.Max.Y < pos.Y {
+		w.diggedRect.Max.Y = pos.Y
+	}
 }
 
 func (w *worldState) NewUnitNode(pos gmath.Vec, stats *unitStats) *unitNode {
@@ -107,9 +130,22 @@ func (w *worldState) AssignLoot(m *mountainNode) {
 }
 
 func (w *worldState) selectLootKind() lootKind {
+	switch w.lootSeq {
+	case 0:
+		return lootBotHarvester
+	case 3:
+		return lootFlatCell
+	case 5:
+		return lootBotPatrol
+	}
+
 	if w.lootSeq%5 == 0 {
-		if w.rand.Chance(0.6) {
+		roll := w.rand.Float()
+		if roll <= 0.4 {
 			return lootBotHarvester
+		}
+		if roll <= 0.6 {
+			return lootBotPatrol
 		}
 	}
 

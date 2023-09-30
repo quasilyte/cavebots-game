@@ -28,7 +28,7 @@ func (m *messageNode) Init(scene *ge.Scene) {
 	m.label = scene.NewLabel(assets.FontSmall)
 	m.label.Text = m.text
 	m.label.Pos.Base = &m.pos
-	m.label.Pos.Offset.X = 8
+	m.label.Pos.Offset.X = 4
 	m.label.Width = w
 	m.label.Height = h
 	m.label.AlignHorizontal = ge.AlignHorizontalCenter

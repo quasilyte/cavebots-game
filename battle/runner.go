@@ -61,6 +61,10 @@ func (r *Runner) Init(scene *ge.Scene) {
 		X: float64((numCaveHorizontalCells - 1) * 32),
 		Y: float64(32 * r.scene.Rand().IntRange(8, numCaveVerticalCells-8)),
 	}
+	r.world.diggedRect = gmath.Rect{
+		Min: spawnPos.Sub(gmath.Vec{X: 15, Y: 15}),
+		Max: spawnPos.Add(gmath.Vec{X: 15, Y: 15}),
+	}
 
 	r.initMap(spawnPos)
 
