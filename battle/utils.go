@@ -2,6 +2,8 @@ package battle
 
 import (
 	"github.com/hajimehoshi/ebiten/v2/text"
+	"github.com/quasilyte/cavebots-game/assets"
+	resource "github.com/quasilyte/ebitengine-resource"
 	"github.com/quasilyte/gmath"
 	"github.com/quasilyte/pathing"
 	"golang.org/x/image/font"
@@ -100,4 +102,21 @@ func estimateMessageBounds(f font.Face, s string, xpadding float64) (width, heig
 	width = (float64(bounds.Dx()) + 16) + xpadding
 	height = (float64(bounds.Dy()) + 16)
 	return width, height
+}
+
+func playGlobalSound(world *worldState, id resource.AudioID) {
+	numSamples := assets.NumSamples(id)
+	if numSamples == 1 {
+		world.scene.Audio().PlaySound(id)
+	} else {
+		soundIndex := world.rand.IntRange(0, numSamples-1)
+		sound := resource.AudioID(int(id) + soundIndex)
+		world.scene.Audio().PlaySound(sound)
+	}
+}
+
+func playSound(world *worldState, id resource.AudioID, pos gmath.Vec) {
+	if world.camera.ContainsPos(pos) {
+		playGlobalSound(world, id)
+	}
 }

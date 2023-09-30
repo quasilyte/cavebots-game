@@ -109,7 +109,7 @@ func (m *tooltipManager) OnHover(pos gmath.Vec) {
 				if option.stoneCost != 0 {
 					priceParts = append(priceParts, strconv.Itoa(option.stoneCost)+" stone")
 				}
-				price := strings.Join(priceParts, " and ")
+				price := strings.Join(priceParts, " / ")
 				parts = append(parts, fmt.Sprintf("[%s] %s - %s", buildingHotkeys[i], option.name, price))
 			}
 			m.createTooltip(pos, strings.Join(parts, "\n"))

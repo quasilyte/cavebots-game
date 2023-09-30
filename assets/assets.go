@@ -24,4 +24,5 @@ func RegisterResources(ctx *ge.Context) {
 	registerFontResources(ctx)
 	registerImageResources(ctx)
 	registerRawResources(ctx)
+	registerAudioResources(ctx)
 }

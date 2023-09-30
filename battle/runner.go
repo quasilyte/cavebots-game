@@ -88,6 +88,11 @@ func (r *Runner) Init(scene *ge.Scene) {
 	scene.AddObject(r.core)
 	r.world.core = r.core
 
+	{
+		res := r.world.NewResourceNode(r.core.pos.Sub(gmath.Vec{X: 64}), ironResourceStats, 4)
+		scene.AddObject(res)
+	}
+
 	r.world.camera.CenterOn(spawnPos)
 
 	{
@@ -226,6 +231,7 @@ func (r *Runner) handleInput(delta float64) {
 	}
 
 	if handler.ActionIsJustPressed(controls.ActionSendUnit) {
+		playGlobalSound(r.world, assets.AudioUnitAck1)
 		r.core.SendTo(cursorWorldPos)
 		r.scene.AddObject(newFloatingTextNode(r.world, cursorWorldPos, "Order: move here"))
 		return
@@ -243,6 +249,7 @@ func (r *Runner) handleInput(delta float64) {
 				return
 			}
 			r.scene.AddObject(newFloatingTextNode(r.world, m.pos, "Order: dig here"))
+			playGlobalSound(r.world, assets.AudioUnitAck1)
 			r.core.SendDigging(cursorWorldPos)
 			r.core.orderTarget = m
 			return
