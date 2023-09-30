@@ -26,6 +26,7 @@ type unitNode struct {
 
 	stats *unitStats
 
+	reload float64
 	health float64
 
 	scene *ge.Scene
@@ -61,12 +62,26 @@ func (u *unitNode) Init(scene *ge.Scene) {
 
 	u.sprite = scene.NewSprite(u.stats.img)
 	u.sprite.Pos.Base = &u.pos
-	u.world.stage.AddSpriteSlightlyAbove(u.sprite)
+	switch u.stats.layer {
+	case 0:
+		u.world.stage.AddSpriteBelow(u.sprite)
+	case 1:
+		u.world.stage.AddSprite(u.sprite)
+	case 2:
+		u.world.stage.AddSpriteSlightlyAbove(u.sprite)
+	case 4:
+		u.world.stage.AddSpriteAbove(u.sprite)
+	}
 
 	if u.sprite.FrameWidth != u.sprite.ImageWidth() {
 		u.anim = ge.NewRepeatedAnimation(u.sprite, -1)
 		u.anim.Tick(scene.Rand().FloatRange(0.1, 4.6))
 		u.anim.SetAnimationSpan(1)
+	}
+
+	switch u.stats {
+	case creepMutantBase:
+		u.reload = scene.Rand().FloatRange(10, 20)
 	}
 }
 
@@ -137,6 +152,8 @@ func (u *unitNode) Update(delta float64) {
 		u.updatePatrol(delta)
 	case droneGeneratorStats:
 		u.updateGenerator(delta)
+	case creepMutantBase:
+		u.updateCreepBase(delta)
 	}
 }
 
@@ -179,6 +196,27 @@ func (u *unitNode) completeHarvestResource() {
 	}
 	u.cargo = 1
 	u.order = orderDeliverResource
+}
+
+func (u *unitNode) updateCreepBase(delta float64) {
+	u.world.creepBaseLevel += delta
+
+	u.reload = gmath.ClampMin(u.reload-delta, 0)
+	if u.reload != 0 {
+		return
+	}
+
+	u.reload = u.scene.Rand().FloatRange(10, 20)
+	waypoint := u.pos.Add(gmath.Vec{
+		X: u.scene.Rand().FloatRange(-32, 32),
+		Y: u.scene.Rand().FloatRange(64, 96),
+	})
+	numWarriors := u.scene.Rand().IntRange(2, 4)
+	for i := 0; i < numWarriors; i++ {
+		newUnit := u.world.NewUnitNode(u.pos.Add(u.scene.Rand().Offset(-8, 8)), creepMutantWarrior)
+		u.scene.AddObject(newUnit)
+		newUnit.SendTo(waypoint)
+	}
 }
 
 func (u *unitNode) updateGenerator(delta float64) {

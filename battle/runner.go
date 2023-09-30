@@ -95,11 +95,7 @@ func (r *Runner) Init(scene *ge.Scene) {
 
 	r.world.camera.CenterOn(spawnPos)
 
-	{
-		creep := r.world.NewUnitNode(r.core.pos.Add(gmath.Vec{X: 32 * 8}), creepMutantWarrior)
-		scene.AddObject(creep)
-		creep.SendTo(creep.pos.Sub(gmath.Vec{X: 64}))
-	}
+	r.placeCreeps()
 
 	r.world.diggedRect = gmath.Rect{
 		Min: r.core.pos.Sub(gmath.Vec{X: 15, Y: 15}),
@@ -144,6 +140,33 @@ func (r *Runner) Init(scene *ge.Scene) {
 	scene.AddObject(r.ttm)
 
 	scene.AddGraphics(r.world.camera)
+}
+
+func (r *Runner) placeCreeps() {
+	scene := r.scene
+
+	for i := 0; i < 3; i++ {
+		pos := r.core.pos.Add(gmath.Vec{X: 32 * 13})
+		creep := r.world.NewUnitNode(pos.Add(scene.Rand().Offset(-12, 12)), creepMutantWarrior)
+		scene.AddObject(creep)
+	}
+
+	for i := 0; i < 2; i++ {
+		pos := r.core.pos.Add(gmath.Vec{X: 32 * 17, Y: 32})
+		creep := r.world.NewUnitNode(pos.Add(scene.Rand().Offset(-12, 12)), creepMutantWarrior)
+		scene.AddObject(creep)
+	}
+	for i := 0; i < 1; i++ {
+		pos := r.core.pos.Add(gmath.Vec{X: 32 * 18, Y: -128})
+		creep := r.world.NewUnitNode(pos.Add(scene.Rand().Offset(-12, 12)), creepMutantWarrior)
+		scene.AddObject(creep)
+	}
+
+	{
+		creep := r.world.NewUnitNode(r.core.pos.Add(gmath.Vec{X: 32 * 18, Y: -96}), creepMutantBase)
+		scene.AddObject(creep)
+		r.world.creepBase = creep
+	}
 }
 
 func (r *Runner) initMap(spawnPos gmath.Vec) {
@@ -337,11 +360,8 @@ func (r *Runner) doBuildAction(cursorPos gmath.Vec, i int) {
 	newBuilding := r.world.NewUnitNode(buildingSpot.pos, buildingStats)
 	r.scene.AddObject(newBuilding)
 	buildingSpot.building = newBuilding
-	coord := r.world.grid.PosToCoord(buildingSpot.pos.X, buildingSpot.pos.Y)
-	r.world.grid.SetCellTile(coord, tileBlocked)
 	newBuilding.EventDisposed.Connect(nil, func(*unitNode) {
 		buildingSpot.building = nil
-		r.world.grid.SetCellTile(coord, tileCaveFlat)
 	})
 }
 

@@ -41,6 +41,9 @@ type worldState struct {
 	creeps      []*unitNode
 	hardTerrain []*hardTerrainNode
 
+	creepBase      *unitNode
+	creepBaseLevel float64
+
 	resourceNodes []*resourceNode
 
 	mountainByCoord map[uint32]*mountainNode
@@ -133,7 +136,13 @@ func (w *worldState) NewHardTerrainNode(pos gmath.Vec) *hardTerrainNode {
 func (w *worldState) NewUnitNode(pos gmath.Vec, stats *unitStats) *unitNode {
 	n := newUnitNode(w, stats)
 	n.pos = pos
+	if stats.building {
+		w.grid.SetCellTile(w.grid.PosToCoord(pos.X, pos.Y), tileBlocked)
+	}
 	n.EventDisposed.Connect(nil, func(n *unitNode) {
+		if stats.building {
+			w.grid.SetCellTile(w.grid.PosToCoord(pos.X, pos.Y), tileCaveFlat)
+		}
 		if n.stats.allied {
 			w.playerUnits = xslices.Remove(w.playerUnits, n)
 		} else {
