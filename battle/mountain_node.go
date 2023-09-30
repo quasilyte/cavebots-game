@@ -6,9 +6,26 @@ import (
 	"github.com/quasilyte/gmath"
 )
 
+type lootKind int
+
+const (
+	lootUnknown lootKind = iota
+	lootNone
+	lootExtraStones
+	lootIronDeposit
+	lootLargeIronDeposit
+	lootLavaCell
+	lootFlatCell
+	lootBotHarvester
+	lootBotGuard
+	lootBotPatrol
+)
+
 type mountainNode struct {
 	pos    gmath.Vec
 	sprite *ge.Sprite
+
+	loot lootKind
 }
 
 func newMountainNode(pos gmath.Vec) *mountainNode {

@@ -29,6 +29,11 @@ type Runner struct {
 	ironLabel   *ge.Label
 	stonesLabel *ge.Label
 
+	stillTime      float64
+	hoverTriggered bool
+	hoverPos       gmath.Vec
+	ttm            *tooltipManager
+
 	cellSelector *ge.Sprite
 }
 
@@ -65,6 +70,7 @@ func (r *Runner) Init(scene *ge.Scene) {
 
 	r.core = newUnitNode(r.world, droneCoreStats)
 	r.core.pos = spawnPos.Add(gmath.Vec{X: 16, Y: 16})
+	r.world.playerUnits = append(r.world.playerUnits, r.core)
 	scene.AddObject(r.core)
 
 	r.energyLabel = scene.NewLabel(assets.FontNormal)
@@ -94,6 +100,9 @@ func (r *Runner) Init(scene *ge.Scene) {
 	r.energyRegenDelay = 10
 
 	r.updateLabels()
+
+	r.ttm = newTooltipManager(r.world)
+	scene.AddObject(r.ttm)
 }
 
 func (r *Runner) initMap(spawnPos gmath.Vec) {
@@ -137,7 +146,7 @@ func (r *Runner) initMap(spawnPos gmath.Vec) {
 }
 
 func (r *Runner) Update(delta float64) {
-	r.handleInput()
+	r.handleInput(delta)
 
 	r.energyRegenDelay -= delta
 	if r.energyRegenDelay <= 0 {
@@ -153,8 +162,11 @@ func (r *Runner) updateLabels() {
 	r.stonesLabel.Text = fmt.Sprintf("Stone: %d", r.world.stones)
 }
 
-func (r *Runner) handleInput() {
+func (r *Runner) handleInput(delta float64) {
 	cursorPos := r.state.Input.CursorPos()
+
+	r.handleHover(cursorPos, delta)
+
 	if r.world.rect.Contains(cursorPos) {
 		r.cellSelector.Visible = true
 		r.cellSelector.Pos.Offset = gmath.Vec{
@@ -187,5 +199,40 @@ func (r *Runner) handleInput() {
 			r.core.orderTarget = m
 			return
 		}
+	}
+}
+
+func (r *Runner) stopHover() {
+	r.ttm.OnStopHover()
+}
+
+func (r *Runner) hover(pos gmath.Vec) {
+	r.ttm.OnHover(pos)
+}
+
+func (r *Runner) handleHover(pos gmath.Vec, delta float64) {
+	maxDistSqr := 6.0 * 6.0
+	if r.hoverPos.IsZero() {
+		r.hoverPos = pos
+	}
+	distSqr := pos.DistanceSquaredTo(r.hoverPos)
+	if distSqr < maxDistSqr {
+		if !r.hoverTriggered {
+			r.stillTime += delta
+			if r.hoverPos.IsZero() && r.stillTime > 0.15 {
+				r.hoverPos = pos
+			}
+			if r.stillTime > 0.3 {
+				r.hoverTriggered = true
+				r.hover(r.hoverPos)
+			}
+		}
+	} else {
+		if r.hoverTriggered && r.stillTime > 0 {
+			r.hoverTriggered = false
+			r.stopHover()
+		}
+		r.stillTime = 0
+		r.hoverPos = gmath.Vec{}
 	}
 }

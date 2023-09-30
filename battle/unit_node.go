@@ -80,24 +80,31 @@ func (u *unitNode) Update(delta float64) {
 				u.waypoint = nextPos.Add(u.world.rand.Offset(-2, 2))
 				return
 			}
-			if u.order == orderDig {
-				u.order = orderNone
-				m := u.orderTarget.(*mountainNode)
-				if m.IsDisposed() {
-					return
-				}
-				if u.world.energy < digEnergyCost {
-					u.scene.AddObject(newFloatingTextNode(m.pos, "Error: not enough energy"))
-					return
-				}
-				u.world.AddEnergy(-digEnergyCost)
-				u.world.AddStones(1)
-				u.scene.AddObject(newFloatingTextNode(m.pos, "Status: dig complete"))
-				// TODO: could be a plain tile.
-				u.world.grid.SetCellTile(u.world.grid.PosToCoord(m.pos.X, m.pos.Y), tileCaveMud)
-				m.Dispose()
-				delete(u.world.mountainByCoord, u.world.grid.PackCoord(u.world.grid.PosToCoord(m.pos.X, m.pos.Y)))
+			order := u.order
+			u.order = orderNone
+			if order == orderDig {
+				u.completeDig()
 			}
 		}
 	}
+}
+
+func (u *unitNode) completeDig() {
+	m := u.orderTarget.(*mountainNode)
+	if m.IsDisposed() {
+		return
+	}
+
+	if u.world.energy < digEnergyCost {
+		u.scene.AddObject(newFloatingTextNode(m.pos, "Error: not enough energy"))
+		return
+	}
+
+	u.world.AddEnergy(-digEnergyCost)
+	u.world.AddStones(1)
+	u.scene.AddObject(newFloatingTextNode(m.pos, "Status: dig complete"))
+	// TODO: could be a plain tile.
+	u.world.grid.SetCellTile(u.world.grid.PosToCoord(m.pos.X, m.pos.Y), tileCaveMud)
+	m.Dispose()
+	delete(u.world.mountainByCoord, u.world.grid.PackCoord(u.world.grid.PosToCoord(m.pos.X, m.pos.Y)))
 }

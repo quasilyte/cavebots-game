@@ -23,7 +23,11 @@ type worldState struct {
 	iron   int
 	stones int
 
+	lootSeq int
+
 	caveWidth float64
+
+	playerUnits []*unitNode
 
 	mountainByCoord map[uint32]*mountainNode
 
@@ -61,6 +65,47 @@ func (w *worldState) MountainAt(pos gmath.Vec) *mountainNode {
 		return m
 	}
 	return nil
+}
+
+func (w *worldState) PeekLoot(m *mountainNode) lootKind {
+	if m.loot == lootUnknown {
+		w.AssignLoot(m)
+	}
+	return m.loot
+}
+
+func (w *worldState) AssignLoot(m *mountainNode) {
+	m.loot = w.selectLootKind()
+	w.lootSeq++
+}
+
+func (w *worldState) selectLootKind() lootKind {
+	if w.lootSeq%5 == 0 {
+		if w.rand.Chance(0.6) {
+			return lootBotHarvester
+		}
+	}
+
+	if w.lootSeq%3 == 0 {
+		if w.rand.Chance(0.5) {
+			return lootIronDeposit
+		}
+		if w.lootSeq > 25 && w.rand.Chance(0.25) {
+			return lootLargeIronDeposit
+		}
+	}
+
+	if w.lootSeq%4 == 0 {
+		if w.rand.Chance(0.4) {
+			return lootFlatCell
+		}
+	}
+
+	if w.rand.Chance(0.1) {
+		return lootExtraStones
+	}
+
+	return lootNone
 }
 
 func (w *worldState) CanDig(m *mountainNode) bool {

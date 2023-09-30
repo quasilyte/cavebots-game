@@ -7,7 +7,7 @@ import (
 
 func registerFontResources(ctx *ge.Context) {
 	fontResources := map[resource.FontID]resource.FontInfo{
-		FontSmall:  {Path: "fonts/whiterabbit.ttf", Size: 14},
+		FontSmall:  {Path: "fonts/whiterabbit.ttf", Size: 14, LineSpacing: 2},
 		FontNormal: {Path: "fonts/whiterabbit.ttf", Size: 18},
 		FontBig:    {Path: "fonts/whiterabbit.ttf", Size: 26},
 	}
