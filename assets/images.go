@@ -36,8 +36,9 @@ func registerImageResources(ctx *ge.Context) {
 
 		ImageIronResource: {Path: "images/iron_resource.png"},
 
-		ImageMountains:   {Path: "images/mountains.png", FrameWidth: 48},
-		ImageHardTerrain: {Path: "images/hard_terrain.png", FrameWidth: 32},
+		ImageMountains:       {Path: "images/mountains.png", FrameWidth: 48},
+		ImageHardTerrain:     {Path: "images/hard_terrain.png", FrameWidth: 32},
+		ImageBiomeTransition: {Path: "images/transition.png"},
 
 		ImagePatrolLaserProjectile: {Path: "images/patrol_laser_projectile.png"},
 		ImageArrowProjectile:       {Path: "images/arrow_projectile.png"},
@@ -81,6 +82,7 @@ const (
 
 	ImageMountains
 	ImageHardTerrain
+	ImageBiomeTransition
 
 	ImagePatrolLaserProjectile
 	ImageArrowProjectile

@@ -165,7 +165,7 @@ func (r *Runner) placeCreeps() {
 }
 
 func (r *Runner) initMap(spawnPos gmath.Vec) {
-	r.initBackground()
+	r.initBackground(spawnPos)
 
 	initialTunnel := make([]gmath.Vec, 0, 8)
 
@@ -196,7 +196,7 @@ func (r *Runner) initMap(spawnPos gmath.Vec) {
 	}
 }
 
-func (r *Runner) initBackground() {
+func (r *Runner) initBackground(spawnPos gmath.Vec) {
 	wholeBg := ebiten.NewImage(1920, numCaveVerticalCells*32)
 	{
 		bg := ge.NewTiledBackground(r.scene.Context())
@@ -208,6 +208,12 @@ func (r *Runner) initBackground() {
 		bg.LoadTileset(r.scene.Context(), 1920-r.world.caveWidth, 32*numCaveVerticalCells, assets.ImageForestTiles, assets.RawCaveTileset)
 		bg.Pos.Offset.X = r.world.caveWidth
 		bg.Draw(wholeBg)
+	}
+	{
+		s := r.scene.NewSprite(assets.ImageBiomeTransition)
+		s.Pos.Offset = spawnPos
+		s.Centered = false
+		s.Draw(wholeBg)
 	}
 	s := ge.NewSprite(r.scene.Context())
 	s.Centered = false
