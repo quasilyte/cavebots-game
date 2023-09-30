@@ -534,9 +534,8 @@ func (u *unitNode) completeDig() {
 		return
 	}
 
-	loot := u.world.PeekLoot(m)
 	energyCost := float64(digEnergyCost)
-	if loot == lootEasyDig {
+	if m.loot == lootEasyDig {
 		energyCost = 0
 	}
 
@@ -551,13 +550,13 @@ func (u *unitNode) completeDig() {
 
 	tileType := uint8(tileCaveMud)
 
-	switch loot {
+	switch m.loot {
 	case lootExtraStones:
 		u.world.AddStones(2)
 	case lootIronDeposit, lootLargeIronDeposit:
 		minAmount := 4
 		maxAmount := 8
-		if loot == lootLargeIronDeposit {
+		if m.loot == lootLargeIronDeposit {
 			minAmount = 12
 			maxAmount = 30
 		}
@@ -581,4 +580,5 @@ func (u *unitNode) completeDig() {
 
 	m.Dispose()
 	delete(u.world.mountainByCoord, u.world.grid.PackCoord(u.world.grid.PosToCoord(m.pos.X, m.pos.Y)))
+	u.world.RevealNeighbors(m.pos)
 }

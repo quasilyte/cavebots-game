@@ -47,6 +47,11 @@ func (m *mountainNode) Init(scene *ge.Scene) {
 	s.FrameOffset.X = float64(scene.Rand().IntRange(0, 1)) * s.FrameWidth
 	m.world.stage.AddSprite(s)
 	m.sprite = s
+	if m.outer {
+		m.sprite.SetColorScale(ge.ColorScale{R: 1.35, G: 1.2, B: 0.8, A: 1})
+	} else {
+		m.sprite.SetColorScale(ge.ColorScale{R: 0.5, G: 0.5, B: 0.5, A: 1})
+	}
 }
 
 func (m *mountainNode) IsDisposed() bool {

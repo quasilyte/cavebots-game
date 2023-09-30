@@ -68,9 +68,9 @@ func (m *tooltipManager) OnHover(pos gmath.Vec) {
 
 	mountain := m.world.MountainAt(pos)
 	if mountain != nil {
-		s := "Inner block"
+		s := "Unreachable block"
 		if mountain.outer {
-			s = "Outer block"
+			s = "Outer block (indestructible)"
 		} else if m.world.CanDig(mountain) {
 			s = m.formatMountainInfo(mountain)
 		}
@@ -155,7 +155,7 @@ func (m *tooltipManager) OnHover(pos gmath.Vec) {
 
 func (m *tooltipManager) formatMountainInfo(mountain *mountainNode) string {
 	var extra string
-	switch m.world.PeekLoot(mountain) {
+	switch mountain.loot {
 	case lootLavaCell:
 		extra = "Lava terrain"
 	case lootFlatCell:

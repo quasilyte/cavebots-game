@@ -1,6 +1,7 @@
 package battle
 
 import (
+	"github.com/quasilyte/cavebots-game/assets"
 	"github.com/quasilyte/cavebots-game/viewport"
 	"github.com/quasilyte/ge"
 	"github.com/quasilyte/ge/xslices"
@@ -197,13 +198,6 @@ func (w *worldState) MountainAt(pos gmath.Vec) *mountainNode {
 	return nil
 }
 
-func (w *worldState) PeekLoot(m *mountainNode) lootKind {
-	if m.loot == lootUnknown {
-		w.AssignLoot(m)
-	}
-	return m.loot
-}
-
 func (w *worldState) AssignLoot(m *mountainNode) {
 	m.loot = w.selectLootKind()
 	w.lootSeq++
@@ -269,6 +263,42 @@ func (w *worldState) selectLootKind() lootKind {
 	}
 
 	return lootNone
+}
+
+func (w *worldState) RevealNeighbors(pos gmath.Vec) {
+	coord := w.grid.PosToCoord(pos.X, pos.Y)
+	for _, offset := range cellNeighborOffsets {
+		probe := coord.Add(offset)
+		packedCoord := w.grid.PackCoord(probe)
+		mountain := w.mountainByCoord[packedCoord]
+		if mountain == nil {
+			continue
+		}
+		w.Reveal(mountain)
+	}
+}
+
+func (w *worldState) Reveal(m *mountainNode) {
+	if m.loot != lootUnknown || m.outer {
+		return
+	}
+
+	w.AssignLoot(m)
+
+	m.sprite.SetColorScale(ge.ColorScale{R: 1, G: 1, B: 1, A: 1})
+
+	switch m.loot {
+	case lootFlatCell:
+		m.sprite.SetImage(w.scene.LoadImage(assets.ImageHardMountains))
+	case lootIronDeposit, lootLargeIronDeposit:
+		m.sprite.SetImage(w.scene.LoadImage(assets.ImageIronMountains))
+	case lootEasyDig:
+		m.sprite.SetImage(w.scene.LoadImage(assets.ImageWeakMountains))
+	case lootBotGenerator, lootBotPatrol, lootBotVanguard, lootBotHarvester:
+		m.sprite.SetImage(w.scene.LoadImage(assets.ImageUnitMountains))
+	case lootExtraStones:
+		m.sprite.SetImage(w.scene.LoadImage(assets.ImageRockyMountains))
+	}
 }
 
 func (w *worldState) CanDig(m *mountainNode) bool {

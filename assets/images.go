@@ -41,6 +41,10 @@ func registerImageResources(ctx *ge.Context) {
 
 		ImageMountains:       {Path: "images/mountains.png", FrameWidth: 48},
 		ImageHardMountains:   {Path: "images/hard_mountains.png", FrameWidth: 48},
+		ImageIronMountains:   {Path: "images/iron_mountains.png", FrameWidth: 48},
+		ImageWeakMountains:   {Path: "images/weak_mountains.png", FrameWidth: 48},
+		ImageUnitMountains:   {Path: "images/unit_mountains.png", FrameWidth: 48},
+		ImageRockyMountains:  {Path: "images/rocky_mountains.png", FrameWidth: 48},
 		ImageHardTerrain:     {Path: "images/hard_terrain.png", FrameWidth: 32},
 		ImageBiomeTransition: {Path: "images/transition.png"},
 
@@ -91,6 +95,10 @@ const (
 
 	ImageMountains
 	ImageHardMountains
+	ImageIronMountains
+	ImageWeakMountains
+	ImageUnitMountains
+	ImageRockyMountains
 	ImageHardTerrain
 	ImageBiomeTransition
 

@@ -205,6 +205,10 @@ func (r *Runner) initMap(spawnPos gmath.Vec) {
 			r.world.mountainByCoord[packedCoord] = m
 		}
 	}
+
+	for _, pos := range initialTunnel {
+		r.world.RevealNeighbors(pos)
+	}
 }
 
 func (r *Runner) initBackground(spawnPos gmath.Vec) {
@@ -280,7 +284,7 @@ func (r *Runner) handleInput(delta float64) {
 				r.scene.AddObject(newFloatingTextNode(r.world, cursorWorldPos, "Error: can't dig here"))
 				return
 			}
-			if r.world.energy < digEnergyCost && r.world.PeekLoot(m) != lootEasyDig {
+			if r.world.energy < digEnergyCost && m.loot != lootEasyDig {
 				r.scene.AddObject(newFloatingTextNode(r.world, cursorWorldPos, "Error: not enough energy"))
 				return
 			}
