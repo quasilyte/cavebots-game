@@ -279,7 +279,7 @@ func (w *worldState) RevealNeighbors(pos gmath.Vec) {
 }
 
 func (w *worldState) Reveal(m *mountainNode) {
-	if m.loot != lootUnknown || m.outer {
+	if m.loot != lootUnknown || !w.CanDig(m) {
 		return
 	}
 

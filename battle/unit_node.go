@@ -351,18 +351,27 @@ func (u *unitNode) updateCreepBase(delta float64) {
 		return
 	}
 
-	u.reload = u.scene.Rand().FloatRange(10, 20)
+	if len(u.world.creeps) > 200 {
+		u.reload = 15
+		return
+	}
+	if len(u.world.creeps) > 120 && u.scene.Rand().Chance(0.6) {
+		u.reload = u.scene.Rand().FloatRange(5, 10)
+		return
+	}
+
+	u.reload = u.scene.Rand().FloatRange(20, 30)
 	waypoint := u.pos.Add(gmath.Vec{
 		X: u.scene.Rand().FloatRange(-32, 32),
-		Y: u.scene.Rand().FloatRange(64, 96),
+		Y: u.scene.Rand().FloatRange(32, 160),
 	})
 	numWarriors := u.scene.Rand().IntRange(2, 5)
 	for i := 0; i < numWarriors; i++ {
 		stats := creepMutantWarrior
-		// Every minute gives +10% warlord chance.
+		// Every minute gives +8% warlord chance.
 		warlardChance := 0.0
 		if u.world.creepBaseLevel > 60 {
-			warlardChance = 0.1 * (u.world.creepBaseLevel / 60)
+			warlardChance = 0.08 * (u.world.creepBaseLevel / 60)
 		}
 		if warlardChance != 0 && u.scene.Rand().Chance(warlardChance) {
 			stats = creepMutantWarlord
@@ -371,7 +380,7 @@ func (u *unitNode) updateCreepBase(delta float64) {
 		u.scene.AddObject(newUnit)
 		newUnit.SendTo(waypoint)
 	}
-	numArchers := gmath.Clamp(int(u.world.creepBaseLevel/80.0), 0, 3)
+	numArchers := gmath.Clamp(int(u.world.creepBaseLevel/100.0), 0, 3)
 	for i := 0; i < numArchers; i++ {
 		newUnit := u.world.NewUnitNode(u.pos.Add(u.scene.Rand().Offset(-8, 8)), creepMutantHunter)
 		u.scene.AddObject(newUnit)
