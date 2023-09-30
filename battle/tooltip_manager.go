@@ -110,7 +110,7 @@ func (m *tooltipManager) OnHover(pos gmath.Vec) {
 					s += "\n[E] Vanguard - " + m.formatPrice(droneVanguardStats)
 				}
 			}
-			m.createTooltip(pos, s+"\n"+health)
+			m.createTooltip(pos, s+"\nHP: "+health)
 			return
 		}
 	}
