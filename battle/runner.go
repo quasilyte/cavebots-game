@@ -110,21 +110,21 @@ func (r *Runner) Init(scene *ge.Scene) {
 	r.energyLabel.AlignVertical = ge.AlignVerticalCenter
 	r.world.camera.UI.AddGraphicsAbove(r.energyLabel)
 
-	// r.ironLabel = scene.NewLabel(assets.FontNormal)
-	// r.ironLabel.ColorScale.SetColor(styles.ButtonTextColor)
-	// r.ironLabel.Pos.Offset.Y = r.world.height
-	// r.ironLabel.Pos.Offset.X = 16 + 320
-	// r.ironLabel.Height = 1080 - r.world.height
-	// r.ironLabel.AlignVertical = ge.AlignVerticalCenter
-	// scene.AddGraphics(r.ironLabel)
+	r.ironLabel = scene.NewLabel(assets.FontNormal)
+	r.ironLabel.ColorScale.SetColor(styles.ButtonTextColor)
+	r.ironLabel.Pos.Offset.Y = (1080 / 2) - 56
+	r.ironLabel.Pos.Offset.X = 16 + 320
+	r.ironLabel.Height = 56
+	r.ironLabel.AlignVertical = ge.AlignVerticalCenter
+	r.world.camera.UI.AddGraphicsAbove(r.ironLabel)
 
-	// r.stonesLabel = scene.NewLabel(assets.FontNormal)
-	// r.stonesLabel.ColorScale.SetColor(styles.ButtonTextColor)
-	// r.stonesLabel.Pos.Offset.Y = r.world.height
-	// r.stonesLabel.Pos.Offset.X = 16 + 320 + 320
-	// r.stonesLabel.Height = 1080 - r.world.height
-	// r.stonesLabel.AlignVertical = ge.AlignVerticalCenter
-	// scene.AddGraphics(r.stonesLabel)
+	r.stonesLabel = scene.NewLabel(assets.FontNormal)
+	r.stonesLabel.ColorScale.SetColor(styles.ButtonTextColor)
+	r.stonesLabel.Pos.Offset.Y = (1080 / 2) - 56
+	r.stonesLabel.Pos.Offset.X = 16 + 320 + 320
+	r.stonesLabel.Height = 56
+	r.stonesLabel.AlignVertical = ge.AlignVerticalCenter
+	r.world.camera.UI.AddGraphicsAbove(r.stonesLabel)
 
 	r.energyRegenDelay = 10
 
@@ -201,8 +201,8 @@ func (r *Runner) Update(delta float64) {
 func (r *Runner) updateLabels() {
 	energyIncome := r.world.CalcEnergyRegen()
 	r.energyLabel.Text = fmt.Sprintf("Energy: %d (%+.1f)", int(r.world.energy), energyIncome)
-	// r.ironLabel.Text = fmt.Sprintf("Iron: %d", r.world.iron)
-	// r.stonesLabel.Text = fmt.Sprintf("Stone: %d", r.world.stones)
+	r.ironLabel.Text = fmt.Sprintf("Iron: %d", r.world.iron)
+	r.stonesLabel.Text = fmt.Sprintf("Stone: %d", r.world.stones)
 }
 
 func (r *Runner) handleInput(delta float64) {

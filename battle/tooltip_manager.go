@@ -46,6 +46,11 @@ func (m *tooltipManager) OnStopHover() {
 }
 
 func (m *tooltipManager) OnHover(pos gmath.Vec) {
+	screenPos := pos.Sub(m.world.camera.Offset)
+	if screenPos.Y >= ((1080.0 / 2) - 56) {
+		return
+	}
+
 	mountain := m.world.MountainAt(pos)
 	if mountain != nil {
 		s := "Inner block"
