@@ -32,6 +32,8 @@ type Runner struct {
 	ironLabel   *ge.Label
 	stonesLabel *ge.Label
 
+	computer *computerPlayer
+
 	stillTime      float64
 	hoverTriggered bool
 	hoverPos       gmath.Vec
@@ -62,6 +64,8 @@ func (r *Runner) Init(scene *ge.Scene) {
 		rand:      scene.Rand(),
 	}
 	r.world.Init()
+
+	r.computer = newComputerPlayer(r.world)
 
 	r.world.EventResourcesUpdated.Connect(nil, func(gsignal.Void) {
 		r.updateLabels()
@@ -189,6 +193,7 @@ func (r *Runner) initBackground() {
 
 func (r *Runner) Update(delta float64) {
 	r.handleInput(delta)
+	r.computer.Update(delta)
 	r.world.stage.Update()
 
 	r.energyRegenDelay -= delta

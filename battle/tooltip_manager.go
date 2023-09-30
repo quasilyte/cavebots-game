@@ -190,17 +190,18 @@ func (m *tooltipManager) createTooltip(pos gmath.Vec, s string) {
 	}
 
 	m.tooltipTime = 5
+	screepPos := pos.Sub(m.world.camera.Offset)
 
 	w, h := estimateMessageBounds(m.world.scene.Context().Loader.LoadFont(assets.FontSmall).Face, s, 0)
-	if w+pos.X+26 > 1920.0/2 {
-		pos.X -= w
+	if w+screepPos.X+26 > 1920.0/2 {
+		screepPos.X -= w
 	}
-	if h+pos.Y+26 > 1080.0/2 {
-		pos.Y -= h + 26
+	if h+screepPos.Y+26 > 1080.0/2 {
+		screepPos.Y -= h + 26
 	} else {
-		pos.Y += 26
+		screepPos.Y += 26
 	}
 
-	m.message = newMessageNode(m.world, pos, s)
+	m.message = newMessageNode(m.world, screepPos, s)
 	m.world.scene.AddObject(m.message)
 }

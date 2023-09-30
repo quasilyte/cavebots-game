@@ -20,15 +20,13 @@ type messageNode struct {
 func newMessageNode(world *worldState, pos gmath.Vec, text string) *messageNode {
 	return &messageNode{
 		world: world,
-		pos:   pos,
 		text:  text,
+		pos:   pos,
 	}
 }
 
 func (m *messageNode) Init(scene *ge.Scene) {
 	w, h := estimateMessageBounds(scene.Context().Loader.LoadFont(assets.FontSmall).Face, m.text, 16)
-
-	m.pos = m.pos.Sub(m.world.camera.Offset)
 
 	m.label = scene.NewLabel(assets.FontSmall)
 	m.label.Text = m.text
