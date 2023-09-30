@@ -158,7 +158,7 @@ func (u *unitNode) Update(delta float64) {
 				nextPos := nextPathWaypoint(u.world, u.pos, &u.path, normalLayer)
 				var offset gmath.Vec
 				if u.stats.tiny {
-					offset = u.world.rand.Offset(-12, 12)
+					offset = u.world.rand.Offset(-10, 10)
 				} else {
 					offset = u.world.rand.Offset(-2, 2)
 				}
