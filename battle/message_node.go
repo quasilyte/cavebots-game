@@ -26,9 +26,9 @@ func newMessageNode(world *worldState, pos gmath.Vec, text string) *messageNode 
 }
 
 func (m *messageNode) Init(scene *ge.Scene) {
-	w, h := estimateMessageBounds(scene.Context().Loader.LoadFont(assets.FontSmall).Face, m.text, 16)
+	w, h := estimateMessageBounds(scene.Context().Loader.LoadFont(assets.FontTiny).Face, m.text, 16)
 
-	m.label = scene.NewLabel(assets.FontSmall)
+	m.label = scene.NewLabel(assets.FontTiny)
 	m.label.Text = m.text
 	m.label.Pos.Base = &m.pos
 	m.label.Pos.Offset.X = 4

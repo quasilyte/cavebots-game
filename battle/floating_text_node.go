@@ -29,11 +29,11 @@ func newFloatingTextNode(world *worldState, pos gmath.Vec, text string) *floatin
 }
 
 func (t *floatingTextNode) Init(scene *ge.Scene) {
-	w, h := estimateMessageBounds(scene.Context().Loader.LoadFont(assets.FontSmall).Face, t.text, 16)
+	w, h := estimateMessageBounds(scene.Context().Loader.LoadFont(assets.FontTiny).Face, t.text, 16)
 
 	t.pos = t.pos.Sub(t.world.camera.Offset)
 
-	t.label = scene.NewLabel(assets.FontSmall)
+	t.label = scene.NewLabel(assets.FontTiny)
 	t.label.Text = t.text
 	t.label.Pos.Base = &t.spritePos
 	t.label.Pos.Offset.X = 4

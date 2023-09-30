@@ -141,39 +141,35 @@ func (m *tooltipManager) OnHover(pos gmath.Vec) {
 }
 
 func (m *tooltipManager) formatMountainInfo(mountain *mountainNode) string {
-	terrain := "soft"
-	loot := ""
+	var extra string
 	switch m.world.PeekLoot(mountain) {
 	case lootLavaCell:
-		terrain = "lava"
+		extra = "Lava terrain"
 	case lootFlatCell:
-		terrain = "hard"
+		extra = "Hard terrain (can build)"
 
-	case lootIronDeposit:
-		loot = "iron deposit"
-	case lootLargeIronDeposit:
-		loot = "large iron deposit"
+	case lootIronDeposit, lootLargeIronDeposit:
+		extra = "Contains iron deposit"
 
 	case lootExtraStones:
-		loot = "stone-rich"
+		extra = "Grants extra stones"
+	case lootEasyDig:
+		extra = "Can be dug for free"
 
 	case lootBotHarvester:
-		loot = "harvester bot"
+		extra = "Contains harvester bot"
 	case lootBotPatrol:
-		loot = "patrol bot"
+		extra = "Contains patrol bot"
 	case lootBotVanguard:
-		loot = "vanguard bot"
+		extra = "Contains vanguard bot"
 	case lootBotGenerator:
-		loot = "generator bot"
+		extra = "Contains generator bot"
 	}
 
-	var s string
-	if loot == "" {
-		s = "Diggable block\nTerrain: " + terrain
-	} else {
-		s = "Diggable block\nTerrain: " + terrain + "\nExtra: " + loot
+	if extra == "" {
+		return "Diggable block\n[LMB to dig here]"
 	}
-	return s + "\n[LMB to dig here]"
+	return "Diggable block\n" + extra + "\n[LMB to dig here]"
 }
 
 func (m *tooltipManager) removeTooltip() {

@@ -510,16 +510,22 @@ func (u *unitNode) completeDig() {
 		return
 	}
 
-	if u.world.energy < digEnergyCost {
+	loot := u.world.PeekLoot(m)
+	energyCost := float64(digEnergyCost)
+	if loot == lootEasyDig {
+		energyCost = 0
+	}
+
+	if u.world.energy < energyCost {
 		u.scene.AddObject(newFloatingTextNode(m.world, m.pos, "Error: not enough energy"))
 		return
 	}
 
-	u.world.AddEnergy(-digEnergyCost)
+	u.world.AddEnergy(-energyCost)
 	u.scene.AddObject(newFloatingTextNode(m.world, m.pos, "Status: dig complete"))
 	u.world.AddStones(1)
 
-	switch loot := u.world.PeekLoot(m); loot {
+	switch loot {
 	case lootExtraStones:
 		u.world.AddStones(2)
 	case lootIronDeposit, lootLargeIronDeposit:

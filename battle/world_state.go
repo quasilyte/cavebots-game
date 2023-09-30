@@ -244,6 +244,10 @@ func (w *worldState) selectLootKind() lootKind {
 		return lootExtraStones
 	}
 
+	if w.rand.Chance(0.45) {
+		return lootEasyDig
+	}
+
 	return lootNone
 }
 

@@ -280,7 +280,7 @@ func (r *Runner) handleInput(delta float64) {
 				r.scene.AddObject(newFloatingTextNode(r.world, cursorWorldPos, "Error: can't dig here"))
 				return
 			}
-			if r.world.energy < digEnergyCost {
+			if r.world.energy < digEnergyCost && r.world.PeekLoot(m) != lootEasyDig {
 				r.scene.AddObject(newFloatingTextNode(r.world, cursorWorldPos, "Error: not enough energy"))
 				return
 			}

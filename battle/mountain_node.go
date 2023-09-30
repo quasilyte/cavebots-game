@@ -12,6 +12,7 @@ const (
 	lootUnknown lootKind = iota
 	lootNone
 	lootExtraStones
+	lootEasyDig
 	lootIronDeposit
 	lootLargeIronDeposit
 	lootLavaCell
