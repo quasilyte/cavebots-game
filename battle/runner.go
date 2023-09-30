@@ -21,8 +21,6 @@ type Runner struct {
 
 	state *session.State
 
-	core *unitNode
-
 	world *worldState
 
 	energyRegenDelay float64
@@ -82,14 +80,11 @@ func (r *Runner) Init(scene *ge.Scene) {
 	r.cellSelector.Visible = false
 	r.world.stage.AddSpriteAbove(r.cellSelector)
 
-	r.core = newUnitNode(r.world, droneCoreStats)
-	r.core.pos = spawnPos.Add(gmath.Vec{X: 16, Y: 16}).Sub(gmath.Vec{X: 32})
-	r.world.playerUnits = append(r.world.playerUnits, r.core)
-	scene.AddObject(r.core)
-	r.world.core = r.core
+	r.world.core = r.world.NewUnitNode(spawnPos.Add(gmath.Vec{X: 16, Y: 16}).Sub(gmath.Vec{X: 32}), droneCoreStats)
+	scene.AddObject(r.world.core)
 
 	{
-		res := r.world.NewResourceNode(r.core.pos.Sub(gmath.Vec{X: 64}), ironResourceStats, 4)
+		res := r.world.NewResourceNode(r.world.core.pos.Sub(gmath.Vec{X: 64}), ironResourceStats, 4)
 		scene.AddObject(res)
 	}
 
@@ -98,8 +93,8 @@ func (r *Runner) Init(scene *ge.Scene) {
 	r.placeCreeps()
 
 	r.world.diggedRect = gmath.Rect{
-		Min: r.core.pos.Sub(gmath.Vec{X: 15, Y: 15}),
-		Max: r.core.pos.Add(gmath.Vec{X: 15, Y: 15}),
+		Min: r.world.core.pos.Sub(gmath.Vec{X: 15, Y: 15}),
+		Max: r.world.core.pos.Add(gmath.Vec{X: 15, Y: 15}),
 	}
 
 	r.labelsRect = ge.NewRect(scene.Context(), 1920.0/2, 56)
@@ -146,24 +141,24 @@ func (r *Runner) placeCreeps() {
 	scene := r.scene
 
 	for i := 0; i < 3; i++ {
-		pos := r.core.pos.Add(gmath.Vec{X: 32 * 13})
+		pos := r.world.core.pos.Add(gmath.Vec{X: 32 * 13})
 		creep := r.world.NewUnitNode(pos.Add(scene.Rand().Offset(-12, 12)), creepMutantWarrior)
 		scene.AddObject(creep)
 	}
 
 	for i := 0; i < 2; i++ {
-		pos := r.core.pos.Add(gmath.Vec{X: 32 * 17, Y: 32})
+		pos := r.world.core.pos.Add(gmath.Vec{X: 32 * 17, Y: 32})
 		creep := r.world.NewUnitNode(pos.Add(scene.Rand().Offset(-12, 12)), creepMutantWarrior)
 		scene.AddObject(creep)
 	}
 	for i := 0; i < 1; i++ {
-		pos := r.core.pos.Add(gmath.Vec{X: 32 * 18, Y: -128})
+		pos := r.world.core.pos.Add(gmath.Vec{X: 32 * 18, Y: -128})
 		creep := r.world.NewUnitNode(pos.Add(scene.Rand().Offset(-12, 12)), creepMutantWarrior)
 		scene.AddObject(creep)
 	}
 
 	{
-		creep := r.world.NewUnitNode(r.core.pos.Add(gmath.Vec{X: 32 * 18, Y: -96}), creepMutantBase)
+		creep := r.world.NewUnitNode(r.world.core.pos.Add(gmath.Vec{X: 32 * 18, Y: -96}), creepMutantBase)
 		scene.AddObject(creep)
 		r.world.creepBase = creep
 	}
@@ -254,14 +249,14 @@ func (r *Runner) handleInput(delta float64) {
 		r.cellSelector.Visible = false
 	}
 
-	if handler.ActionIsJustPressed(controls.ActionSendUnit) {
+	if r.world.core != nil && handler.ActionIsJustPressed(controls.ActionSendUnit) {
 		playGlobalSound(r.world, assets.AudioUnitAck1)
-		r.core.SendTo(cursorWorldPos)
+		r.world.core.SendTo(cursorWorldPos)
 		r.scene.AddObject(newFloatingTextNode(r.world, cursorWorldPos, "Order: move here"))
 		return
 	}
 
-	if handler.ActionIsJustPressed(controls.ActionInteract) {
+	if r.world.core != nil && handler.ActionIsJustPressed(controls.ActionInteract) {
 		m := r.world.MountainAt(cursorWorldPos)
 		if m != nil {
 			if !r.world.CanDig(m) {
@@ -274,8 +269,8 @@ func (r *Runner) handleInput(delta float64) {
 			}
 			r.scene.AddObject(newFloatingTextNode(r.world, m.pos, "Order: dig here"))
 			playGlobalSound(r.world, assets.AudioUnitAck1)
-			r.core.SendDigging(cursorWorldPos)
-			r.core.orderTarget = m
+			r.world.core.SendDigging(cursorWorldPos)
+			r.world.core.orderTarget = m
 			return
 		}
 	}

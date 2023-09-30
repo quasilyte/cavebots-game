@@ -15,6 +15,11 @@ func registerAudioResources(ctx *ge.Context) {
 		AudioUnitAck6: {Path: "audio/unit_ack6.wav"},
 		AudioUnitAck7: {Path: "audio/unit_ack7.wav"},
 		AudioUnitAck8: {Path: "audio/unit_ack8.wav"},
+
+		AudioWarriorHit1: {Path: "audio/warrior_hit1.wav"},
+		AudioWarriorHit2: {Path: "audio/warrior_hit2.wav"},
+		AudioWarriorHit3: {Path: "audio/warrior_hit3.wav"},
+		AudioWarriorHit4: {Path: "audio/warrior_hit4.wav"},
 	}
 
 	for id, res := range audioResources {
@@ -27,6 +32,8 @@ func NumSamples(a resource.AudioID) int {
 	switch a {
 	case AudioUnitAck1:
 		return 8
+	case AudioWarriorHit1:
+		return 4
 	default:
 		return 1
 	}
@@ -43,4 +50,9 @@ const (
 	AudioUnitAck6
 	AudioUnitAck7
 	AudioUnitAck8
+
+	AudioWarriorHit1
+	AudioWarriorHit2
+	AudioWarriorHit3
+	AudioWarriorHit4
 )

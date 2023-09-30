@@ -75,7 +75,7 @@ func (m *tooltipManager) OnHover(pos gmath.Vec) {
 	for _, u := range m.world.playerUnits {
 		if u.pos.DistanceSquaredTo(pos) < (18 * 18) {
 			s := "Core"
-			health := strconv.Itoa(int(100*math.Ceil(u.health/u.stats.maxHealth))) + "%"
+			health := strconv.Itoa(int(math.Ceil(100*u.health/u.stats.maxHealth))) + "%"
 			if u.stats != droneCoreStats {
 				if u.stats.building {
 					s = u.stats.name

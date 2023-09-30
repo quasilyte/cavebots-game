@@ -144,6 +144,9 @@ func (w *worldState) NewUnitNode(pos gmath.Vec, stats *unitStats) *unitNode {
 			w.grid.SetCellTile(w.grid.PosToCoord(pos.X, pos.Y), tileCaveFlat)
 		}
 		if n.stats.allied {
+			if n == w.core {
+				w.core = nil
+			}
 			w.playerUnits = xslices.Remove(w.playerUnits, n)
 		} else {
 			w.creeps = xslices.Remove(w.creeps, n)

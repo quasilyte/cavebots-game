@@ -16,9 +16,18 @@ type unitStats struct {
 	energyUpkeep float64
 	layer        int
 
+	weapon *weaponStats
+
 	energyCost int
 	ironCost   int
 	stoneCost  int
+}
+
+type weaponStats struct {
+	damage      float64
+	attackRange float64
+	reload      float64
+	impact      resource.AudioID
 }
 
 var droneCoreStats = &unitStats{
@@ -109,4 +118,9 @@ var creepMutantWarrior = &unitStats{
 	img:       assets.ImageMutantWarrior,
 	speed:     15,
 	tiny:      true,
+	weapon: &weaponStats{
+		damage: 3,
+		reload: 1.2,
+		impact: assets.AudioWarriorHit1,
+	},
 }

@@ -118,6 +118,18 @@ func (u *unitNode) sendTo(pos gmath.Vec) {
 	u.waypoint = makePos(u.world.grid.AlignPos(u.pos.X, u.pos.Y))
 }
 
+func (u *unitNode) OnDamage(amount float64) {
+	u.health = gmath.ClampMin(u.health-amount, 0)
+	if u.health == 0 {
+		u.destroy()
+		return
+	}
+}
+
+func (u *unitNode) destroy() {
+	u.Dispose()
+}
+
 func (u *unitNode) Update(delta float64) {
 	if u.anim != nil {
 		u.anim.Tick(delta)
@@ -154,6 +166,8 @@ func (u *unitNode) Update(delta float64) {
 		u.updateGenerator(delta)
 	case creepMutantBase:
 		u.updateCreepBase(delta)
+	case creepMutantWarrior:
+		u.updateMutantWarrior(delta)
 	}
 }
 
@@ -196,6 +210,31 @@ func (u *unitNode) completeHarvestResource() {
 	}
 	u.cargo = 1
 	u.order = orderDeliverResource
+}
+
+func (u *unitNode) updateMutantWarrior(delta float64) {
+	u.reload = gmath.ClampMin(u.reload-delta, 0)
+	if u.reload != 0 {
+		return
+	}
+
+	var target *unitNode
+	for _, other := range u.world.playerUnits {
+		if other.pos.DistanceSquaredTo(u.pos) > (16 * 16) {
+			continue
+		}
+		target = other
+		break
+	}
+
+	if target == nil {
+		u.reload = u.scene.Rand().FloatRange(2, 4)
+		return
+	}
+
+	u.reload = u.stats.weapon.reload * u.scene.Rand().FloatRange(0.8, 1.2)
+	target.OnDamage(u.stats.weapon.damage)
+	playSound(u.world, u.stats.weapon.impact, target.pos)
 }
 
 func (u *unitNode) updateCreepBase(delta float64) {
