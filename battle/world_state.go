@@ -69,6 +69,7 @@ func (w *worldState) Init() {
 		WorldHeight: uint(w.height),
 		CellWidth:   32,
 		CellHeight:  32,
+		DefaultTile: tileGrass,
 	})
 	w.astar = pathing.NewAStar(pathing.AStarConfig{
 		NumCols: uint(w.grid.NumCols()),

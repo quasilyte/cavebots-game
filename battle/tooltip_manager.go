@@ -91,7 +91,6 @@ func (m *tooltipManager) OnHover(pos gmath.Vec) {
 			continue
 		}
 		if t.pos.DistanceSquaredTo(pos) < (20 * 20) {
-			// TODO: show building options.
 			parts := []string{"Hard terrain, can build here:"}
 			for i, option := range t.buildOptions {
 				priceParts := make([]string, 0, 3)
@@ -110,6 +109,21 @@ func (m *tooltipManager) OnHover(pos gmath.Vec) {
 			m.createTooltip(pos, strings.Join(parts, "\n"))
 			return
 		}
+	}
+
+	if !m.world.rect.Contains(pos) {
+		return
+	}
+	coord := m.world.grid.PosToCoord(pos.X, pos.Y)
+	if coord.X < 0 || coord.Y < 0 {
+		return
+	}
+	cellType := m.world.grid.GetCellTile(coord)
+	switch cellType {
+	case tileCaveMud:
+		m.createTooltip(pos, "Cave area\n[RMB to move here]")
+	case tileGrass:
+		m.createTooltip(pos, "Forest area\n[RMB to move here]")
 	}
 }
 
@@ -140,10 +154,13 @@ func (m *tooltipManager) formatMountainInfo(mountain *mountainNode) string {
 		loot = "generator bot"
 	}
 
+	var s string
 	if loot == "" {
-		return "Diggable block\nTerrain: " + terrain
+		s = "Diggable block\nTerrain: " + terrain
+	} else {
+		s = "Diggable block\nTerrain: " + terrain + "\nExtra: " + loot
 	}
-	return "Diggable block\nTerrain: " + terrain + "\nExtra: " + loot
+	return s + "\n[LMB to dig here]"
 }
 
 func (m *tooltipManager) removeTooltip() {

@@ -138,7 +138,9 @@ func (r *Runner) initMap(spawnPos gmath.Vec) {
 	for y := 0; y < numCaveVerticalCells; y++ {
 		for x := 0; x < numCaveHorizontalCells; x++ {
 			pos := gmath.Vec{X: float64(x*32) + 16, Y: float64(y*32) + 16}
+			coord := pathing.GridCoord{X: x, Y: y}
 			if xslices.Contains(initialTunnel, pos) {
+				r.world.grid.SetCellTile(coord, tileCaveMud)
 				continue
 			}
 			m := newMountainNode(pos)
@@ -146,7 +148,6 @@ func (r *Runner) initMap(spawnPos gmath.Vec) {
 				m.outer = true
 			}
 			r.scene.AddObject(m)
-			coord := pathing.GridCoord{X: x, Y: y}
 			r.world.grid.SetCellTile(coord, tileBlocked)
 			packedCoord := r.world.grid.PackCoord(coord)
 			r.world.mountainByCoord[packedCoord] = m
