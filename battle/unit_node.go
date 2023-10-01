@@ -153,6 +153,9 @@ func (u *unitNode) destroy() {
 	if explodes {
 		playSound(u.world, assets.AudioExplosion1, u.pos)
 		u.scene.AddObject(newEffectNode(u.world, u.pos, true, assets.ImageEffectExplosion))
+	} else if u.stats.tiny {
+		// Only mutant infantry is considered to be tiny.
+		u.scene.AddObject(newEffectNode(u.world, u.pos, true, assets.ImageEffectMutantImpact))
 	}
 	u.Dispose()
 }
