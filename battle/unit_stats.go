@@ -268,13 +268,33 @@ var creepMutantHunter = &unitStats{
 	},
 }
 
+var creepMutantGunner = &unitStats{
+	name:      "Mutant gunner",
+	score:     6,
+	layer:     1,
+	maxHealth: 22,
+	img:       assets.ImageMutantGunner,
+	speed:     20,
+	tiny:      true,
+	weapon: &weaponStats{
+		damage:          6,
+		reload:          1.7,
+		attackRange:     160,
+		projectileSpeed: 600,
+		burstSize:       1,
+		maxTargets:      1,
+		projectileImage: assets.ImageGatlingProjectile,
+		fireSound:       assets.AudioGunnerShot1,
+	},
+}
+
 var creepMutantWarlord = &unitStats{
 	name:      "Mutant warlord",
 	score:     4,
 	layer:     1,
 	maxHealth: 25,
 	img:       assets.ImageMutantWarlord,
-	speed:     20,
+	speed:     30,
 	tiny:      true,
 	weapon: &weaponStats{
 		damage:      8,
