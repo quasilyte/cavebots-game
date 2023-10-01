@@ -172,7 +172,7 @@ var buildingPowerGenerator = &unitStats{
 
 var buildingBarricate = &unitStats{
 	name:        "Barricade",
-	botPriority: 1,
+	botPriority: 4,
 	layer:       2,
 	maxHealth:   90,
 	img:         assets.ImageBuildingBarricade,
