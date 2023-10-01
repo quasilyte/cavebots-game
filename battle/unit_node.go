@@ -474,6 +474,7 @@ func (u *unitNode) updateFactory(delta float64) {
 	u.scene.AddObject(u.world.NewUnitNode(u.pos, stats))
 	u.world.results.BotsCreated++
 	playGlobalSound(u.world, assets.AudioUnitReady)
+	u.world.EventTooltipUpdateRequest.Emit(gsignal.Void{})
 }
 
 func (u *unitNode) updateRepairbot(delta float64) {
