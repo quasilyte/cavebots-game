@@ -219,7 +219,7 @@ func (m *tooltipManager) createTooltip(pos gmath.Vec, s string) {
 	m.tooltipTime = 5
 	screepPos := pos.Sub(m.world.camera.Offset)
 
-	w, h := estimateMessageBounds(m.world.scene.Context().Loader.LoadFont(assets.FontSmall).Face, s, 0)
+	w, h := estimateMessageBounds(m.world.scene.Context().Loader.LoadFont(assets.FontTiny).Face, s, 0)
 	if w+screepPos.X+26 > 1920.0/2 {
 		screepPos.X -= w
 	}

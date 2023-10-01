@@ -34,7 +34,6 @@ func (m *messageNode) Init(scene *ge.Scene) {
 	m.label.Pos.Offset.X = 8
 	m.label.Width = w
 	m.label.Height = h
-	// m.label.AlignHorizontal = ge.AlignHorizontalCenter
 	m.label.AlignVertical = ge.AlignVerticalCenter
 	m.label.ColorScale.SetColor(styles.ButtonTextColor)
 
