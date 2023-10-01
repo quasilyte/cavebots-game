@@ -65,7 +65,7 @@ func registerAudioResources(ctx *ge.Context) {
 		AudioWarriorHit3: {Path: "audio/warrior_hit3.wav", Volume: -0.15},
 		AudioWarriorHit4: {Path: "audio/warrior_hit4.wav", Volume: -0.15},
 
-		AudioGatlingShot: {Path: "audio/gatling_shot.wav", Volume: -0.1},
+		AudioGatlingShot: {Path: "audio/gatling_shot.wav", Volume: -0.2},
 
 		AudioExplosion1: {Path: "audio/explosion1.wav", Volume: -0.2},
 		AudioExplosion2: {Path: "audio/explosion2.wav", Volume: -0.2},
@@ -73,9 +73,9 @@ func registerAudioResources(ctx *ge.Context) {
 		AudioExplosion4: {Path: "audio/explosion4.wav", Volume: -0.2},
 
 		AudioResourceAdded:     {Path: "audio/resource_added.wav", Volume: -0.2},
-		AudioUnitReady:         {Path: "audio/unit_ready.wav", Volume: -0.35},
+		AudioUnitReady:         {Path: "audio/unit_ready.wav", Volume: -0.45},
 		AudioDig:               {Path: "audio/dig.wav", Volume: -0.1},
-		AudioRepair:            {Path: "audio/repair.wav", Volume: -0.5},
+		AudioRepair:            {Path: "audio/repair.wav", Volume: -0.6},
 		AudioBuildingPlaced:    {Path: "audio/building_placed.wav", Volume: +0.5},
 		AudioProductionStarted: {Path: "audio/production_started.wav", Volume: -0.35},
 	}
