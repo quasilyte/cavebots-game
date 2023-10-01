@@ -414,6 +414,7 @@ func (r *Runner) doBuildBuilding(coord pathing.GridCoord, cursorPos gmath.Vec, i
 		buildingSpot.building = nil
 	})
 	r.ttm.ForceUpdate()
+	playGlobalSound(r.world, assets.AudioBuildingPlaced)
 }
 
 func (r *Runner) doBuildAction(cursorPos gmath.Vec, i int) {
@@ -464,6 +465,7 @@ func (r *Runner) doBuildAction(cursorPos gmath.Vec, i int) {
 	factory.order = orderMakeUnit
 	factory.reload = r.scene.Rand().FloatRange(15, 20)
 	r.ttm.ForceUpdate()
+	playGlobalSound(r.world, assets.AudioProductionStarted)
 }
 
 func (r *Runner) stopHover() {
