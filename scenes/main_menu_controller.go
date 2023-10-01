@@ -3,6 +3,7 @@ package scenes
 import (
 	"fmt"
 	"os"
+	"runtime"
 
 	"github.com/ebitenui/ebitenui/widget"
 	"github.com/quasilyte/cavebots-game/assets"
@@ -60,9 +61,11 @@ func (c *MainMenuController) initUI(scene *ge.Scene) {
 		scene.Context().ChangeScene(NewCreditsController(c.state))
 	}))
 
-	rowContainer.AddChild(eui.NewButton(c.state.UIResources, "EXIT", func() {
-		os.Exit(0)
-	}))
+	if runtime.GOARCH != "wasm" {
+		rowContainer.AddChild(eui.NewButton(c.state.UIResources, "EXIT", func() {
+			os.Exit(0)
+		}))
+	}
 
 	rowContainer.AddChild(eui.NewSeparator(nil, styles.TransparentColor))
 	rowContainer.AddChild(eui.NewCenteredLabel(fmt.Sprintf("LD54 build %d", currentBuild), tinyFont))
