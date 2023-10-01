@@ -248,6 +248,7 @@ func (u *unitNode) completeRepairOther() {
 	u.reload = u.world.rand.FloatRange(10, 30)
 	other.health = gmath.ClampMax(other.health+15, other.stats.maxHealth)
 	playSound(u.world, assets.AudioRepair, other.pos)
+	u.scene.AddObject(newEffectNode(u.world, other.pos.Sub(gmath.Vec{Y: 8}), true, assets.ImageEffectRepair))
 }
 
 func (u *unitNode) completeDeliverResource() {
