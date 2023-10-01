@@ -26,19 +26,19 @@ func newMessageNode(world *worldState, pos gmath.Vec, text string) *messageNode 
 }
 
 func (m *messageNode) Init(scene *ge.Scene) {
-	w, h := estimateMessageBounds(scene.Context().Loader.LoadFont(assets.FontTiny).Face, m.text, 16)
+	w, h := estimateMessageBounds(scene.Context().Loader.LoadFont(assets.FontTiny).Face, m.text, 8)
 
 	m.label = scene.NewLabel(assets.FontTiny)
 	m.label.Text = m.text
 	m.label.Pos.Base = &m.pos
-	m.label.Pos.Offset.X = 4
+	m.label.Pos.Offset.X = 8
 	m.label.Width = w
 	m.label.Height = h
-	m.label.AlignHorizontal = ge.AlignHorizontalCenter
+	// m.label.AlignHorizontal = ge.AlignHorizontalCenter
 	m.label.AlignVertical = ge.AlignVerticalCenter
 	m.label.ColorScale.SetColor(styles.ButtonTextColor)
 
-	m.rect = ge.NewRect(scene.Context(), w+8, h)
+	m.rect = ge.NewRect(scene.Context(), w+16, h)
 	m.rect.Centered = false
 	m.rect.FillColorScale.SetColor(styles.BgDark)
 	m.rect.FillColorScale.A = 0.7

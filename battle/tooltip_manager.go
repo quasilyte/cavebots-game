@@ -102,24 +102,21 @@ func (m *tooltipManager) OnHover(pos gmath.Vec) {
 				if u.stats.building {
 					s = u.stats.name
 				} else {
-					status := "online"
-					if u.offline {
-						status = "offline"
-					}
-					s = fmt.Sprintf("%s bot (%s)", u.stats.name, status)
+					s = fmt.Sprintf("%s bot", u.stats.name)
 				}
 			}
+			s += " [HP: " + health + "]"
 			if u.stats == buildingFactory {
 				if u.order == orderMakeUnit {
 					s += "\n" + u.orderTarget.(*unitStats).name + " bot is being produced..."
 				} else {
-					s += "\n[Q] Harvester - " + m.formatPrice(droneHarvesterStats)
-					s += "\n[W] Patrol - " + m.formatPrice(dronePatrolStats)
-					s += "\n[E] Vanguard - " + m.formatPrice(droneVanguardStats)
-					s += "\n[R] Titan - " + m.formatPrice(droneTitanStats)
+					s += "\n>> [Q] Harvester - " + m.formatPrice(droneHarvesterStats)
+					s += "\n>> [W] Patrol - " + m.formatPrice(dronePatrolStats)
+					s += "\n>> [E] Vanguard - " + m.formatPrice(droneVanguardStats)
+					s += "\n>> [R] Titan - " + m.formatPrice(droneTitanStats)
 				}
 			}
-			m.createTooltip(pos, s+"\nHP: "+health)
+			m.createTooltip(pos, s)
 			return
 		}
 	}
@@ -132,7 +129,7 @@ func (m *tooltipManager) OnHover(pos gmath.Vec) {
 			parts := []string{"Hard terrain, can build here:"}
 			for i, option := range t.buildOptions {
 				price := m.formatPrice(option)
-				parts = append(parts, fmt.Sprintf("[%s] %s - %s", buildingHotkeys[i], option.name, price))
+				parts = append(parts, fmt.Sprintf(">> [%s] %s - %s", buildingHotkeys[i], option.name, price))
 			}
 			m.createTooltip(pos, strings.Join(parts, "\n"))
 			return
@@ -156,9 +153,9 @@ func (m *tooltipManager) OnHover(pos gmath.Vec) {
 	cellType := m.world.grid.GetCellTile(coord)
 	switch cellType {
 	case tileCaveMud:
-		m.createTooltip(pos, "Cave area\n[RMB to move here]")
+		m.createTooltip(pos, "Cave area\n>> RMB to move here")
 	case tileGrass:
-		m.createTooltip(pos, "Forest area\n[RMB to move here]")
+		m.createTooltip(pos, "Forest area\n>> RMB to move here")
 	}
 }
 
@@ -191,9 +188,9 @@ func (m *tooltipManager) formatMountainInfo(mountain *mountainNode) string {
 	}
 
 	if extra == "" {
-		return "Diggable block\n[LMB to dig here]"
+		return "Diggable block\n>> LMB to dig here"
 	}
-	return "Diggable block\n" + extra + "\n[LMB to dig here]"
+	return "Diggable block\n" + extra + "\n>> LMB to dig here]"
 }
 
 func (m *tooltipManager) removeTooltip() {
