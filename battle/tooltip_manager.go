@@ -105,6 +105,7 @@ func (m *tooltipManager) OnHover(pos gmath.Vec) {
 	for _, u := range m.world.playerUnits {
 		if u.pos.DistanceSquaredTo(pos) < (18 * 18) {
 			s := "Core"
+			extraHint := ""
 			health := strconv.Itoa(int(math.Ceil(100*u.health/u.stats.maxHealth))) + "%"
 			if u.stats != droneCoreStats {
 				if u.stats.building {
@@ -113,7 +114,34 @@ func (m *tooltipManager) OnHover(pos gmath.Vec) {
 					s = fmt.Sprintf("%s bot", u.stats.name)
 				}
 			}
+			switch u.stats {
+			case droneCoreStats:
+				extraHint = "A flagman that can dig"
+			case droneHarvesterStats:
+				extraHint = "Collects iron resources\nBrings them to Core or Smelter"
+			case droneGeneratorStats:
+				extraHint = "Passively generates energy"
+			case dronePatrolStats:
+				extraHint = "Keeps your base safe"
+			case droneRepairStats:
+				extraHint = "Repairs damaged bots"
+			case droneTitanStats:
+				extraHint = "Attacks enemy base"
+			case droneVanguardStats:
+				extraHint = "Defends the Core"
+			case buildingPowerGenerator:
+				extraHint = "Passively generates energy"
+			case buildingBarricate:
+				extraHint = "A primitive defensive structure"
+			case buildingTurret:
+				extraHint = "Attacks nearby enemies"
+			case buildingSmelter:
+				extraHint = "Harvesters will bring iron here"
+			}
 			s += " [HP: " + health + "]"
+			if extraHint != "" {
+				s += "\n" + extraHint
+			}
 			if u.stats == buildingFactory {
 				if u.order == orderMakeUnit {
 					s += "\n" + u.orderTarget.(*unitStats).name + " bot is being produced..."

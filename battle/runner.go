@@ -501,10 +501,10 @@ func (r *Runner) handleHover(pos gmath.Vec, delta float64) {
 	if distSqr < maxDistSqr {
 		if !r.hoverTriggered {
 			r.stillTime += delta
-			if r.hoverPos.IsZero() && r.stillTime > 0.15 {
+			if r.hoverPos.IsZero() && r.stillTime > 0.1 {
 				r.hoverPos = pos
 			}
-			if r.stillTime > 0.3 {
+			if r.stillTime > 0.2 {
 				r.hoverTriggered = true
 				r.hover(r.hoverPos)
 			}
