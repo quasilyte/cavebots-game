@@ -182,7 +182,7 @@ func (w *worldState) NewUnitNode(pos gmath.Vec, stats *unitStats) *unitNode {
 			w.playerUnits = xslices.Remove(w.playerUnits, n)
 		} else {
 			if n == w.creepBase {
-				w.EventDefeat.Emit(n.pos)
+				w.EventVictory.Emit(n.pos)
 			}
 			w.creeps = xslices.Remove(w.creeps, n)
 		}
