@@ -59,6 +59,14 @@ func registerAudioResources(ctx *ge.Context) {
 		AudioWarriorHit4: {Path: "audio/warrior_hit4.wav", Volume: -0.15},
 
 		AudioGatlingShot: {Path: "audio/gatling_shot.wav", Volume: -0.1},
+
+		AudioExplosion1: {Path: "audio/explosion1.wav", Volume: -0.2},
+		AudioExplosion2: {Path: "audio/explosion2.wav", Volume: -0.2},
+		AudioExplosion3: {Path: "audio/explosion3.wav", Volume: -0.2},
+		AudioExplosion4: {Path: "audio/explosion4.wav", Volume: -0.2},
+
+		AudioResourceAdded: {Path: "audio/resource_added.wav", Volume: -0.2},
+		AudioUnitReady:     {Path: "audio/unit_ready.wav", Volume: -0.2},
 	}
 
 	for id, res := range audioResources {
@@ -76,6 +84,8 @@ func NumSamples(a resource.AudioID) int {
 	case AudioBowShot1:
 		return 3
 	case AudioWarriorHit1:
+		return 4
+	case AudioExplosion1:
 		return 4
 	default:
 		return 1
@@ -115,4 +125,12 @@ const (
 	AudioWarriorHit4
 
 	AudioGatlingShot
+
+	AudioExplosion1
+	AudioExplosion2
+	AudioExplosion3
+	AudioExplosion4
+
+	AudioResourceAdded
+	AudioUnitReady
 )

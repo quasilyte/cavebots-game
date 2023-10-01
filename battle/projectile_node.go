@@ -128,6 +128,10 @@ func (p *projectileNode) detonate() {
 
 	p.dispose()
 
+	if p.target.IsDisposed() {
+		return
+	}
+
 	weapon := p.attacker.stats.weapon
 
 	if p.toPos.DistanceSquaredTo(p.target.pos) > (20 * 20) {

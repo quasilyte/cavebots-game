@@ -145,6 +145,12 @@ func (u *unitNode) OnDamage(amount float64, attacker *unitNode) {
 }
 
 func (u *unitNode) destroy() {
+	if u.IsDisposed() {
+		return
+	}
+	if u.stats.allied {
+		playSound(u.world, assets.AudioExplosion1, u.pos)
+	}
 	u.Dispose()
 }
 
@@ -228,8 +234,12 @@ func (u *unitNode) completeDeliverResource() {
 		u.order = orderDeliverResource
 		return
 	}
+	if u.cargo == 0 {
+		return
+	}
 	u.world.AddIron(u.cargo)
 	u.cargo = 0
+	playGlobalSound(u.world, assets.AudioResourceAdded)
 }
 
 func (u *unitNode) completeHarvestResource() {
@@ -416,6 +426,7 @@ func (u *unitNode) updateFactory(delta float64) {
 
 	u.scene.AddObject(u.world.NewUnitNode(u.pos, stats))
 	u.world.results.BotsCreated++
+	playGlobalSound(u.world, assets.AudioUnitReady)
 }
 
 func (u *unitNode) updateGenerator(delta float64) {
@@ -587,6 +598,8 @@ func (u *unitNode) completeDig() {
 
 	tileType := uint8(tileCaveMud)
 
+	createdBot := false
+
 	switch m.loot {
 	case lootExtraStones:
 		u.world.AddStones(2)
@@ -601,24 +614,29 @@ func (u *unitNode) completeDig() {
 		u.scene.AddObjectBelow(iron, 1)
 
 	case lootBotHarvester:
-		u.world.results.BotsCreated++
+		createdBot = true
 		u.scene.AddObject(u.world.NewUnitNode(m.pos, droneHarvesterStats))
 	case lootBotPatrol:
-		u.world.results.BotsCreated++
+		createdBot = true
 		u.scene.AddObject(u.world.NewUnitNode(m.pos, dronePatrolStats))
 	case lootBotGenerator:
-		u.world.results.BotsCreated++
+		createdBot = true
 		u.scene.AddObject(u.world.NewUnitNode(m.pos, droneGeneratorStats))
 	case lootBotVanguard:
-		u.world.results.BotsCreated++
+		createdBot = true
 		u.scene.AddObject(u.world.NewUnitNode(m.pos, droneVanguardStats))
 	case lootBotTitan:
-		u.world.results.BotsCreated++
+		createdBot = true
 		u.scene.AddObject(u.world.NewUnitNode(m.pos, droneTitanStats))
 
 	case lootFlatCell:
 		u.scene.AddObject(u.world.NewHardTerrainNode(m.pos))
 		tileType = tileCaveFlat
+	}
+
+	if createdBot {
+		u.world.results.BotsCreated++
+		playGlobalSound(u.world, assets.AudioUnitReady)
 	}
 
 	u.world.GrowDiggedRect(m.pos)
