@@ -266,13 +266,23 @@ func (u *unitNode) completeDeliverResource() {
 		u.order = orderDeliverResource
 		return
 	}
-	if target.pos.DistanceSquaredTo(u.pos) > (64 * 64) {
-		u.order = orderDeliverResource
-		return
+	if target.stats == droneCoreStats {
+		if target.pos.DistanceSquaredTo(u.pos) > (64 * 64) {
+			u.order = orderDeliverResource
+			return
+		}
+	} else {
+		if target.pos.DistanceSquaredTo(u.pos) > (10 * 10) {
+			u.waypoint = target.pos.Add(u.scene.Rand().Offset(-2, 2))
+			u.order = orderDeliverResource
+			return
+		}
 	}
+
 	if u.cargo == 0 {
 		return
 	}
+
 	u.world.AddIron(u.cargo)
 	u.cargo = 0
 	playGlobalSound(u.world, assets.AudioResourceAdded)
@@ -290,6 +300,7 @@ func (u *unitNode) completeHarvestResource() {
 	}
 	u.cargo = 1
 	u.order = orderDeliverResource
+	u.specialDelay = u.scene.Rand().FloatRange(0.4, 0.8)
 }
 
 func (u *unitNode) maybeCharge(delta, maxDist float64) {
@@ -618,7 +629,7 @@ func (u *unitNode) updateHarvester(delta float64) {
 			distMultiplier := 1.0
 			switch other.stats {
 			case droneCoreStats:
-				distMultiplier = 1.5
+				distMultiplier = 1.6
 			case buildingSmelter:
 				// OK
 			default:

@@ -183,7 +183,7 @@ var buildingBarricate = &unitStats{
 
 var buildingTurret = &unitStats{
 	name:        "Turret",
-	botPriority: 5,
+	botPriority: 8,
 	layer:       2,
 	maxHealth:   85,
 	img:         assets.ImageBuildingTurret,
@@ -203,7 +203,7 @@ var buildingTurret = &unitStats{
 var buildingSmelter = &unitStats{
 	name:        "Smelter",
 	botPriority: 6,
-	layer:       2,
+	layer:       1,
 	maxHealth:   130,
 	img:         assets.ImageBuildingSmelter,
 	allied:      true,
