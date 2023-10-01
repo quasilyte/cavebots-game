@@ -3,6 +3,7 @@ package scenes
 import (
 	"github.com/ebitenui/ebitenui/widget"
 	"github.com/quasilyte/cavebots-game/assets"
+	"github.com/quasilyte/cavebots-game/controls"
 	"github.com/quasilyte/cavebots-game/eui"
 	"github.com/quasilyte/cavebots-game/session"
 	"github.com/quasilyte/cavebots-game/styles"
@@ -11,6 +12,7 @@ import (
 
 type settingsController struct {
 	state *session.State
+	scene *ge.Scene
 }
 
 func NewSettingsController(state *session.State) *settingsController {
@@ -20,6 +22,7 @@ func NewSettingsController(state *session.State) *settingsController {
 }
 
 func (c *settingsController) Init(scene *ge.Scene) {
+	c.scene = scene
 	c.initUI(scene)
 }
 
@@ -54,11 +57,19 @@ func (c *settingsController) initUI(scene *ge.Scene) {
 
 	rowContainer.AddChild(eui.NewSeparator(nil, styles.TransparentColor))
 	rowContainer.AddChild(eui.NewButton(c.state.UIResources, "OK", func() {
-		scene.Context().SaveGameData("save", c.state.Settings)
-		scene.Context().ChangeScene(NewMainMenuController(c.state))
+		c.leave()
 	}))
 
 	initUI(scene, root)
 }
 
-func (c *settingsController) Update(delta float64) {}
+func (c *settingsController) Update(delta float64) {
+	if c.state.Input.ActionIsJustPressed(controls.ActionBack) {
+		c.leave()
+	}
+}
+
+func (c *settingsController) leave() {
+	c.scene.Context().SaveGameData("save", c.state.Settings)
+	c.scene.Context().ChangeScene(NewMainMenuController(c.state))
+}

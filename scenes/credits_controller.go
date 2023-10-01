@@ -3,6 +3,7 @@ package scenes
 import (
 	"github.com/ebitenui/ebitenui/widget"
 	"github.com/quasilyte/cavebots-game/assets"
+	"github.com/quasilyte/cavebots-game/controls"
 	"github.com/quasilyte/cavebots-game/eui"
 	"github.com/quasilyte/cavebots-game/session"
 	"github.com/quasilyte/ge"
@@ -10,6 +11,8 @@ import (
 
 type creditsController struct {
 	state *session.State
+
+	scene *ge.Scene
 }
 
 func NewCreditsController(state *session.State) *creditsController {
@@ -19,6 +22,7 @@ func NewCreditsController(state *session.State) *creditsController {
 }
 
 func (c *creditsController) Init(scene *ge.Scene) {
+	c.scene = scene
 	c.initUI(scene)
 }
 
@@ -54,4 +58,8 @@ Made with Ebitengine`
 	initUI(scene, root)
 }
 
-func (c *creditsController) Update(delta float64) {}
+func (c *creditsController) Update(delta float64) {
+	if c.state.Input.ActionIsJustPressed(controls.ActionBack) {
+		c.scene.Context().ChangeScene(NewMainMenuController(c.state))
+	}
+}
