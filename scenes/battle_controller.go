@@ -27,7 +27,7 @@ func (c *BattleController) Init(scene *ge.Scene) {
 	c.runner.EventBattleCompleted.Connect(nil, func(results *battle.Results) {
 		c.transition = true
 		scene.DelayedCall(4, func() {
-			scene.Context().ChangeScene(NewResultscontroller(c.state, results))
+			scene.Context().ChangeScene(NewResultsController(c.state, results))
 		})
 	})
 }

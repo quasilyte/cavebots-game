@@ -1,6 +1,7 @@
 package scenes
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/ebitenui/ebitenui/widget"
@@ -34,6 +35,7 @@ func (c *MainMenuController) initUI(scene *ge.Scene) {
 	root.AddChild(rowContainer)
 
 	bigFont := scene.Context().Loader.LoadFont(assets.FontBig).Face
+	tinyFont := scene.Context().Loader.LoadFont(assets.FontTiny).Face
 
 	rowContainer.AddChild(eui.NewCenteredLabel("CaveBots", bigFont))
 
@@ -47,11 +49,15 @@ func (c *MainMenuController) initUI(scene *ge.Scene) {
 	}))
 
 	rowContainer.AddChild(eui.NewButton(c.state.UIResources, "CREDITS", func() {
+		scene.Context().ChangeScene(NewCreditsController(c.state))
 	}))
 
 	rowContainer.AddChild(eui.NewButton(c.state.UIResources, "EXIT", func() {
 		os.Exit(0)
 	}))
+
+	rowContainer.AddChild(eui.NewSeparator(nil, styles.TransparentColor))
+	rowContainer.AddChild(eui.NewCenteredLabel(fmt.Sprintf("LD54 build %d", currentBuild), tinyFont))
 
 	initUI(scene, root)
 }

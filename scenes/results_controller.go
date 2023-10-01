@@ -16,7 +16,7 @@ type resultsController struct {
 	results *battle.Results
 }
 
-func NewResultscontroller(state *session.State, results *battle.Results) *resultsController {
+func NewResultsController(state *session.State, results *battle.Results) *resultsController {
 	return &resultsController{
 		state:   state,
 		results: results,
