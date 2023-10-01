@@ -149,7 +149,8 @@ func (u *unitNode) destroy() {
 	if u.IsDisposed() {
 		return
 	}
-	if u.stats.allied {
+	explodes := u.stats.allied || u.stats.building
+	if explodes {
 		playSound(u.world, assets.AudioExplosion1, u.pos)
 		u.scene.AddObject(newEffectNode(u.world, u.pos, true, assets.ImageEffectExplosion))
 	}
