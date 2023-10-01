@@ -439,7 +439,7 @@ func (u *unitNode) updateFactory(delta float64) {
 
 	u.specialDelay = gmath.ClampMin(u.specialDelay-delta, 0)
 	if u.specialDelay == 0 {
-		u.specialDelay = u.world.rand.FloatRange(0.8, 1.6)
+		u.specialDelay = u.world.rand.FloatRange(0.7, 1.4)
 		u.scene.AddObject(newEffectNode(u.world, u.pos.Sub(gmath.Vec{Y: 16}), true, assets.ImageEffectSmokeUp))
 	}
 

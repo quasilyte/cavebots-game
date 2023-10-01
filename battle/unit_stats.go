@@ -95,7 +95,9 @@ var droneTitanStats = &unitStats{
 	img:          assets.ImageDroneTitan,
 	allied:       true,
 	energyUpkeep: 1,
+	energyCost:   1,
 	ironCost:     30,
+	stoneCost:    3,
 	weapon: &weaponStats{
 		damage:          7,
 		reload:          3.1,
@@ -117,7 +119,7 @@ var droneVanguardStats = &unitStats{
 	img:          assets.ImageDroneVanguard,
 	allied:       true,
 	energyUpkeep: 0.55,
-	energyCost:   3,
+	energyCost:   2,
 	ironCost:     9,
 	weapon: &weaponStats{
 		damage:          10,

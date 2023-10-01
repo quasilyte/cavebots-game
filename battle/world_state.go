@@ -358,11 +358,11 @@ func (w *worldState) CalcEnergyRegen() float64 {
 	for _, u := range w.playerUnits {
 		switch u.stats {
 		case buildingPowerGenerator:
-			regen += 1.0 * generatorMultiplier
-			generatorMultiplier = gmath.ClampMin(generatorMultiplier-0.1, 0.1)
+			regen += 1.1 * generatorMultiplier
+			generatorMultiplier = gmath.ClampMin(generatorMultiplier-0.1, 0.2)
 		case droneGeneratorStats:
 			regen += 0.6 * generatorBotMultiplier
-			generatorBotMultiplier = gmath.ClampMin(generatorBotMultiplier-0.15, 0.05)
+			generatorBotMultiplier = gmath.ClampMin(generatorBotMultiplier-0.15, 0.1)
 		}
 	}
 	return regen - w.CalcEnergyUpkeep()
