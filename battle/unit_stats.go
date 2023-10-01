@@ -33,6 +33,7 @@ type weaponStats struct {
 	projectileSpeed float64
 	arcPower        float64
 	burstSize       int
+	maxTargets      int
 	burstDelay      float64
 	projectileImage resource.ImageID
 	fireSound       resource.AudioID
@@ -79,6 +80,29 @@ var dronePatrolStats = &unitStats{
 		attackRange:     140,
 		projectileSpeed: 550,
 		burstSize:       1,
+		maxTargets:      1,
+		projectileImage: assets.ImagePatrolLaserProjectile,
+		fireSound:       assets.AudioPatrolLaser1,
+	},
+}
+
+var droneTitanStats = &unitStats{
+	name:         "Titan",
+	botPriority:  6,
+	layer:        2,
+	speed:        30,
+	maxHealth:    200,
+	img:          assets.ImageDroneTitan,
+	allied:       true,
+	energyUpkeep: 1,
+	ironCost:     30,
+	weapon: &weaponStats{
+		damage:          7,
+		reload:          2.9,
+		attackRange:     195,
+		projectileSpeed: 600,
+		burstSize:       1,
+		maxTargets:      6,
 		projectileImage: assets.ImagePatrolLaserProjectile,
 		fireSound:       assets.AudioPatrolLaser1,
 	},
@@ -101,6 +125,7 @@ var droneVanguardStats = &unitStats{
 		attackRange:     165,
 		projectileSpeed: 600,
 		burstSize:       1,
+		maxTargets:      1,
 		projectileImage: assets.ImageVanguardProjectile,
 		fireSound:       assets.AudioVanguardShot1,
 	},
@@ -201,6 +226,7 @@ var creepMutantHunter = &unitStats{
 		attackRange:     120,
 		projectileSpeed: 350,
 		burstSize:       1,
+		maxTargets:      1,
 		projectileImage: assets.ImageArrowProjectile,
 		fireSound:       assets.AudioBowShot1,
 		arcPower:        2.5,
@@ -233,6 +259,7 @@ var creepJeep = &unitStats{
 		reload:          1.9,
 		attackRange:     230,
 		burstSize:       3,
+		maxTargets:      1,
 		burstDelay:      0.1,
 		projectileSpeed: 600,
 		projectileImage: assets.ImageGatlingProjectile,

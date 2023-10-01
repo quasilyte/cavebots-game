@@ -44,6 +44,8 @@ type worldState struct {
 	creeps      []*unitNode
 	hardTerrain []*hardTerrainNode
 
+	tmpTargetsSlice []*unitNode
+
 	creepBase             *unitNode
 	creepBaseLevel        float64
 	creepBaseAttackBudget int
@@ -59,6 +61,8 @@ type worldState struct {
 
 func (w *worldState) Init() {
 	w.results = &Results{}
+
+	w.tmpTargetsSlice = make([]*unitNode, 0, 10)
 
 	w.energy = 20
 
@@ -230,6 +234,8 @@ func (w *worldState) selectLootKind() lootKind {
 		return lootBotGenerator
 	case 15:
 		return lootBotVanguard
+	case 77:
+		return lootBotTitan
 	}
 
 	if w.lootSeq%5 == 0 {
@@ -304,7 +310,7 @@ func (w *worldState) Reveal(m *mountainNode) {
 		m.sprite.SetImage(w.scene.LoadImage(assets.ImageIronMountains))
 	case lootEasyDig:
 		m.sprite.SetImage(w.scene.LoadImage(assets.ImageWeakMountains))
-	case lootBotGenerator, lootBotPatrol, lootBotVanguard, lootBotHarvester:
+	case lootBotGenerator, lootBotPatrol, lootBotVanguard, lootBotHarvester, lootBotTitan:
 		m.sprite.SetImage(w.scene.LoadImage(assets.ImageUnitMountains))
 	case lootExtraStones:
 		m.sprite.SetImage(w.scene.LoadImage(assets.ImageRockyMountains))

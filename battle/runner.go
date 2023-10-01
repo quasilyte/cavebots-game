@@ -236,9 +236,10 @@ func (r *Runner) initMap(spawnPos gmath.Vec) {
 		}
 	}
 
-	for _, pos := range initialTunnel {
+	randIterate(r.world.rand, initialTunnel, func(pos gmath.Vec) bool {
 		r.world.RevealNeighbors(pos)
-	}
+		return false
+	})
 }
 
 func (r *Runner) initBackground(spawnPos gmath.Vec) {
@@ -336,6 +337,10 @@ func (r *Runner) handleInput(delta float64) {
 	}
 	if handler.ActionIsJustPressed(controls.ActionBuild3) {
 		r.doBuildAction(cursorWorldPos, 2)
+		return
+	}
+	if handler.ActionIsJustPressed(controls.ActionBuild4) {
+		r.doBuildAction(cursorWorldPos, 3)
 		return
 	}
 
@@ -443,6 +448,8 @@ func (r *Runner) doBuildAction(cursorPos gmath.Vec, i int) {
 		stats = dronePatrolStats
 	case 2:
 		stats = droneVanguardStats
+	case 3:
+		stats = droneTitanStats
 	}
 	if !r.world.TryBuy(stats, factory.pos) {
 		return

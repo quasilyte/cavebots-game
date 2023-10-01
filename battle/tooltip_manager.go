@@ -108,6 +108,7 @@ func (m *tooltipManager) OnHover(pos gmath.Vec) {
 					s += "\n[Q] Harvester - " + m.formatPrice(droneHarvesterStats)
 					s += "\n[W] Patrol - " + m.formatPrice(dronePatrolStats)
 					s += "\n[E] Vanguard - " + m.formatPrice(droneVanguardStats)
+					s += "\n[R] Titan - " + m.formatPrice(droneTitanStats)
 				}
 			}
 			m.createTooltip(pos, s+"\nHP: "+health)
@@ -170,13 +171,15 @@ func (m *tooltipManager) formatMountainInfo(mountain *mountainNode) string {
 		extra = "Can be dug for free"
 
 	case lootBotHarvester:
-		extra = "Contains harvester bot"
+		extra = "Contains Harvester bot"
 	case lootBotPatrol:
-		extra = "Contains patrol bot"
+		extra = "Contains Patrol bot"
 	case lootBotVanguard:
-		extra = "Contains vanguard bot"
+		extra = "Contains Vanguard bot"
 	case lootBotGenerator:
-		extra = "Contains generator bot"
+		extra = "Contains Generator bot"
+	case lootBotTitan:
+		extra = "Contains Titan bot"
 	}
 
 	if extra == "" {

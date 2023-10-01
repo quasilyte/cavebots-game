@@ -37,6 +37,7 @@ func main() {
 		controls.ActionBuild1:   {input.KeyQ},
 		controls.ActionBuild2:   {input.KeyW},
 		controls.ActionBuild3:   {input.KeyE},
+		controls.ActionBuild4:   {input.KeyR},
 		controls.ActionPanRight: {input.KeyRight},
 		controls.ActionPanDown:  {input.KeyDown},
 		controls.ActionPanLeft:  {input.KeyLeft},

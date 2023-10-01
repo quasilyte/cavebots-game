@@ -181,6 +181,8 @@ func (u *unitNode) Update(delta float64) {
 		u.updatePatrol(delta)
 	case droneVanguardStats:
 		u.updateVanguard(delta)
+	case droneTitanStats:
+		u.updateTitan(delta)
 	case droneGeneratorStats:
 		u.updateGenerator(delta)
 	case buildingFactory:
@@ -296,49 +298,51 @@ func (u *unitNode) processWeapon(delta float64) {
 		attackDistSqr = 34.0 * 34.0
 	}
 
-	var target *unitNode
+	u.world.tmpTargetsSlice = u.world.tmpTargetsSlice[:0]
 
 	targetSlice := u.world.playerUnits
 	if u.stats.allied {
 		targetSlice = u.world.creeps
 	}
 
-	for _, other := range targetSlice {
+	randIterate(u.world.rand, targetSlice, func(other *unitNode) bool {
 		if other.pos.DistanceSquaredTo(u.pos) > attackDistSqr {
-			continue
+			return false
 		}
 		if !isMelee && !hasLineOfFire(u.world, u.pos, other.pos) {
-			continue
+			return false
 		}
-		target = other
-		break
-	}
+		u.world.tmpTargetsSlice = append(u.world.tmpTargetsSlice, other)
+		return len(u.world.tmpTargetsSlice) >= u.stats.weapon.maxTargets
+	})
 
-	if target == nil {
+	if len(u.world.tmpTargetsSlice) == 0 {
 		if isMelee {
-			u.reload = u.scene.Rand().FloatRange(0.4, 1.2)
+			u.reload = u.scene.Rand().FloatRange(0.4, 1.1)
 		} else {
-			u.reload = u.scene.Rand().FloatRange(2, 4)
+			u.reload = u.scene.Rand().FloatRange(1.5, 3.5)
 		}
 		return
 	}
 
 	u.reload = u.stats.weapon.reload * u.scene.Rand().FloatRange(0.8, 1.2)
 	if isMelee {
-		target.OnDamage(u.stats.weapon.damage, u)
-		playSound(u.world, u.stats.weapon.impactSound, target.pos)
+		u.world.tmpTargetsSlice[0].OnDamage(u.stats.weapon.damage, u)
+		playSound(u.world, u.stats.weapon.impactSound, u.world.tmpTargetsSlice[0].pos)
 		return
 	}
 
-	for i := 0; i < u.stats.weapon.burstSize; i++ {
-		fireDelay := float64(i) * u.stats.weapon.burstDelay
-		projectile := newProjectileNode(projectileNodeConfig{
-			attacker:  u,
-			target:    target,
-			targetPos: target.pos.Add(u.scene.Rand().Offset(-6, 6)),
-			fireDelay: fireDelay,
-		})
-		u.scene.AddObject(projectile)
+	for _, target := range u.world.tmpTargetsSlice {
+		for i := 0; i < u.stats.weapon.burstSize; i++ {
+			fireDelay := float64(i) * u.stats.weapon.burstDelay
+			projectile := newProjectileNode(projectileNodeConfig{
+				attacker:  u,
+				target:    target,
+				targetPos: target.pos.Add(u.scene.Rand().Offset(-6, 6)),
+				fireDelay: fireDelay,
+			})
+			u.scene.AddObject(projectile)
+		}
 	}
 	playSound(u.world, u.stats.weapon.fireSound, u.pos)
 }
@@ -413,6 +417,19 @@ func (u *unitNode) updateGenerator(delta float64) {
 	}
 
 	u.sendTo(randomSectorPos(u.scene.Rand(), u.world.diggedRect))
+}
+
+func (u *unitNode) updateTitan(delta float64) {
+	u.processWeapon(delta)
+
+	if !u.waypoint.IsZero() {
+		return
+	}
+	if u.world.creepBase == nil || u.world.creepBase.IsDisposed() {
+		return
+	}
+
+	u.SendTo(u.world.creepBase.pos.Add(u.scene.Rand().Offset(-140, 140)))
 }
 
 func (u *unitNode) updateVanguard(delta float64) {
@@ -585,6 +602,9 @@ func (u *unitNode) completeDig() {
 	case lootBotVanguard:
 		u.world.results.BotsCreated++
 		u.scene.AddObject(u.world.NewUnitNode(m.pos, droneVanguardStats))
+	case lootBotTitan:
+		u.world.results.BotsCreated++
+		u.scene.AddObject(u.world.NewUnitNode(m.pos, droneTitanStats))
 
 	case lootFlatCell:
 		u.scene.AddObject(u.world.NewHardTerrainNode(m.pos))
