@@ -457,7 +457,7 @@ func (r *Runner) doBuildAction(cursorPos gmath.Vec, i int) {
 
 	factory.orderTarget = stats
 	factory.order = orderMakeUnit
-	factory.specialDelay = r.scene.Rand().FloatRange(10, 20)
+	factory.reload = r.scene.Rand().FloatRange(10, 20)
 }
 
 func (r *Runner) stopHover() {

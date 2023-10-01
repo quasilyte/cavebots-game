@@ -3,6 +3,7 @@ package battle
 import (
 	"math"
 
+	"github.com/quasilyte/cavebots-game/assets"
 	"github.com/quasilyte/ge"
 	"github.com/quasilyte/gmath"
 	"github.com/quasilyte/gsignal"
@@ -397,12 +398,18 @@ func (u *unitNode) updateFactory(delta float64) {
 		return
 	}
 
-	u.specialDelay -= delta
-	if u.specialDelay > 0 {
+	u.specialDelay = gmath.ClampMin(u.specialDelay-delta, 0)
+	if u.specialDelay == 0 {
+		u.specialDelay = u.world.rand.FloatRange(0.8, 1.6)
+		u.scene.AddObject(newEffectNode(u.world, u.pos.Sub(gmath.Vec{Y: 16}), true, assets.ImageEffectSmokeUp))
+	}
+
+	u.reload -= delta
+	if u.reload > 0 {
 		return
 	}
 
-	u.specialDelay = 0
+	u.reload = 0
 	stats := u.orderTarget.(*unitStats)
 	u.orderTarget = nil
 	u.order = orderNone

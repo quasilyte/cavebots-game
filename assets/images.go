@@ -57,6 +57,8 @@ func registerImageResources(ctx *ge.Context) {
 		ImageVanguardProjectile:    {Path: "images/vanguard_projectile.png"},
 		ImageArrowProjectile:       {Path: "images/arrow_projectile.png"},
 		ImageGatlingProjectile:     {Path: "images/gatling_projectile.png"},
+
+		ImageEffectSmokeUp: {Path: "images/smoke_up.png", FrameWidth: 8},
 	}
 
 	for id, res := range imageResources {
@@ -116,4 +118,6 @@ const (
 	ImageVanguardProjectile
 	ImageArrowProjectile
 	ImageGatlingProjectile
+
+	ImageEffectSmokeUp
 )
