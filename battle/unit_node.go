@@ -544,11 +544,14 @@ func (u *unitNode) updateHarvester(delta float64) {
 			u.order = orderHarvestResource
 			u.orderTarget = closestResource
 			u.sendTo(closestResource.pos)
-		} else {
+			return
+		}
+		if u.scene.Rand().Chance(0.6) {
 			u.specialDelay = u.scene.Rand().FloatRange(2, 7)
+		} else {
+			u.SendTo(randomSectorPos(u.scene.Rand(), u.world.diggedRect))
 		}
 	}
-
 }
 
 func (u *unitNode) movementSpeed() float64 {
