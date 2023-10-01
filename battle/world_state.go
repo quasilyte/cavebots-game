@@ -262,6 +262,16 @@ func (w *worldState) selectLootKind() lootKind {
 	if w.lootSeq%5 == 0 {
 		roll := w.rand.Float()
 		if roll <= 0.4 { // 40%
+			generatorChance := 0.0
+			switch {
+			case w.lootSeq > 50:
+				generatorChance = 0.6
+			case w.lootSeq > 30:
+				generatorChance = 0.3
+			}
+			if generatorChance != 0 && w.rand.Chance(generatorChance) {
+				return lootBotGenerator
+			}
 			return lootBotHarvester
 		}
 		if roll <= 0.6 { // 20%
@@ -377,10 +387,10 @@ func (w *worldState) CalcEnergyRegen() float64 {
 		switch u.stats {
 		case buildingPowerGenerator:
 			regen += 1.1 * generatorMultiplier
-			generatorMultiplier = gmath.ClampMin(generatorMultiplier-0.1, 0.2)
+			generatorMultiplier = gmath.ClampMin(generatorMultiplier-0.1, 0.3)
 		case droneGeneratorStats:
 			regen += 0.6 * generatorBotMultiplier
-			generatorBotMultiplier = gmath.ClampMin(generatorBotMultiplier-0.15, 0.1)
+			generatorBotMultiplier = gmath.ClampMin(generatorBotMultiplier-0.1, 0.1)
 		}
 	}
 	return regen - w.CalcEnergyUpkeep()
