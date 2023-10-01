@@ -17,6 +17,7 @@ var firstBuildingList = []*unitStats{
 var secondBuildingList = []*unitStats{
 	buildingBarricate,
 	buildingFactory,
+	buildingTurret,
 }
 
 var buildingHotkeys = []string{

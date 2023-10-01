@@ -49,6 +49,10 @@ func registerAudioResources(ctx *ge.Context) {
 		AudioVanguardShot2: {Path: "audio/vanguard_shot2.wav", Volume: -0.05},
 		AudioVanguardShot3: {Path: "audio/vanguard_shot3.wav", Volume: -0.05},
 
+		AudioLaserTurretShot1: {Path: "audio/lasertower1.wav", Volume: -0.2},
+		AudioLaserTurretShot2: {Path: "audio/lasertower2.wav", Volume: -0.2},
+		AudioLaserTurretShot3: {Path: "audio/lasertower3.wav", Volume: -0.2},
+
 		AudioBowShot1: {Path: "audio/bow_shot1.wav"},
 		AudioBowShot2: {Path: "audio/bow_shot2.wav"},
 		AudioBowShot3: {Path: "audio/bow_shot3.wav"},
@@ -91,6 +95,8 @@ func NumSamples(a resource.AudioID) int {
 		return 4
 	case AudioExplosion1:
 		return 4
+	case AudioLaserTurretShot1:
+		return 3
 	default:
 		return 1
 	}
@@ -118,6 +124,10 @@ const (
 	AudioVanguardShot1
 	AudioVanguardShot2
 	AudioVanguardShot3
+
+	AudioLaserTurretShot1
+	AudioLaserTurretShot2
+	AudioLaserTurretShot3
 
 	AudioBowShot1
 	AudioBowShot2

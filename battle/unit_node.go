@@ -199,6 +199,8 @@ func (u *unitNode) Update(delta float64) {
 		u.updateRepairbot(delta)
 	case buildingFactory:
 		u.updateFactory(delta)
+	case buildingTurret:
+		u.updateTurret(delta)
 	case creepMutantBase:
 		u.updateCreepBase(delta)
 	case creepMutantWarrior:
@@ -377,15 +379,23 @@ func (u *unitNode) processWeapon(delta float64) {
 	}
 
 	for _, target := range u.world.tmpTargetsSlice {
-		for i := 0; i < u.stats.weapon.burstSize; i++ {
-			fireDelay := float64(i) * u.stats.weapon.burstDelay
-			projectile := newProjectileNode(projectileNodeConfig{
-				attacker:  u,
-				target:    target,
-				targetPos: target.pos.Add(u.scene.Rand().Offset(-6, 6)),
-				fireDelay: fireDelay,
-			})
-			u.scene.AddObject(projectile)
+		if u.stats.weapon.projectileImage != assets.ImageNone {
+			for i := 0; i < u.stats.weapon.burstSize; i++ {
+				fireDelay := float64(i) * u.stats.weapon.burstDelay
+				projectile := newProjectileNode(projectileNodeConfig{
+					attacker:  u,
+					target:    target,
+					targetPos: target.pos.Add(u.scene.Rand().Offset(-6, 6)),
+					fireDelay: fireDelay,
+				})
+				u.scene.AddObject(projectile)
+			}
+		} else {
+			from := ge.Pos{Base: &u.pos}
+			to := ge.Pos{Base: &target.pos}
+			line := newLineNode(u.world, from, to, u.stats.weapon.beamColor)
+			u.scene.AddObject(line)
+			target.OnDamage(u.stats.weapon.damage, u)
 		}
 	}
 	playSound(u.world, u.stats.weapon.fireSound, u.pos)
@@ -434,6 +444,10 @@ func (u *unitNode) updateCreepBase(delta float64) {
 		u.scene.AddObject(newUnit)
 		newUnit.SendTo(waypoint)
 	}
+}
+
+func (u *unitNode) updateTurret(delta float64) {
+	u.processWeapon(delta)
 }
 
 func (u *unitNode) updateFactory(delta float64) {

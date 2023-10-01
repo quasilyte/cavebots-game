@@ -1,8 +1,11 @@
 package battle
 
 import (
+	"image/color"
+
 	"github.com/quasilyte/cavebots-game/assets"
 	resource "github.com/quasilyte/ebitengine-resource"
+	"github.com/quasilyte/ge"
 )
 
 type unitStats struct {
@@ -38,6 +41,7 @@ type weaponStats struct {
 	projectileImage resource.ImageID
 	fireSound       resource.AudioID
 	impactSound     resource.AudioID
+	beamColor       color.RGBA
 }
 
 var droneCoreStats = &unitStats{
@@ -174,8 +178,26 @@ var buildingBarricate = &unitStats{
 	img:         assets.ImageBuildingBarricade,
 	allied:      true,
 	building:    true,
-	energyCost:  3,
-	ironCost:    1,
+	ironCost:    3,
+}
+
+var buildingTurret = &unitStats{
+	name:        "Turret",
+	botPriority: 5,
+	layer:       2,
+	maxHealth:   85,
+	img:         assets.ImageBuildingTurret,
+	allied:      true,
+	building:    true,
+	energyCost:  1,
+	ironCost:    10,
+	weapon: &weaponStats{
+		damage:      14,
+		reload:      3.1,
+		attackRange: 190,
+		fireSound:   assets.AudioLaserTurretShot1,
+		beamColor:   ge.RGB(0xff2452),
+	},
 }
 
 var buildingSmelter = &unitStats{

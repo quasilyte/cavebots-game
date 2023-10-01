@@ -35,6 +35,7 @@ func registerImageResources(ctx *ge.Context) {
 		ImageBuildingBarricade: {Path: "images/building_wall.png"},
 		ImageBuildingSmelter:   {Path: "images/building_smelter.png"},
 		ImageBuildingFactory:   {Path: "images/building_factory.png"},
+		ImageBuildingTurret:    {Path: "images/building_turret.png"},
 
 		ImageBuildingMutantBase: {Path: "images/mutant_base.png", FrameWidth: 34},
 
@@ -104,6 +105,7 @@ const (
 	ImageBuildingGenerator
 	ImageBuildingSmelter
 	ImageBuildingFactory
+	ImageBuildingTurret
 
 	ImageBuildingMutantBase
 
