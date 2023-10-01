@@ -71,6 +71,14 @@ func (m *tooltipManager) OnHover(pos gmath.Vec) {
 	screenPos := pos.Sub(m.world.camera.Offset)
 	if screenPos.Y >= ((1080.0 / 2) - 56) {
 		// TODO: resource hints.
+		switch {
+		case screenPos.X < 320*1:
+			m.createTooltip(pos, "Energy is needed to dig\nDrones have energy upkeep costs\nBuild generators to increase the income")
+		case screenPos.X < 320*2:
+			m.createTooltip(pos, "Iron is needed to build drones\nOnly Harvesters can collect it")
+		case screenPos.X < 320*3:
+			m.createTooltip(pos, "Stone is needed to create buildings\nDig to get these")
+		}
 		return
 	}
 
