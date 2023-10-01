@@ -44,6 +44,14 @@ func (c *settingsController) initUI(scene *ge.Scene) {
 	rowContainer.AddChild(eui.NewSelectButton(eui.SelectButtonConfig{
 		Resources:  c.state.UIResources,
 		Input:      c.state.Input,
+		Value:      &c.state.Settings.Difficulty,
+		Label:      "Difficulty",
+		ValueNames: []string{"easy", "normal", "hard"},
+	}))
+
+	rowContainer.AddChild(eui.NewSelectButton(eui.SelectButtonConfig{
+		Resources:  c.state.UIResources,
+		Input:      c.state.Input,
 		Value:      &c.state.Settings.SoundLevel,
 		Label:      "Effects volume",
 		ValueNames: []string{"off", "1", "2", "3", "4", "5"},

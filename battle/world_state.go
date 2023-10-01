@@ -49,6 +49,8 @@ type worldState struct {
 	creepBase             *unitNode
 	creepBaseLevel        float64
 	creepBaseAttackBudget int
+	creepsEvolutionRate   float64
+	difficulty            int
 
 	resourceNodes []*resourceNode
 
@@ -62,6 +64,15 @@ type worldState struct {
 
 func (w *worldState) Init() {
 	w.results = &Results{}
+
+	switch w.difficulty {
+	case 0:
+		w.creepsEvolutionRate = 0.8
+	case 1:
+		w.creepsEvolutionRate = 1.0
+	case 2:
+		w.creepsEvolutionRate = 1.25
+	}
 
 	w.tmpTargetsSlice = make([]*unitNode, 0, 10)
 

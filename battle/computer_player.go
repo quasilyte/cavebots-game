@@ -13,11 +13,17 @@ type computerPlayer struct {
 }
 
 func newComputerPlayer(world *worldState) *computerPlayer {
-	return &computerPlayer{
+	p := &computerPlayer{
 		world:       world,
 		attackGroup: make([]*unitNode, 0, 16),
-		attackDelay: world.rand.FloatRange(15, 30),
 	}
+	switch world.difficulty {
+	case 0:
+		p.attackDelay = world.rand.FloatRange(50, 65)
+	case 1, 2:
+		p.attackDelay = world.rand.FloatRange(30, 40)
+	}
+	return p
 }
 
 func (p *computerPlayer) Update(delta float64) {

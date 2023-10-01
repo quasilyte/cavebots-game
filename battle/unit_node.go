@@ -425,7 +425,7 @@ func (u *unitNode) processWeapon(delta float64) {
 }
 
 func (u *unitNode) updateCreepBase(delta float64) {
-	u.world.creepBaseLevel += delta
+	u.world.creepBaseLevel += delta * u.world.creepsEvolutionRate
 
 	u.reload = gmath.ClampMin(u.reload-delta, 0)
 	if u.reload != 0 {
@@ -446,7 +446,13 @@ func (u *unitNode) updateCreepBase(delta float64) {
 		X: u.scene.Rand().FloatRange(-32, 32),
 		Y: u.scene.Rand().FloatRange(32, 160),
 	})
-	numWarriors := u.scene.Rand().IntRange(2, 5)
+	maxWarriors := 5
+	minWarriors := 2
+	if u.world.difficulty == 2 {
+		minWarriors = 3
+		maxWarriors = 6
+	}
+	numWarriors := u.scene.Rand().IntRange(minWarriors, maxWarriors)
 	for i := 0; i < numWarriors; i++ {
 		stats := creepMutantWarrior
 		// Every minute gives +8% warlord chance.
@@ -462,7 +468,8 @@ func (u *unitNode) updateCreepBase(delta float64) {
 		newUnit.SendTo(waypoint)
 	}
 
-	numArchers := gmath.Clamp(int(u.world.creepBaseLevel/100.0), 0, 3)
+	maxArchers := u.world.difficulty + 2
+	numArchers := gmath.Clamp(int(u.world.creepBaseLevel/100.0), 0, maxArchers)
 	for i := 0; i < numArchers; i++ {
 		newUnit := u.world.NewUnitNode(u.pos.Add(u.scene.Rand().Offset(-8, 8)), creepMutantHunter)
 		u.scene.AddObject(newUnit)
@@ -470,7 +477,8 @@ func (u *unitNode) updateCreepBase(delta float64) {
 	}
 
 	if u.world.creepBaseLevel > 300 {
-		numGunners := gmath.Clamp(int(u.world.creepBaseLevel/300.0), 0, 3)
+		maxGunners := u.world.difficulty + 2
+		numGunners := gmath.Clamp(int(u.world.creepBaseLevel/300.0), 0, maxGunners)
 		for i := 0; i < numGunners; i++ {
 			newUnit := u.world.NewUnitNode(u.pos.Add(u.scene.Rand().Offset(-8, 8)), creepMutantGunner)
 			u.scene.AddObject(newUnit)

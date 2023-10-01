@@ -58,6 +58,7 @@ func main() {
 
 func getDefaultSettings() session.Settings {
 	return session.Settings{
+		Difficulty: 0,
 		SoundLevel: 2,
 		MusicLevel: 2,
 	}

@@ -16,4 +16,5 @@ type State struct {
 type Settings struct {
 	SoundLevel int
 	MusicLevel int
+	Difficulty int
 }

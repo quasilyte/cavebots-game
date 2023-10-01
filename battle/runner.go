@@ -55,6 +55,8 @@ type Results struct {
 	Digs        int
 
 	Duration time.Duration
+
+	Difficulty int
 }
 
 func NewRunner(state *session.State) *Runner {
@@ -71,11 +73,12 @@ func (r *Runner) Init(scene *ge.Scene) {
 	r.startTime = time.Now()
 
 	r.world = &worldState{
-		width:     1920,
-		height:    32 * numCaveVerticalCells,
-		caveWidth: float64(32 * numCaveHorizontalCells),
-		scene:     scene,
-		rand:      scene.Rand(),
+		width:      1920,
+		height:     32 * numCaveVerticalCells,
+		caveWidth:  float64(32 * numCaveHorizontalCells),
+		scene:      scene,
+		rand:       scene.Rand(),
+		difficulty: r.state.Settings.Difficulty,
 	}
 	r.world.Init()
 
@@ -87,6 +90,7 @@ func (r *Runner) Init(scene *ge.Scene) {
 		r.scene.AddObject(newBigFloatingTextNode(r.world, pos, "Defeat!"))
 		r.world.results.Victory = false
 		r.world.results.Duration = time.Since(r.startTime)
+		r.world.results.Difficulty = r.world.difficulty
 		r.EventBattleCompleted.Emit(r.world.results)
 	})
 
@@ -94,6 +98,7 @@ func (r *Runner) Init(scene *ge.Scene) {
 		r.scene.AddObject(newBigFloatingTextNode(r.world, pos, "Victory!"))
 		r.world.results.Victory = true
 		r.world.results.Duration = time.Since(r.startTime)
+		r.world.results.Difficulty = r.world.difficulty
 		r.EventBattleCompleted.Emit(r.world.results)
 	})
 
@@ -180,15 +185,24 @@ func (r *Runner) placeCreeps() {
 		scene.AddObject(creep)
 	}
 
-	for i := 0; i < 2; i++ {
-		pos := r.world.core.pos.Add(gmath.Vec{X: 32 * 17, Y: 32})
-		creep := r.world.NewUnitNode(pos.Add(scene.Rand().Offset(-12, 12)), creepMutantHunter)
-		scene.AddObject(creep)
-	}
 	for i := 0; i < 1; i++ {
 		pos := r.world.core.pos.Add(gmath.Vec{X: 32 * 18, Y: -128})
 		creep := r.world.NewUnitNode(pos.Add(scene.Rand().Offset(-12, 12)), creepMutantWarlord)
 		scene.AddObject(creep)
+	}
+	if r.world.difficulty >= 1 {
+		for i := 0; i < 2; i++ {
+			pos := r.world.core.pos.Add(gmath.Vec{X: 32 * 17, Y: 32})
+			creep := r.world.NewUnitNode(pos.Add(scene.Rand().Offset(-12, 12)), creepMutantHunter)
+			scene.AddObject(creep)
+		}
+	}
+	if r.world.difficulty >= 2 {
+		for i := 0; i < 1; i++ {
+			pos := r.world.core.pos.Add(gmath.Vec{X: 32 * 18, Y: (-32 * 5)})
+			creep := r.world.NewUnitNode(pos.Add(scene.Rand().Offset(-12, 12)), creepMutantGunner)
+			scene.AddObject(creep)
+		}
 	}
 
 	{

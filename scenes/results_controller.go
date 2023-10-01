@@ -58,7 +58,16 @@ func (c *resultsController) initUI(scene *ge.Scene) {
 	panel.AddChild(table)
 	rowContainer.AddChild(panel)
 
+	difficulty := "easy"
+	switch c.results.Difficulty {
+	case 1:
+		difficulty = "normal"
+	case 2:
+		difficulty = "hard"
+	}
+
 	rows := [][2]string{
+		{"Difficulty", difficulty},
 		{"Game duration", formatDurationCompact(c.results.Duration)},
 		{"Bots created", strconv.Itoa(c.results.BotsCreated)},
 		{"Tiles excavated", strconv.Itoa(c.results.Digs)},
