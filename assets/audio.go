@@ -66,9 +66,9 @@ func registerAudioResources(ctx *ge.Context) {
 		AudioExplosion4: {Path: "audio/explosion4.wav", Volume: -0.2},
 
 		AudioResourceAdded: {Path: "audio/resource_added.wav", Volume: -0.2},
-		AudioUnitReady:     {Path: "audio/unit_ready.wav", Volume: -0.2},
+		AudioUnitReady:     {Path: "audio/unit_ready.wav", Volume: -0.35},
 		AudioDig:           {Path: "audio/dig.wav", Volume: -0.1},
-		AudioRepair:        {Path: "audio/repair.wav", Volume: -0.3},
+		AudioRepair:        {Path: "audio/repair.wav", Volume: -0.5},
 	}
 
 	for id, res := range audioResources {
