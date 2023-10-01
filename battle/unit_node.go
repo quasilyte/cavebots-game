@@ -717,6 +717,7 @@ func (u *unitNode) completeDig() {
 	if u.world.energy < energyCost {
 		playGlobalSound(u.world, assets.AudioError)
 		u.scene.AddObject(newFloatingTextNode(m.world, m.pos, "Error: not enough energy"))
+		u.world.notEnoughEnergy += 1
 		return
 	}
 

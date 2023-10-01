@@ -39,6 +39,7 @@ type Runner struct {
 	hoverTriggered bool
 	hoverPos       gmath.Vec
 	ttm            *tooltipManager
+	tutorial       *tutorialManager
 
 	cameraPanSpeed    float64
 	cameraPanBoundary float64
@@ -175,6 +176,11 @@ func (r *Runner) Init(scene *ge.Scene) {
 	scene.AddObject(r.ttm)
 
 	scene.AddGraphics(r.world.camera)
+
+	if r.world.tutorial {
+		r.tutorial = newTutorialManager(r.world)
+		r.tutorial.Init(scene)
+	}
 }
 
 func (r *Runner) placeCreeps() {
@@ -290,6 +296,9 @@ func (r *Runner) Update(delta float64) {
 	r.handleInput(delta)
 	r.computer.Update(delta)
 	r.world.stage.Update()
+	if r.tutorial != nil {
+		r.tutorial.Update(delta)
+	}
 
 	r.energyRegenDelay -= delta
 	if r.energyRegenDelay <= 0 {
@@ -338,6 +347,7 @@ func (r *Runner) handleInput(delta float64) {
 			if r.world.energy < digEnergyCost && m.loot != lootEasyDig {
 				playGlobalSound(r.world, assets.AudioError)
 				r.scene.AddObject(newFloatingTextNode(r.world, cursorWorldPos, "Error: not enough energy"))
+				r.world.notEnoughEnergy += 1
 				return
 			}
 			r.scene.AddObject(newFloatingTextNode(r.world, m.pos, "Order: dig here"))

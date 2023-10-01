@@ -51,6 +51,9 @@ func main() {
 		ctx.SaveGameData("save", state.Settings)
 	}
 
+	// Uncomment to test the tutorial.
+	// state.Settings.FirstTime = true
+
 	if err := ge.RunGame(ctx, scenes.NewMainMenuController(state)); err != nil {
 		panic(err)
 	}

@@ -52,7 +52,8 @@ type worldState struct {
 	creepsEvolutionRate   float64
 	difficulty            int
 
-	tutorial bool
+	tutorial        bool
+	notEnoughEnergy float64
 
 	resourceNodes []*resourceNode
 
@@ -161,6 +162,7 @@ func (w *worldState) TryBuy(stats *unitStats, pos gmath.Vec) bool {
 	if w.energy < float64(stats.energyCost) {
 		playGlobalSound(w, assets.AudioError)
 		w.scene.AddObject(newFloatingTextNode(w, pos, "Error: not enough energy"))
+		w.notEnoughEnergy += 1
 		return false
 	}
 	if w.iron < stats.ironCost {
