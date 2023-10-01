@@ -20,8 +20,10 @@ func newComputerPlayer(world *worldState) *computerPlayer {
 	switch world.difficulty {
 	case 0:
 		p.attackDelay = world.rand.FloatRange(50, 65)
-	case 1, 2:
+	case 1:
 		p.attackDelay = world.rand.FloatRange(30, 40)
+	case 2:
+		p.attackDelay = world.rand.FloatRange(20, 30)
 	}
 	return p
 }
