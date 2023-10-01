@@ -151,6 +151,7 @@ func (u *unitNode) destroy() {
 	}
 	if u.stats.allied {
 		playSound(u.world, assets.AudioExplosion1, u.pos)
+		u.scene.AddObject(newEffectNode(u.world, u.pos, true, assets.ImageEffectExplosion))
 	}
 	u.Dispose()
 }
