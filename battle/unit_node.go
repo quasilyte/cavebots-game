@@ -291,6 +291,10 @@ func (u *unitNode) maybeCharge(delta, maxDist float64) {
 		return
 	}
 
+	if u.world.caveRect.Contains(u.pos) {
+		maxDist *= 3
+	}
+
 	target := gmath.RandElem(u.world.rand, u.world.playerUnits)
 	if target == nil {
 		u.chargeDelay = u.scene.Rand().FloatRange(8, 12)
