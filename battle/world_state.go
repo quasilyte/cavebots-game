@@ -386,7 +386,7 @@ func (w *worldState) AddEnergy(delta float64) {
 	if delta == 0 {
 		return
 	}
-	w.energy += delta
+	w.energy = gmath.ClampMin(w.energy+delta, 0)
 	w.EventResourcesUpdated.Emit(gsignal.Void{})
 }
 
