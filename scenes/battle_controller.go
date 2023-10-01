@@ -31,6 +31,10 @@ func (c *BattleController) Init(scene *ge.Scene) {
 			scene.Context().ChangeScene(NewResultsController(c.state, results))
 		})
 	})
+
+	// Set "first time" to false.
+	c.state.Settings.FirstTime = false
+	c.scene.Context().SaveGameData("save", c.state.Settings)
 }
 
 func (c *BattleController) Update(delta float64) {

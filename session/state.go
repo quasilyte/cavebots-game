@@ -17,4 +17,5 @@ type Settings struct {
 	SoundLevel int
 	MusicLevel int
 	Difficulty int
+	FirstTime  bool
 }

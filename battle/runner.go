@@ -73,6 +73,7 @@ func (r *Runner) Init(scene *ge.Scene) {
 	r.startTime = time.Now()
 
 	r.world = &worldState{
+		tutorial:   r.state.Settings.FirstTime,
 		width:      1920,
 		height:     32 * numCaveVerticalCells,
 		caveWidth:  float64(32 * numCaveHorizontalCells),

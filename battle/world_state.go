@@ -52,6 +52,8 @@ type worldState struct {
 	creepsEvolutionRate   float64
 	difficulty            int
 
+	tutorial bool
+
 	resourceNodes []*resourceNode
 
 	mountainByCoord map[uint32]*mountainNode

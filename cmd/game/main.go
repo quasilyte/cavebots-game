@@ -61,5 +61,6 @@ func getDefaultSettings() session.Settings {
 		Difficulty: 0,
 		SoundLevel: 2,
 		MusicLevel: 2,
+		FirstTime:  true,
 	}
 }
