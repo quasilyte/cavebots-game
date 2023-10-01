@@ -15,6 +15,7 @@ type floatingTextNode struct {
 	world     *worldState
 	pos       gmath.Vec
 	spritePos gmath.Vec
+	big       bool
 	text      string
 	hp        float64
 }
@@ -28,12 +29,27 @@ func newFloatingTextNode(world *worldState, pos gmath.Vec, text string) *floatin
 	}
 }
 
+func newBigFloatingTextNode(world *worldState, pos gmath.Vec, text string) *floatingTextNode {
+	return &floatingTextNode{
+		world: world,
+		pos:   pos,
+		text:  text,
+		hp:    2.0,
+		big:   true,
+	}
+}
+
 func (t *floatingTextNode) Init(scene *ge.Scene) {
-	w, h := estimateMessageBounds(scene.Context().Loader.LoadFont(assets.FontTiny).Face, t.text, 16)
+	fnt := assets.FontTiny
+	if t.big {
+		fnt = assets.FontNormal
+	}
+
+	w, h := estimateMessageBounds(scene.Context().Loader.LoadFont(fnt).Face, t.text, 16)
 
 	t.pos = t.pos.Sub(t.world.camera.Offset)
 
-	t.label = scene.NewLabel(assets.FontTiny)
+	t.label = scene.NewLabel(fnt)
 	t.label.Text = t.text
 	t.label.Pos.Base = &t.spritePos
 	t.label.Pos.Offset.X = 4

@@ -1,8 +1,6 @@
 package battle
 
 import (
-	"fmt"
-
 	"github.com/quasilyte/gmath"
 )
 
@@ -82,11 +80,9 @@ func (p *computerPlayer) maybeDoAttack() float64 {
 	}
 	if bestScore < 10 && rng.Chance(0.4) {
 		p.world.creepBaseAttackBudget += 2 + extraBudgetGrowth
-		fmt.Println("stall for time")
 		return rng.FloatRange(15, 30)
 	}
 	if bestTarget == nil {
-		fmt.Println("no targets?")
 		return 40
 	}
 
@@ -99,7 +95,6 @@ func (p *computerPlayer) maybeDoAttack() float64 {
 	}
 
 	p.world.creepBaseAttackBudget += 1 + extraBudgetGrowth
-	fmt.Println("attacked with", len(p.attackGroup), "units")
 
 	return rng.FloatRange(20, 60)
 }

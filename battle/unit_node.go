@@ -404,6 +404,7 @@ func (u *unitNode) updateFactory(delta float64) {
 	u.order = orderNone
 
 	u.scene.AddObject(u.world.NewUnitNode(u.pos, stats))
+	u.world.results.BotsCreated++
 }
 
 func (u *unitNode) updateGenerator(delta float64) {
@@ -571,14 +572,20 @@ func (u *unitNode) completeDig() {
 		}
 		iron := u.world.NewResourceNode(m.pos, ironResourceStats, u.scene.Rand().IntRange(minAmount, maxAmount))
 		u.scene.AddObjectBelow(iron, 1)
+
 	case lootBotHarvester:
+		u.world.results.BotsCreated++
 		u.scene.AddObject(u.world.NewUnitNode(m.pos, droneHarvesterStats))
 	case lootBotPatrol:
+		u.world.results.BotsCreated++
 		u.scene.AddObject(u.world.NewUnitNode(m.pos, dronePatrolStats))
 	case lootBotGenerator:
+		u.world.results.BotsCreated++
 		u.scene.AddObject(u.world.NewUnitNode(m.pos, droneGeneratorStats))
 	case lootBotVanguard:
+		u.world.results.BotsCreated++
 		u.scene.AddObject(u.world.NewUnitNode(m.pos, droneVanguardStats))
+
 	case lootFlatCell:
 		u.scene.AddObject(u.world.NewHardTerrainNode(m.pos))
 		tileType = tileCaveFlat
@@ -590,4 +597,5 @@ func (u *unitNode) completeDig() {
 	m.Dispose()
 	delete(u.world.mountainByCoord, u.world.grid.PackCoord(u.world.grid.PosToCoord(m.pos.X, m.pos.Y)))
 	u.world.RevealNeighbors(m.pos)
+	u.world.results.Digs++
 }

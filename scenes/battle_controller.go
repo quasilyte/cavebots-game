@@ -10,7 +10,8 @@ type BattleController struct {
 	scene *ge.Scene
 	state *session.State
 
-	runner *battle.Runner
+	runner     *battle.Runner
+	transition bool
 }
 
 func NewBattleController(state *session.State) *BattleController {
@@ -22,6 +23,13 @@ func (c *BattleController) Init(scene *ge.Scene) {
 
 	c.runner = battle.NewRunner(c.state)
 	c.runner.Init(scene)
+
+	c.runner.EventBattleCompleted.Connect(nil, func(results *battle.Results) {
+		c.transition = true
+		scene.DelayedCall(4, func() {
+			scene.Context().ChangeScene(NewResultscontroller(c.state, results))
+		})
+	})
 }
 
 func (c *BattleController) Update(delta float64) {

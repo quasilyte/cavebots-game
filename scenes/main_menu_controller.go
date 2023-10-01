@@ -30,7 +30,7 @@ func (c *MainMenuController) initUI(scene *ge.Scene) {
 		})),
 		widget.ContainerOpts.Layout(widget.NewAnchorLayout()))
 
-	rowContainer := eui.NewRowLayoutContainerWithMinWidth(640, 16, nil)
+	rowContainer := eui.NewRowLayoutContainerWithMinWidth(400, 16, nil)
 	root.AddChild(rowContainer)
 
 	bigFont := scene.Context().Loader.LoadFont(assets.FontBig).Face

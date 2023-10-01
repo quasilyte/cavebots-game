@@ -13,6 +13,7 @@ func registerImageResources(ctx *ge.Context) {
 		ImageUIButtonIdle:     {Path: "images/ebitenui/button-idle.png"},
 		ImageUIButtonHover:    {Path: "images/ebitenui/button-hover.png"},
 		ImageUIButtonPressed:  {Path: "images/ebitenui/button-pressed.png"},
+		ImageUIPanelIdle:      {Path: "images/ebitenui/panel-idle.png"},
 
 		ImageCaveTiles:   {Path: "images/cave_tiles.png"},
 		ImageForestTiles: {Path: "images/forest_tiles.png"},
@@ -67,6 +68,7 @@ const (
 	ImageUIButtonIdle
 	ImageUIButtonHover
 	ImageUIButtonPressed
+	ImageUIPanelIdle
 
 	ImageCaveTiles
 	ImageForestTiles

@@ -14,6 +14,7 @@ import (
 
 type Resources struct {
 	button *buttonResource
+	panel  *panelResource
 }
 
 type buttonResource struct {
@@ -22,6 +23,11 @@ type buttonResource struct {
 	TextColors    *widget.ButtonTextColor
 	AltTextColors *widget.ButtonTextColor
 	FontFace      font.Face
+}
+
+type panelResource struct {
+	Image   *image.NineSlice
+	Padding widget.Insets
 }
 
 func PrepareResources(loader *resource.Loader) *Resources {
@@ -56,6 +62,19 @@ func PrepareResources(loader *resource.Loader) *Resources {
 				Disabled: styles.DisabledButtonTextColor,
 			},
 			FontFace: normalFont,
+		}
+	}
+
+	{
+		idle := loader.LoadImage(assets.ImageUIPanelIdle).Data
+		result.panel = &panelResource{
+			Image: nineSliceImage(idle, 10, 10),
+			Padding: widget.Insets{
+				Left:   16,
+				Right:  16,
+				Top:    10,
+				Bottom: 10,
+			},
 		}
 	}
 
@@ -134,6 +153,20 @@ func NewCenteredLabel(text string, ff font.Face) *widget.Text {
 	return NewCenteredLabelWithMaxWidth(text, ff, -1)
 }
 
+func NewColoredLabel(text string, ff font.Face, clr color.RGBA, options ...widget.TextOpt) *widget.Text {
+	opts := []widget.TextOpt{
+		widget.TextOpts.Text(text, ff, clr),
+	}
+	if len(options) != 0 {
+		opts = append(opts, options...)
+	}
+	return widget.NewText(opts...)
+}
+
+func NewLabel(text string, ff font.Face, options ...widget.TextOpt) *widget.Text {
+	return NewColoredLabel(text, ff, styles.ButtonTextColor, options...)
+}
+
 func NewSeparator(ld interface{}, clr color.RGBA) widget.PreferredSizeLocateableWidget {
 	c := widget.NewContainer(
 		widget.ContainerOpts.Layout(widget.NewRowLayout(
@@ -153,4 +186,26 @@ func NewSeparator(ld interface{}, clr color.RGBA) widget.PreferredSizeLocateable
 	))
 
 	return c
+}
+
+func NewPanelWithPadding(res *Resources, minWidth, minHeight int, padding widget.Insets) *widget.Container {
+	return widget.NewContainer(
+		widget.ContainerOpts.BackgroundImage(res.panel.Image),
+		widget.ContainerOpts.Layout(widget.NewAnchorLayout(
+			widget.AnchorLayoutOpts.Padding(padding),
+		)),
+		// widget.ContainerOpts.Layout(widget.NewRowLayout(
+		// 	widget.RowLayoutOpts.Direction(widget.DirectionVertical),
+		// 	widget.RowLayoutOpts.Spacing(4),
+		// 	widget.RowLayoutOpts.Padding(res.panel.Padding),
+		// )),
+		widget.ContainerOpts.WidgetOpts(
+			widget.WidgetOpts.LayoutData(widget.AnchorLayoutData{
+				StretchHorizontal:  true,
+				HorizontalPosition: widget.AnchorLayoutPositionCenter,
+				VerticalPosition:   widget.AnchorLayoutPositionCenter,
+			}),
+			widget.WidgetOpts.MinSize(minWidth, minHeight),
+		),
+	)
 }

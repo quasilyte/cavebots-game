@@ -2,6 +2,7 @@ package battle
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/quasilyte/cavebots-game/assets"
@@ -32,6 +33,8 @@ type Runner struct {
 
 	computer *computerPlayer
 
+	startTime time.Time
+
 	stillTime      float64
 	hoverTriggered bool
 	hoverPos       gmath.Vec
@@ -41,6 +44,17 @@ type Runner struct {
 	cameraPanBoundary float64
 
 	cellSelector *ge.Sprite
+
+	EventBattleCompleted gsignal.Event[*Results]
+}
+
+type Results struct {
+	Victory bool
+
+	BotsCreated int
+	Digs        int
+
+	Duration time.Duration
 }
 
 func NewRunner(state *session.State) *Runner {
@@ -54,6 +68,8 @@ func NewRunner(state *session.State) *Runner {
 func (r *Runner) Init(scene *ge.Scene) {
 	r.scene = scene
 
+	r.startTime = time.Now()
+
 	r.world = &worldState{
 		width:     1920,
 		height:    32 * numCaveVerticalCells,
@@ -62,6 +78,20 @@ func (r *Runner) Init(scene *ge.Scene) {
 		rand:      scene.Rand(),
 	}
 	r.world.Init()
+
+	r.world.EventDefeat.Connect(nil, func(pos gmath.Vec) {
+		r.scene.AddObject(newBigFloatingTextNode(r.world, pos, "Defeat!"))
+		r.world.results.Victory = false
+		r.world.results.Duration = time.Since(r.startTime)
+		r.EventBattleCompleted.Emit(r.world.results)
+	})
+
+	r.world.EventVictory.Connect(nil, func(pos gmath.Vec) {
+		r.scene.AddObject(newBigFloatingTextNode(r.world, pos, "Victory!"))
+		r.world.results.Victory = true
+		r.world.results.Duration = time.Since(r.startTime)
+		r.EventBattleCompleted.Emit(r.world.results)
+	})
 
 	r.computer = newComputerPlayer(r.world)
 

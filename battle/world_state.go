@@ -37,6 +37,8 @@ type worldState struct {
 
 	caveWidth float64
 
+	results *Results
+
 	core        *unitNode
 	playerUnits []*unitNode
 	creeps      []*unitNode
@@ -51,9 +53,13 @@ type worldState struct {
 	mountainByCoord map[uint32]*mountainNode
 
 	EventResourcesUpdated gsignal.Event[gsignal.Void]
+	EventDefeat           gsignal.Event[gmath.Vec]
+	EventVictory          gsignal.Event[gmath.Vec]
 }
 
 func (w *worldState) Init() {
+	w.results = &Results{}
+
 	w.energy = 20
 
 	w.creepBaseAttackBudget = 5
@@ -166,9 +172,13 @@ func (w *worldState) NewUnitNode(pos gmath.Vec, stats *unitStats) *unitNode {
 		if n.stats.allied {
 			if n == w.core {
 				w.core = nil
+				w.EventDefeat.Emit(n.pos)
 			}
 			w.playerUnits = xslices.Remove(w.playerUnits, n)
 		} else {
+			if n == w.creepBase {
+				w.EventDefeat.Emit(n.pos)
+			}
 			w.creeps = xslices.Remove(w.creeps, n)
 		}
 	})
