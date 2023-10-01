@@ -20,6 +20,7 @@ const (
 	lootBotHarvester
 	lootBotVanguard
 	lootBotPatrol
+	lootBotRepair
 	lootBotTitan
 	lootBotGenerator
 )

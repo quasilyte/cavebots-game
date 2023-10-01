@@ -183,6 +183,8 @@ func (m *tooltipManager) formatMountainInfo(mountain *mountainNode) string {
 		extra = "Contains Vanguard bot"
 	case lootBotGenerator:
 		extra = "Contains Generator bot"
+	case lootBotRepair:
+		extra = "Repair bot"
 	case lootBotTitan:
 		extra = "Contains Titan bot"
 	}

@@ -59,7 +59,7 @@ var droneHarvesterStats = &unitStats{
 	maxHealth:    30,
 	img:          assets.ImageDroneHarvester,
 	allied:       true,
-	energyUpkeep: 0.2,
+	energyUpkeep: 0.15,
 	energyCost:   2,
 	ironCost:     2,
 }
@@ -116,7 +116,7 @@ var droneVanguardStats = &unitStats{
 	maxHealth:    50,
 	img:          assets.ImageDroneVanguard,
 	allied:       true,
-	energyUpkeep: 0.6,
+	energyUpkeep: 0.55,
 	energyCost:   3,
 	ironCost:     9,
 	weapon: &weaponStats{
@@ -139,6 +139,17 @@ var droneGeneratorStats = &unitStats{
 	maxHealth:   60,
 	img:         assets.ImageDroneGenerator,
 	allied:      true,
+}
+
+var droneRepairStats = &unitStats{
+	name:         "Repair",
+	botPriority:  9.0,
+	layer:        2,
+	speed:        40,
+	maxHealth:    75,
+	img:          assets.ImageDroneRepair,
+	allied:       true,
+	energyUpkeep: 0.2,
 }
 
 var buildingPowerGenerator = &unitStats{

@@ -233,22 +233,27 @@ func (w *worldState) selectLootKind() lootKind {
 		return lootBotPatrol
 	case 11:
 		return lootBotGenerator
-	case 15:
+	case 20:
 		return lootBotVanguard
 	case 77:
 		return lootBotTitan
+	case 89:
+		return lootBotRepair
 	}
 
 	if w.lootSeq%5 == 0 {
 		roll := w.rand.Float()
-		if roll <= 0.4 {
+		if roll <= 0.4 { // 40%
 			return lootBotHarvester
 		}
-		if roll <= 0.6 {
+		if roll <= 0.6 { // 20%
 			return lootBotPatrol
 		}
-		if roll <= 0.65 {
+		if roll <= 0.7 { // 10%
 			return lootBotGenerator
+		}
+		if w.lootSeq > 32 && roll < 0.75 { // 5%
+			return lootBotRepair
 		}
 	}
 
@@ -311,7 +316,7 @@ func (w *worldState) Reveal(m *mountainNode) {
 		m.sprite.SetImage(w.scene.LoadImage(assets.ImageIronMountains))
 	case lootEasyDig:
 		m.sprite.SetImage(w.scene.LoadImage(assets.ImageWeakMountains))
-	case lootBotGenerator, lootBotPatrol, lootBotVanguard, lootBotHarvester, lootBotTitan:
+	case lootBotGenerator, lootBotPatrol, lootBotVanguard, lootBotHarvester, lootBotRepair, lootBotTitan:
 		m.sprite.SetImage(w.scene.LoadImage(assets.ImageUnitMountains))
 	case lootExtraStones:
 		m.sprite.SetImage(w.scene.LoadImage(assets.ImageRockyMountains))

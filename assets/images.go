@@ -28,6 +28,7 @@ func registerImageResources(ctx *ge.Context) {
 		ImageDronePatrol:    {Path: "images/drone_patrol.png"},
 		ImageDroneGenerator: {Path: "images/drone_mobile_generator.png"},
 		ImageDroneVanguard:  {Path: "images/drone_vanguard.png"},
+		ImageDroneRepair:    {Path: "images/drone_repair.png"},
 		ImageDroneTitan:     {Path: "images/drone_titan.png"},
 
 		ImageBuildingGenerator: {Path: "images/building_generator.png"},
@@ -89,6 +90,7 @@ const (
 	ImageDronePatrol
 	ImageDroneGenerator
 	ImageDroneVanguard
+	ImageDroneRepair
 	ImageDroneTitan
 
 	ImageMutantWarrior

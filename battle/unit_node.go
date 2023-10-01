@@ -18,6 +18,7 @@ const (
 	orderHarvestResource
 	orderDeliverResource
 	orderPatrolMove
+	orderRepairOther
 	orderVanguardFollow
 	orderMakeUnit
 	orderCreepAttack
@@ -192,6 +193,8 @@ func (u *unitNode) Update(delta float64) {
 		u.updateTitan(delta)
 	case droneGeneratorStats:
 		u.updateGenerator(delta)
+	case droneRepairStats:
+		u.updateRepairbot(delta)
 	case buildingFactory:
 		u.updateFactory(delta)
 	case creepMutantBase:
@@ -215,6 +218,8 @@ func (u *unitNode) completeOrder(order unitOrder) {
 		u.completeHarvestResource()
 	case orderDeliverResource:
 		u.completeDeliverResource()
+	case orderRepairOther:
+		u.completeRepairOther()
 	case orderCreepAttack, orderCreepAfterAttack:
 		u.order = orderCreepAfterAttack
 	case orderPatrolMove:
@@ -222,6 +227,27 @@ func (u *unitNode) completeOrder(order unitOrder) {
 	case orderVanguardFollow:
 		u.specialDelay = u.scene.Rand().FloatRange(3, 9)
 	}
+}
+
+func (u *unitNode) completeRepairOther() {
+	other := u.orderTarget.(*unitNode)
+	if other.IsDisposed() {
+		return
+	}
+
+	if other.pos.DistanceTo(u.pos) > 64 {
+		if u.world.diggedRect.Contains(other.pos) && u.world.rand.Chance(0.6) {
+			u.sendTo(other.pos)
+			u.order = orderRepairOther
+			return
+		}
+		u.reload = u.world.rand.FloatRange(1, 5)
+		return
+	}
+
+	u.reload = u.world.rand.FloatRange(10, 30)
+	other.health = gmath.ClampMax(other.health+15, other.stats.maxHealth)
+	playSound(u.world, assets.AudioRepair, other.pos)
 }
 
 func (u *unitNode) completeDeliverResource() {
@@ -429,6 +455,41 @@ func (u *unitNode) updateFactory(delta float64) {
 	playGlobalSound(u.world, assets.AudioUnitReady)
 }
 
+func (u *unitNode) updateRepairbot(delta float64) {
+	u.reload = gmath.ClampMin(u.reload-delta, 0)
+	if u.order != orderNone {
+		return
+	}
+	if !u.waypoint.IsZero() {
+		return
+	}
+	var target *unitNode
+	if u.reload == 0 {
+		target = randIterate(u.world.rand, u.world.playerUnits, func(other *unitNode) bool {
+			if other == u {
+				return false
+			}
+			if other.stats.building {
+				return false
+			}
+			if other.health >= other.stats.maxHealth {
+				return false
+			}
+			if !u.world.diggedRect.Contains(other.pos) {
+				return false
+			}
+			return true
+		})
+	}
+	if target == nil {
+		u.sendTo(randomSectorPos(u.scene.Rand(), u.world.diggedRect))
+		return
+	}
+	u.order = orderRepairOther
+	u.orderTarget = target
+	u.sendTo(target.pos)
+}
+
 func (u *unitNode) updateGenerator(delta float64) {
 	if !u.waypoint.IsZero() {
 		return
@@ -570,6 +631,9 @@ func (u *unitNode) movementSpeed() float64 {
 	if u.cargo != 0 {
 		multiplier = 0.25
 	}
+	if u.order == orderRepairOther {
+		multiplier += 0.75
+	}
 	return u.stats.speed * multiplier
 }
 
@@ -622,6 +686,9 @@ func (u *unitNode) completeDig() {
 	case lootBotGenerator:
 		createdBot = true
 		u.scene.AddObject(u.world.NewUnitNode(m.pos, droneGeneratorStats))
+	case lootBotRepair:
+		createdBot = true
+		u.scene.AddObject(u.world.NewUnitNode(m.pos, droneRepairStats))
 	case lootBotVanguard:
 		createdBot = true
 		u.scene.AddObject(u.world.NewUnitNode(m.pos, droneVanguardStats))
