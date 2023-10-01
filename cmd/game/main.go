@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/quasilyte/cavebots-game/assets"
@@ -26,9 +27,11 @@ func main() {
 
 	state := &session.State{
 		UIResources: eui.PrepareResources(ctx.Loader),
+		Settings:    getDefaultSettings(),
 	}
 
 	keymap := input.Keymap{
+		controls.ActionBack:     {input.KeyEscape},
 		controls.ActionSendUnit: {input.KeyMouseRight},
 		controls.ActionInteract: {input.KeyMouseLeft},
 		controls.ActionBuild1:   {input.KeyQ},
@@ -41,7 +44,19 @@ func main() {
 	}
 	state.Input = ctx.Input.NewHandler(0, keymap)
 
+	if err := ctx.LoadGameData("save", &state.Settings); err != nil {
+		fmt.Printf("can't load game data: %v", err)
+		state.Settings = getDefaultSettings()
+		ctx.SaveGameData("save", state.Settings)
+	}
+
 	if err := ge.RunGame(ctx, scenes.NewMainMenuController(state)); err != nil {
 		panic(err)
+	}
+}
+
+func getDefaultSettings() session.Settings {
+	return session.Settings{
+		SoundLevel: 2,
 	}
 }

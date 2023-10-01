@@ -2,6 +2,7 @@ package scenes
 
 import (
 	"github.com/quasilyte/cavebots-game/battle"
+	"github.com/quasilyte/cavebots-game/controls"
 	"github.com/quasilyte/cavebots-game/session"
 	"github.com/quasilyte/ge"
 )
@@ -34,4 +35,8 @@ func (c *BattleController) Init(scene *ge.Scene) {
 
 func (c *BattleController) Update(delta float64) {
 	c.runner.Update(delta)
+
+	if c.state.Input.ActionIsJustPressed(controls.ActionBack) {
+		c.scene.Context().ChangeScene(NewMainMenuController(c.state))
+	}
 }

@@ -9,11 +9,14 @@ import (
 
 func registerImageResources(ctx *ge.Context) {
 	imageResources := map[resource.ImageID]resource.ImageInfo{
-		ImageUIButtonDisabled: {Path: "images/ebitenui/button-disabled.png"},
-		ImageUIButtonIdle:     {Path: "images/ebitenui/button-idle.png"},
-		ImageUIButtonHover:    {Path: "images/ebitenui/button-hover.png"},
-		ImageUIButtonPressed:  {Path: "images/ebitenui/button-pressed.png"},
-		ImageUIPanelIdle:      {Path: "images/ebitenui/panel-idle.png"},
+		ImageUIButtonDisabled:      {Path: "images/ebitenui/button-disabled.png"},
+		ImageUIButtonIdle:          {Path: "images/ebitenui/button-idle.png"},
+		ImageUIButtonHover:         {Path: "images/ebitenui/button-hover.png"},
+		ImageUIButtonPressed:       {Path: "images/ebitenui/button-pressed.png"},
+		ImageUISelectButtonIdle:    {Path: "images/ebitenui/select-button-idle.png"},
+		ImageUISelectButtonHover:   {Path: "images/ebitenui/select-button-hover.png"},
+		ImageUISelectButtonPressed: {Path: "images/ebitenui/select-button-pressed.png"},
+		ImageUIPanelIdle:           {Path: "images/ebitenui/panel-idle.png"},
 
 		ImageCaveTiles:   {Path: "images/cave_tiles.png"},
 		ImageForestTiles: {Path: "images/forest_tiles.png"},
@@ -68,6 +71,9 @@ const (
 	ImageUIButtonIdle
 	ImageUIButtonHover
 	ImageUIButtonPressed
+	ImageUISelectButtonIdle
+	ImageUISelectButtonHover
+	ImageUISelectButtonPressed
 	ImageUIPanelIdle
 
 	ImageCaveTiles

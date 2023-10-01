@@ -7,6 +7,8 @@ import (
 const (
 	ActionUnknown input.Action = iota
 
+	ActionBack
+
 	ActionSendUnit
 	ActionInteract
 

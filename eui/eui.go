@@ -9,12 +9,15 @@ import (
 	"github.com/quasilyte/cavebots-game/assets"
 	"github.com/quasilyte/cavebots-game/styles"
 	resource "github.com/quasilyte/ebitengine-resource"
+	"github.com/quasilyte/ge/input"
+	"github.com/quasilyte/gmath"
 	"golang.org/x/image/font"
 )
 
 type Resources struct {
-	button *buttonResource
-	panel  *panelResource
+	button         *buttonResource
+	buttonSelected *buttonResource
+	panel          *panelResource
 }
 
 type buttonResource struct {
@@ -40,6 +43,9 @@ func PrepareResources(loader *resource.Loader) *Resources {
 		idle := nineSliceImage(loader.LoadImage(assets.ImageUIButtonIdle).Data, 12, 0)
 		hover := nineSliceImage(loader.LoadImage(assets.ImageUIButtonHover).Data, 12, 0)
 		pressed := nineSliceImage(loader.LoadImage(assets.ImageUIButtonPressed).Data, 12, 0)
+		selectedIdle := nineSliceImage(loader.LoadImage(assets.ImageUISelectButtonIdle).Data, 12, 0)
+		selectedHover := nineSliceImage(loader.LoadImage(assets.ImageUISelectButtonHover).Data, 12, 0)
+		selectedPressed := nineSliceImage(loader.LoadImage(assets.ImageUISelectButtonPressed).Data, 12, 0)
 		buttonPadding := widget.Insets{
 			Left:  30,
 			Right: 30,
@@ -62,6 +68,16 @@ func PrepareResources(loader *resource.Loader) *Resources {
 				Disabled: styles.DisabledButtonTextColor,
 			},
 			FontFace: normalFont,
+		}
+		result.buttonSelected = &buttonResource{
+			Image: &widget.ButtonImage{
+				Idle:    selectedIdle,
+				Hover:   selectedHover,
+				Pressed: selectedPressed,
+			},
+			Padding:    buttonPadding,
+			TextColors: buttonColors,
+			FontFace:   normalFont,
 		}
 	}
 
@@ -208,4 +224,79 @@ func NewPanelWithPadding(res *Resources, minWidth, minHeight int, padding widget
 			widget.WidgetOpts.MinSize(minWidth, minHeight),
 		),
 	)
+}
+
+type SelectButtonConfig struct {
+	Resources *Resources
+	Input     *input.Handler
+
+	Value      *int
+	Label      string
+	ValueNames []string
+
+	LayoutData any
+
+	OnPressed func()
+}
+
+func NewSelectButton(config SelectButtonConfig) *widget.Button {
+	maxValue := len(config.ValueNames) - 1
+	value := config.Value
+	key := config.Label
+	valueNames := config.ValueNames
+
+	var slider gmath.Slider
+	slider.SetBounds(0, maxValue)
+	slider.TrySetValue(*value)
+	makeLabel := func() string {
+		if key == "" {
+			return valueNames[slider.Value()]
+		}
+		return key + ": " + valueNames[slider.Value()]
+	}
+
+	buttonOpts := []widget.ButtonOpt{}
+	if config.LayoutData != nil {
+		buttonOpts = append(buttonOpts, widget.ButtonOpts.WidgetOpts(widget.WidgetOpts.LayoutData(config.LayoutData)))
+	}
+	button := newButtonSelected(config.Resources, makeLabel(), buttonOpts...)
+
+	button.ClickedEvent.AddHandler(func(args interface{}) {
+		increase := false
+		{
+			cursorPos := config.Input.CursorPos()
+			buttonRect := button.GetWidget().Rect
+			buttonWidth := buttonRect.Dx()
+			if cursorPos.X >= float64(buttonRect.Min.X)+float64(buttonWidth)*0.5 {
+				increase = true
+			}
+		}
+
+		if increase {
+			slider.Inc()
+		} else {
+			slider.Dec()
+		}
+		*value = slider.Value()
+
+		button.Text().Label = makeLabel()
+		if config.OnPressed != nil {
+			config.OnPressed()
+		}
+	})
+
+	return button
+}
+
+func newButtonSelected(res *Resources, text string, opts ...widget.ButtonOpt) *widget.Button {
+	options := []widget.ButtonOpt{
+		widget.ButtonOpts.WidgetOpts(widget.WidgetOpts.LayoutData(widget.RowLayoutData{
+			Stretch: true,
+		})),
+		widget.ButtonOpts.Image(res.buttonSelected.Image),
+		widget.ButtonOpts.Text(text, res.buttonSelected.FontFace, res.buttonSelected.TextColors),
+		widget.ButtonOpts.TextPadding(res.buttonSelected.Padding),
+	}
+	options = append(options, opts...)
+	return widget.NewButton(options...)
 }

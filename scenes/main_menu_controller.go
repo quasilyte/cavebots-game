@@ -21,6 +21,8 @@ func NewMainMenuController(state *session.State) *MainMenuController {
 }
 
 func (c *MainMenuController) Init(scene *ge.Scene) {
+	scene.Audio().SetGroupVolume(assets.SoundGroupEffect, assets.VolumeMultiplier(c.state.Settings.SoundLevel))
+
 	c.initUI(scene)
 }
 
@@ -46,6 +48,7 @@ func (c *MainMenuController) initUI(scene *ge.Scene) {
 	}))
 
 	rowContainer.AddChild(eui.NewButton(c.state.UIResources, "SETTINGS", func() {
+		scene.Context().ChangeScene(NewSettingsController(c.state))
 	}))
 
 	rowContainer.AddChild(eui.NewButton(c.state.UIResources, "CREDITS", func() {

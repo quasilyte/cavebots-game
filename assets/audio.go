@@ -5,6 +5,28 @@ import (
 	"github.com/quasilyte/ge"
 )
 
+const (
+	SoundGroupEffect uint = iota
+	SoundGroupMusic
+)
+
+func VolumeMultiplier(level int) float64 {
+	switch level {
+	case 1:
+		return 0.01
+	case 2:
+		return 0.15
+	case 3:
+		return 0.45
+	case 4:
+		return 0.8
+	case 5:
+		return 1.0
+	default:
+		return 0
+	}
+}
+
 func registerAudioResources(ctx *ge.Context) {
 	audioResources := map[resource.AudioID]resource.AudioInfo{
 		AudioUnitAck1: {Path: "audio/unit_ack1.wav"},
