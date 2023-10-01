@@ -201,7 +201,7 @@ func (m *tooltipManager) formatMountainInfo(mountain *mountainNode) string {
 	case lootLavaCell:
 		extra = "Lava terrain"
 	case lootFlatCell:
-		extra = "Hard terrain (can build)"
+		extra = "Hard terrain (can build here)"
 
 	case lootIronDeposit, lootLargeIronDeposit:
 		extra = "Contains iron deposit"
@@ -209,7 +209,7 @@ func (m *tooltipManager) formatMountainInfo(mountain *mountainNode) string {
 	case lootExtraStones:
 		extra = "Grants extra stones"
 	case lootEasyDig:
-		extra = "Can be dug for free"
+		extra = "Can be dug for free (no energy cost)"
 
 	case lootBotHarvester:
 		extra = "Contains Harvester bot"
@@ -228,7 +228,7 @@ func (m *tooltipManager) formatMountainInfo(mountain *mountainNode) string {
 	if extra == "" {
 		return "Diggable block\n>> LMB to dig here"
 	}
-	return "Diggable block\n" + extra + "\n>> LMB to dig here]"
+	return "Diggable block\n" + extra + "\n>> LMB to dig here"
 }
 
 func (m *tooltipManager) removeTooltip() {
