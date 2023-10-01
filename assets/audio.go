@@ -67,6 +67,7 @@ func registerAudioResources(ctx *ge.Context) {
 
 		AudioResourceAdded: {Path: "audio/resource_added.wav", Volume: -0.2},
 		AudioUnitReady:     {Path: "audio/unit_ready.wav", Volume: -0.2},
+		AudioDig:           {Path: "audio/dig.wav", Volume: -0.1},
 	}
 
 	for id, res := range audioResources {
@@ -133,4 +134,5 @@ const (
 
 	AudioResourceAdded
 	AudioUnitReady
+	AudioDig
 )

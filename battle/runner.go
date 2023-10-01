@@ -79,6 +79,10 @@ func (r *Runner) Init(scene *ge.Scene) {
 	}
 	r.world.Init()
 
+	r.world.EventTooltipUpdateRequest.Connect(nil, func(gsignal.Void) {
+		r.ttm.ForceUpdate()
+	})
+
 	r.world.EventDefeat.Connect(nil, func(pos gmath.Vec) {
 		r.scene.AddObject(newBigFloatingTextNode(r.world, pos, "Defeat!"))
 		r.world.results.Victory = false
@@ -409,6 +413,7 @@ func (r *Runner) doBuildBuilding(coord pathing.GridCoord, cursorPos gmath.Vec, i
 	newBuilding.EventDisposed.Connect(nil, func(*unitNode) {
 		buildingSpot.building = nil
 	})
+	r.ttm.ForceUpdate()
 }
 
 func (r *Runner) doBuildAction(cursorPos gmath.Vec, i int) {
@@ -458,6 +463,7 @@ func (r *Runner) doBuildAction(cursorPos gmath.Vec, i int) {
 	factory.orderTarget = stats
 	factory.order = orderMakeUnit
 	factory.reload = r.scene.Rand().FloatRange(15, 20)
+	r.ttm.ForceUpdate()
 }
 
 func (r *Runner) stopHover() {

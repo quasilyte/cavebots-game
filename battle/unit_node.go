@@ -642,8 +642,10 @@ func (u *unitNode) completeDig() {
 	u.world.GrowDiggedRect(m.pos)
 	u.world.grid.SetCellTile(u.world.grid.PosToCoord(m.pos.X, m.pos.Y), tileType)
 
+	playSound(u.world, assets.AudioDig, m.pos)
 	m.Dispose()
 	delete(u.world.mountainByCoord, u.world.grid.PackCoord(u.world.grid.PosToCoord(m.pos.X, m.pos.Y)))
 	u.world.RevealNeighbors(m.pos)
 	u.world.results.Digs++
+	u.world.EventTooltipUpdateRequest.Emit(gsignal.Void{})
 }

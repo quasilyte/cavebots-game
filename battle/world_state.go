@@ -54,9 +54,10 @@ type worldState struct {
 
 	mountainByCoord map[uint32]*mountainNode
 
-	EventResourcesUpdated gsignal.Event[gsignal.Void]
-	EventDefeat           gsignal.Event[gmath.Vec]
-	EventVictory          gsignal.Event[gmath.Vec]
+	EventResourcesUpdated     gsignal.Event[gsignal.Void]
+	EventDefeat               gsignal.Event[gmath.Vec]
+	EventVictory              gsignal.Event[gmath.Vec]
+	EventTooltipUpdateRequest gsignal.Event[gsignal.Void]
 }
 
 func (w *worldState) Init() {

@@ -15,6 +15,7 @@ type tooltipManager struct {
 	world   *worldState
 	message *messageNode
 
+	hoverPos    gmath.Vec
 	tooltipTime float64
 }
 
@@ -59,7 +60,14 @@ func (m *tooltipManager) formatPrice(u *unitStats) string {
 	return strings.Join(priceParts, " / ")
 }
 
+func (m *tooltipManager) ForceUpdate() {
+	m.OnStopHover()
+	m.OnHover(m.hoverPos)
+}
+
 func (m *tooltipManager) OnHover(pos gmath.Vec) {
+	m.hoverPos = pos
+
 	screenPos := pos.Sub(m.world.camera.Offset)
 	if screenPos.Y >= ((1080.0 / 2) - 56) {
 		// TODO: resource hints.
