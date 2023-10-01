@@ -146,14 +146,17 @@ func (w *worldState) NewHardTerrainNode(pos gmath.Vec) *hardTerrainNode {
 
 func (w *worldState) TryBuy(stats *unitStats, pos gmath.Vec) bool {
 	if w.energy < float64(stats.energyCost) {
+		playGlobalSound(w, assets.AudioError)
 		w.scene.AddObject(newFloatingTextNode(w, pos, "Error: not enough energy"))
 		return false
 	}
 	if w.iron < stats.ironCost {
+		playGlobalSound(w, assets.AudioError)
 		w.scene.AddObject(newFloatingTextNode(w, pos, "Error: not enough iron"))
 		return false
 	}
 	if w.stones < stats.stoneCost {
+		playGlobalSound(w, assets.AudioError)
 		w.scene.AddObject(newFloatingTextNode(w, pos, "Error: not enough stone"))
 		return false
 	}

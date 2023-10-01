@@ -78,6 +78,7 @@ func registerAudioResources(ctx *ge.Context) {
 		AudioRepair:            {Path: "audio/repair.wav", Volume: -0.6},
 		AudioBuildingPlaced:    {Path: "audio/building_placed.wav", Volume: +0.5},
 		AudioProductionStarted: {Path: "audio/production_started.wav", Volume: -0.35},
+		AudioError:             {Path: "audio/error.wav", Volume: -0.35},
 	}
 
 	for id, res := range audioResources {
@@ -159,4 +160,5 @@ const (
 	AudioRepair
 	AudioBuildingPlaced
 	AudioProductionStarted
+	AudioError
 )

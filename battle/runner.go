@@ -316,10 +316,12 @@ func (r *Runner) handleInput(delta float64) {
 		m := r.world.MountainAt(cursorWorldPos)
 		if m != nil {
 			if !r.world.CanDig(m) {
+				playGlobalSound(r.world, assets.AudioError)
 				r.scene.AddObject(newFloatingTextNode(r.world, cursorWorldPos, "Error: can't dig here"))
 				return
 			}
 			if r.world.energy < digEnergyCost && m.loot != lootEasyDig {
+				playGlobalSound(r.world, assets.AudioError)
 				r.scene.AddObject(newFloatingTextNode(r.world, cursorWorldPos, "Error: not enough energy"))
 				return
 			}
