@@ -29,6 +29,8 @@ func VolumeMultiplier(level int) float64 {
 
 func registerAudioResources(ctx *ge.Context) {
 	audioResources := map[resource.AudioID]resource.AudioInfo{
+		AudioMusic1: {Path: "audio/otomata_track.ogg", Group: SoundGroupMusic},
+
 		AudioUnitAck1: {Path: "audio/unit_ack1.wav"},
 		AudioUnitAck2: {Path: "audio/unit_ack2.wav"},
 		AudioUnitAck3: {Path: "audio/unit_ack3.wav"},
@@ -82,6 +84,8 @@ func NumSamples(a resource.AudioID) int {
 
 const (
 	AudioNone resource.AudioID = iota
+
+	AudioMusic1
 
 	AudioUnitAck1
 	AudioUnitAck2

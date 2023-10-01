@@ -45,12 +45,29 @@ func (c *settingsController) initUI(scene *ge.Scene) {
 		Resources:  c.state.UIResources,
 		Input:      c.state.Input,
 		Value:      &c.state.Settings.SoundLevel,
-		Label:      "Volume level",
-		ValueNames: []string{"0", "1", "2", "3", "4", "5"},
+		Label:      "Effects volume",
+		ValueNames: []string{"off", "1", "2", "3", "4", "5"},
 		OnPressed: func() {
 			if c.state.Settings.SoundLevel != 0 {
 				scene.Audio().SetGroupVolume(assets.SoundGroupEffect, assets.VolumeMultiplier(c.state.Settings.SoundLevel))
 				scene.Audio().PlaySound(assets.AudioUnitAck2)
+			}
+		},
+	}))
+
+	rowContainer.AddChild(eui.NewSelectButton(eui.SelectButtonConfig{
+		Resources:  c.state.UIResources,
+		Input:      c.state.Input,
+		Value:      &c.state.Settings.MusicLevel,
+		Label:      "Music volume",
+		ValueNames: []string{"off", "1", "2", "3", "4", "5"},
+		OnPressed: func() {
+			if c.state.Settings.MusicLevel != 0 {
+				c.scene.Audio().SetGroupVolume(assets.SoundGroupMusic, assets.VolumeMultiplier(c.state.Settings.MusicLevel))
+				c.scene.Audio().PauseCurrentMusic()
+				c.scene.Audio().PlayMusic(assets.AudioMusic1)
+			} else {
+				c.scene.Audio().PauseCurrentMusic()
 			}
 		},
 	}))

@@ -22,8 +22,13 @@ func NewMainMenuController(state *session.State) *MainMenuController {
 
 func (c *MainMenuController) Init(scene *ge.Scene) {
 	scene.Audio().SetGroupVolume(assets.SoundGroupEffect, assets.VolumeMultiplier(c.state.Settings.SoundLevel))
+	scene.Audio().SetGroupVolume(assets.SoundGroupMusic, assets.VolumeMultiplier(c.state.Settings.MusicLevel))
 
 	c.initUI(scene)
+
+	if c.state.Settings.MusicLevel != 0 {
+		scene.Audio().ContinueMusic(assets.AudioMusic1)
+	}
 }
 
 func (c *MainMenuController) initUI(scene *ge.Scene) {
