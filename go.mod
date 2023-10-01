@@ -1,6 +1,6 @@
 module github.com/quasilyte/cavebots-game
 
-go 1.21
+go 1.20
 
 replace github.com/ebitenui/ebitenui => github.com/quasilyte/ebitenui v0.0.0-20230726093423-e2a7a066d711
 
